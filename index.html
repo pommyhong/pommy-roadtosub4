@@ -451,10 +451,12 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fuel-cta-go{margin-left:auto;flex:0 0 auto;font-size:10px;font-weight:700;color:#b07700;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:5px}
 .fuel-cta-go svg{transition:transform .2s cubic-bezier(.22,1,.36,1)}
 .fuel-cta:hover .fuel-cta-go svg{transform:translateY(-2px)}
-#fuel-back{position:fixed;inset:0;background:rgba(22,20,16,.44);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:9998}
+#fuel-back{position:fixed;inset:0;background:rgba(22,20,16,.44);opacity:0;pointer-events:none;transition:opacity .24s ease-out;z-index:9998}
 #fuel-back.on{opacity:1;pointer-events:auto}
-#fuel-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:var(--bg);border-radius:20px 20px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(103%);transition:transform .36s cubic-bezier(.22,1,.36,1);box-shadow:0 -10px 34px rgba(0,0,0,.2);visibility:hidden}
-#fuel-sheet.on{transform:translateY(0);visibility:visible}
+/* ปิด: ต้องเลื่อนพ้นจอ + เผื่อความฟุ้งของ box-shadow (34px) ไม่งั้นเหลือเงาดำคาขอบล่างตอนสไลด์ออก */
+#fuel-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:var(--bg);border-radius:20px 20px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(calc(100% + 50px));transition:transform .36s cubic-bezier(.22,1,.36,1),visibility 0s linear .36s;box-shadow:0 -10px 34px rgba(0,0,0,.2);visibility:hidden}
+/* visibility ต้องหน่วงจนสไลด์จบ ไม่งั้นแผ่นหายวับตั้งแต่เฟรมแรก เหลือแต่ backdrop ค่อยๆ จาง = เงาดำค้าง */
+#fuel-sheet.on{transform:translateY(0);visibility:visible;transition:transform .36s cubic-bezier(.22,1,.36,1),visibility 0s}
 #fuel-sheet.dragging{transition:none}
 .fs-grab{padding:11px 0 7px;display:flex;justify-content:center;touch-action:none;cursor:grab}
 .fs-grab i{width:40px;height:4px;border-radius:2px;background:#d5d1c6;display:block}
