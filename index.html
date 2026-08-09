@@ -1614,6 +1614,14 @@ function centerChip(){
  requestAnimationFrame(()=>{
   const nav=document.querySelector('.week-nav'),act=nav&&nav.querySelector('.wk-btn.active');
   if(!nav||!act)return;
+  // spacer หัว-ท้าย: ให้ chip ตัวแรก/ตัวสุดท้ายเลื่อนมาอยู่กลางได้เหมือนตัวอื่น
+  // (ใส่เป็น padding ผ่าน JS ไม่ใช่ CSS คงที่ — จะได้ไม่สร้าง scroll เกินจำเป็นตอนจอกว้างพอ)
+  nav.style.paddingLeft='';nav.style.paddingRight='';
+  const first=nav.querySelector('.wk-btn'),last=nav.lastElementChild;
+  if(first&&last&&nav.scrollWidth>nav.clientWidth+1){
+   nav.style.paddingLeft=Math.max(4,(nav.clientWidth-first.offsetWidth)/2)+'px';
+   nav.style.paddingRight=Math.max(4,(nav.clientWidth-last.offsetWidth)/2)+'px';
+  }
   const target=act.offsetLeft-(nav.clientWidth-act.offsetWidth)/2;
   const max=nav.scrollWidth-nav.clientWidth;
   const left=Math.max(0,Math.min(target,max));
@@ -1622,6 +1630,9 @@ function centerChip(){
   chipCentered=true;
  });
 }
+// หมุนจอ/ย่อขยายหน้าต่าง → คำนวณ spacer + ตำแหน่งกลางใหม่
+let chipRT=0;
+addEventListener('resize',()=>{clearTimeout(chipRT);chipRT=setTimeout(centerChip,150)});
 
 // ── bottom sheet (ใช้ร่วมทุกการ์ด · เนื้อหามาจาก SHEETS[key].blocks) ──
 const sheetCache={};
