@@ -1321,23 +1321,6 @@ function render(){
  });
  html+='</tbody></table></div>';
 
- // 👀 สัปดาห์หน้า — เห็นล่วงหน้าโดยไม่ต้องสลับแท็บ (เตรียมอาหาร/จัดคิวงานได้)
- if(selected+1<W.length){
-  const nw=W[selected+1];
-  html+='<div class="section-l">สัปดาห์หน้า · W'+nw.w+' <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">'+nw.f+'</span></div>';
-  html+='<div class="nw-card">';
-  nw.d.forEach(day=>{
-   const st=SESS[day.t]||SESS.rest;
-   const pl=[];if(day.k)pl.push(day.k+' km');if(day.m)pl.push(day.m+'′');
-   html+='<div class="nw-row'+(day.t==='rest'?' nw-rest':'')+'">'+
-    '<span class="nw-d">'+DAYS[day.d]+'</span>'+
-    '<span class="nw-bar" style="background:'+st.c+'"></span>'+
-    '<span class="nw-t">'+day.ti+'</span>'+
-    '<span class="nw-k">'+(day.t==='rest'?'—':(pl.join(' · ')||'—'))+'</span></div>';
-  });
-  html+='</div>';
- }
-
  // 🗓 ปฏิทินเดือน — เห็นรูปทรง block ทั้งเดือนในภาพเดียว (สีตาม session type · ทึบ=ทำแล้ว · เส้นประ=ข้าม)
  {
   const anchor=dateOf(selected,0);
@@ -1381,6 +1364,23 @@ function render(){
    '<span><i style="background:'+SESS.race.bg+'"></i>แข่ง</span>'+
    '<span><i class="o"></i>ข้าม</span>'+
    '<span style="opacity:.7">ทึบ = ทำแล้ว · อ่อน = ยังไม่ถึง · จุดล่าง = 2 session</span></div>';
+ }
+
+ // 👀 สัปดาห์หน้า — เห็นล่วงหน้าโดยไม่ต้องสลับแท็บ (เตรียมอาหาร/จัดคิวงานได้)
+ if(selected+1<W.length){
+  const nw=W[selected+1];
+  html+='<div class="section-l">สัปดาห์หน้า · W'+nw.w+' <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">'+nw.f+'</span></div>';
+  html+='<div class="nw-card">';
+  nw.d.forEach(day=>{
+   const st=SESS[day.t]||SESS.rest;
+   const pl=[];if(day.k)pl.push(day.k+' km');if(day.m)pl.push(day.m+'′');
+   html+='<div class="nw-row'+(day.t==='rest'?' nw-rest':'')+'">'+
+    '<span class="nw-d">'+DAYS[day.d]+'</span>'+
+    '<span class="nw-bar" style="background:'+st.c+'"></span>'+
+    '<span class="nw-t">'+day.ti+'</span>'+
+    '<span class="nw-k">'+(day.t==='rest'?'—':(pl.join(' · ')||'—'))+'</span></div>';
+  });
+  html+='</div>';
  }
 
  // สรุปการซ้อมสัปดาห์นี้ — chart (plan vs actual) + log cards
