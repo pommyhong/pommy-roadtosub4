@@ -448,6 +448,20 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad{border-color:#f3d3cd;background:#fef7f5}
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
+/* ── week header (เรฟ Runna) ── */
+.wkh{margin:12px 0 12px}
+.wkh-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wkh-range{font-size:14px;font-weight:700;color:#1c1c1c}
+.wkh-badge{font-size:9px;font-weight:800;letter-spacing:.1em;color:#fff;background:var(--ink);border-radius:20px;padding:3px 9px}
+.wkh-tag{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:3px 9px}
+.wkh-total{font-size:12px;color:var(--ink-2);margin-top:5px}
+.wkh-total b{font-size:13px;color:#1c1c1c}
+.wkh-act{color:var(--muted);font-weight:600}
+.wkh-bar{height:3px;border-radius:2px;background:#e8e5dd;margin-top:7px;overflow:hidden}
+.wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
+/* ── chip เลือกสัปดาห์: โชว์ระยะ (เรฟ KGT) ── */
+.wk-btn-w{display:block;font-size:9px;letter-spacing:.06em;opacity:.75}
+.wk-btn-k{display:block;font-size:13px;font-weight:700;letter-spacing:0;margin-top:1px;font-variant-numeric:tabular-nums}
 /* ── accordion section (A: ส่วนที่ดูนานๆ ครั้ง พับเก็บ) ── */
 .sec-h{width:100%;display:flex;align-items:center;gap:8px;background:none;border:none;border-bottom:1px solid var(--line);font-family:inherit;cursor:pointer;padding:0 0 8px;margin:24px 0 0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);text-align:left;-webkit-tap-highlight-color:transparent}
 .sec-h:hover{color:#1c1c1c}
@@ -1099,7 +1113,9 @@ function chipBtns(){
   if(prev>=0&&i>prev+1)h+='<span class="wk-ellipsis">···</span>';
   const dn=wkDone(i),tot=wkTotal(i);
   const isDoneWk=dn===tot&&tot>0;
-  h+='<button class="wk-btn'+(i===selected?' active':'')+(i===cw?' current':'')+(isDoneWk?' done':'')+'" onclick="selWeek('+i+')">W'+W[i].w+(isDoneWk?'<span class="wk-dot"></span>':'')+'</button>';
+  h+='<button class="wk-btn'+(i===selected?' active':'')+(i===cw?' current':'')+(isDoneWk?' done':'')+'" onclick="selWeek('+i+')">'+
+   '<span class="wk-btn-w">W'+W[i].w+'</span><span class="wk-btn-k">'+W[i].k+'</span>'+
+   (isDoneWk?'<span class="wk-dot"></span>':'')+'</button>';
   prev=i;
  });
  return h;
@@ -1272,12 +1288,10 @@ function render(){
  html+='</div>';
  // stats
  html+='<div class="week-stats'+(wkDone(selected)===wkTotal(selected)&&wkTotal(selected)>0?' week-complete':'')+'">'+
-  '<div class="stat"><div class="stat-l">ระยะทาง</div><div class="stat-v">'+w.k+'</div><div class="stat-u">km / สัปดาห์</div></div>'+
   '<div class="stat"><div class="stat-l">Training Load</div><div class="load-bar"><div class="track"><div class="fill" style="width:'+Math.min(100,w.ls/90*100)+'%;background:'+lc+'"></div></div><div class="num" style="color:'+lc+'">'+w.ls+'<span style="font-size:9px;color:var(--muted);font-weight:600">/90</span></div></div><div class="stat-u" style="margin-top:4px">'+lt+'</div></div>'+
   '<div class="stat"><div class="stat-l">Quality</div><div class="stat-v" style="color:'+(qd?'#e63012':'#9a968a')+'">'+(qd||'—')+'</div><div class="stat-u">'+(qd?'days hard work':w.p+' phase')+'</div></div>';
  const cmin=Math.min(...w.d.map(x=>(CARB[x.ca]||CARB.rest)[0]));
  const cmax=Math.max(...w.d.map(x=>(CARB[x.ca]||CARB.rest)[1]));
- html+='<div class="stat"><div class="stat-l">Carb / day</div><div class="stat-v" style="color:#b07700;font-size:16px">'+cmin+'–'+cmax+'g</div><div class="stat-u">low–high</div></div>';
  html+='</div>';
  // progress
  html+='<div class="progress"><div class="progress-top"><span class="progress-l">ความคืบหน้าสัปดาห์นี้</span><span class="progress-v" style="color:'+(pct===100?'#2faa72':'#1c1c1c')+'">'+dn+'/'+tot+' sessions '+(pct===100?'🎉':'')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+pct+'%;background:'+(pct===100?'#52c896':pct>=50?'#f5a623':'#e63012')+'"></div></div></div>';
@@ -1285,6 +1299,16 @@ function render(){
 
  // days
  html+=chipBar('เลือกสัปดาห์')+'<div class="section-l">ตารางซ้อมสัปดาห์นี้</div>';
+ // header แบบ Runna: ช่วงวันที่ + WEEK badge + phase tag → บรรทัดล่างเป็นระยะรวม (แทนการ์ด stat "ระยะทาง")
+ {const _act=w.d.reduce((sum,day)=>{const l=getLog(selected,day.d);return sum+(l&&l.km>0?l.km:0)},0);
+  const _pct=w.k>0?Math.min(100,_act/w.k*100):0;
+  html+='<div class="wkh">'+
+   '<div class="wkh-top"><span class="wkh-range">'+fmt(ws)+' – '+fmt(we)+'</span>'+
+   '<span class="wkh-badge">WEEK '+w.w+'</span>'+
+   '<span class="wkh-tag" style="color:'+phc+';background:'+phc+'1a">'+w.p+'</span></div>'+
+   '<div class="wkh-total">Total: <b>'+w.k+' km</b>'+(_act>0?'<span class="wkh-act"> · วิ่งแล้ว '+_act.toFixed(1)+' km</span>':'')+'</div>'+
+   '<div class="wkh-bar"><i style="width:'+_pct.toFixed(1)+'%"></i></div>'+
+   '</div>';}
  // compact row list (เลิกใช้ตาราง 5 คอลัมน์ — ซ้ำกับบล็อก "สัปดาห์หน้า" เดิม + กินที่)
  // เลย์เอาต์: [วันที่] [แถบสี type] [ชื่อ + รายละเอียด + ผลจริง] [แผน + สถานะ]
  html+='<div class="type-legend">'+['easy','quality','long','cross','rest'].map(t=>{const s=SESS[t];return '<span class="tl-chip" style="color:'+s.tc+';background:'+s.bg+'">'+s.l+'</span>'}).join('')+'</div>';
@@ -1514,7 +1538,7 @@ function render(){
  // อ้างอิง — Pace + Carb รวมใต้ section เดียว แต่คนละแถว
  // (คนละหน่วย: pace = ความเร็ว/โซน · carb = คาร์บ/วันซ้อม → ยุบเป็นตารางเดียวไม่ได้ เพราะแกนไม่ตรงกัน)
  let _refH='';
- _refH+='<div class="ref-sub">Carb · 65 kg <i>กรัม/วัน · กดดูเมนูทั้งวัน</i></div><div class="ref-row">';
+ _refH+='<div class="ref-sub">Carb · 65 kg <i>กรัม/วัน · กดดูเมนูทั้งวัน · สัปดาห์นี้ '+cmin+'–'+cmax+'g</i></div><div class="ref-row">';
  [['พัก',CARB.rest,'var(--muted)','rest'],['Easy',CARB.easy,'#2f9e6a','easy'],['Quality',CARB.quality,'#e63012','quality'],['Long',CARB.long,'#3a86c8','long'],['Race',CARB.race,'#b07700','race']].forEach(c=>{
   const hm=NUTRI[c[3]];
   _refH+='<span class="ref-pill'+(hm?' ref-pill-menu':'')+'"'+(hm?' onclick="toggleMenu(\''+c[3]+'\')"':'')+'><span class="ref-dot" style="background:'+c[2]+'"></span><b>'+c[0]+'</b> '+c[1][0]+'–'+c[1][1]+'g'+(hm?' <span class="ref-caret">▾</span>':'')+'</span>';
