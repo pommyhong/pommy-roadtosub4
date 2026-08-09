@@ -487,7 +487,44 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad{border-color:#f3d3cd;background:#fef7f5}
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
-@media (prefers-reduced-motion:reduce){#fuel-sheet,#fuel-back,.fuel-cta{transition:none}#fuel-sheet.shown .fs-blk{transition:none}.fs-blk{opacity:1;transform:none}}
+/* ── 🗓 ปฏิทินเดือน (macro view) ── */
+.mg-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mg-mo{font-size:13px;font-weight:700;color:#1c1c1c}
+.mg-nav{margin-left:auto;display:flex;gap:6px}
+.mg-nav button{font-family:inherit;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:13px;line-height:1;cursor:pointer;transition:background .15s,transform .15s}
+.mg-nav button:hover:not(:disabled){background:#f1efe9;transform:scale(1.08)}
+.mg-nav button:disabled{opacity:.3;cursor:default}
+.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.mg-dow{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;padding-bottom:2px}
+.mg-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;font-family:inherit;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mg-cell:disabled{cursor:default}
+.mg-c{width:100%;max-width:38px;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:transform .16s cubic-bezier(.22,1,.36,1)}
+.mg-cell:hover:not(:disabled) .mg-c{transform:scale(1.12)}
+.mg-cell:active:not(:disabled) .mg-c{transform:scale(.94)}
+.mg-out{cursor:default;pointer-events:none}
+.mg-out .mg-c{background:#f1efe9;color:#c6c2b6}
+.mg-fut .mg-c{color:#fff}
+.mg-race .mg-c{color:#fff;box-shadow:0 0 0 2px #fff,0 0 0 4px #e63012}
+.mg-done .mg-c{color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.mg-miss .mg-c{background:#fff!important;border:1.5px dashed #d5d1c6;color:#b4b0a4}
+.mg-today .mg-c{outline:2px solid #1c1c1c;outline-offset:2px}
+.mg-sel .mg-c{outline:2px solid #e63012;outline-offset:2px}
+.mg-mark{height:4px;display:flex;gap:3px;align-items:center}
+.mg-mark i{width:4px;height:4px;border-radius:50%;background:#9a968a;display:block}
+.mg-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:10px;font-weight:600;color:var(--muted)}
+.mg-legend span{display:flex;align-items:center;gap:4px}
+.mg-legend i{width:9px;height:9px;border-radius:50%;display:block}
+.mg-legend i.o{background:#fff;border:1.5px dashed #d5d1c6}
+/* ── สัปดาห์หน้า (peek) ── */
+.nw-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px 14px}
+.nw-row{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid #f1efe9;font-size:12px}
+.nw-row:last-child{border-bottom:none}
+.nw-d{width:26px;flex:0 0 auto;font-weight:700;color:#6b6b6b;font-size:11px}
+.nw-bar{width:3px;flex:0 0 auto;align-self:stretch;border-radius:2px}
+.nw-t{color:#1c1c1c;line-height:1.45}
+.nw-k{margin-left:auto;flex:0 0 auto;color:var(--muted);font-weight:600;white-space:nowrap;font-size:11px}
+.nw-rest .nw-t,.nw-rest .nw-d{color:#aaa69a}
+@media (prefers-reduced-motion:reduce){#fuel-sheet,#fuel-back,.fuel-cta,.mg-c{transition:none}#fuel-sheet.shown .fs-blk{transition:none}.fs-blk{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -1004,7 +1041,33 @@ function jumpToday(){
   setTimeout(()=>{const r=document.querySelector('.sched tr.jump-hi');if(r)r.classList.remove('jump-hi')},1600);
  },150);
 }
-function selWeek(i){selected=i;render();
+// 🗓 ปฏิทินเดือน — หา (week,day) จากวันที่จริง · นอกช่วงแผน = null
+function slotOf(date){
+ const a=new Date(PLAN_START);a.setHours(0,0,0,0);
+ const b=new Date(date);b.setHours(0,0,0,0);
+ const diff=Math.round((b-a)/864e5);
+ if(diff<0||diff>=W.length*7)return null;
+ return {wi:Math.floor(diff/7),di:diff%7};
+}
+// แตะวันในปฏิทิน → สลับไปสัปดาห์นั้น + ไฮไลต์แถว (reuse .jump-hi เดิมของ jumpToday)
+function jumpDay(wi,di){
+ selWeek(wi);
+ setTimeout(()=>{
+  const rows=document.querySelectorAll('.sched tbody tr');
+  const idx=W[wi].d.findIndex(x=>x.d===di);
+  const row=rows[idx];
+  if(row){row.classList.add('jump-hi');row.scrollIntoView({behavior:'smooth',block:'center'});}
+  setTimeout(()=>{const r=document.querySelector('.sched tr.jump-hi');if(r)r.classList.remove('jump-hi')},1600);
+ },160);
+}
+function moveMonth(n){                                              // กันเลื่อนออกนอกช่วงแผน (ปุ่ม disabled อยู่แล้ว · กันเรียกตรงด้วย)
+ const a=dateOf(selected,0);
+ const t=new Date(a.getFullYear(),a.getMonth()+(window.__mo||0)+n,1);
+ const last=new Date(t.getFullYear(),t.getMonth()+1,0);
+ if(!slotOf(t)&&!slotOf(last))return;
+ window.__mo=(window.__mo||0)+n;render();
+}
+function selWeek(i){selected=i;window.__mo=0;render();   // สลับสัปดาห์ = รีเซ็ต offset ปฏิทิน ไม่งั้นค้างเดือนเก่า
  const c=document.getElementById('content');                       // Tier 2: crossfade ตอนสลับสัปดาห์ (ลดกระตุก)
  if(c&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
   c.style.opacity='0';c.style.transform='translateY(6px)';
@@ -1255,6 +1318,68 @@ function render(){
   html+='</td></tr>';
  });
  html+='</tbody></table></div>';
+
+ // 👀 สัปดาห์หน้า — เห็นล่วงหน้าโดยไม่ต้องสลับแท็บ (เตรียมอาหาร/จัดคิวงานได้)
+ if(selected+1<W.length){
+  const nw=W[selected+1];
+  html+='<div class="section-l">สัปดาห์หน้า · W'+nw.w+' <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">'+nw.f+'</span></div>';
+  html+='<div class="nw-card">';
+  nw.d.forEach(day=>{
+   const st=SESS[day.t]||SESS.rest;
+   const pl=[];if(day.k)pl.push(day.k+' km');if(day.m)pl.push(day.m+'′');
+   html+='<div class="nw-row'+(day.t==='rest'?' nw-rest':'')+'">'+
+    '<span class="nw-d">'+DAYS[day.d]+'</span>'+
+    '<span class="nw-bar" style="background:'+st.c+'"></span>'+
+    '<span class="nw-t">'+day.ti+'</span>'+
+    '<span class="nw-k">'+(day.t==='rest'?'—':(pl.join(' · ')||'—'))+'</span></div>';
+  });
+  html+='</div>';
+ }
+
+ // 🗓 ปฏิทินเดือน — เห็นรูปทรง block ทั้งเดือนในภาพเดียว (สีตาม session type · ทึบ=ทำแล้ว · เส้นประ=ข้าม)
+ {
+  const anchor=dateOf(selected,0);
+  const mo=new Date(anchor.getFullYear(),anchor.getMonth()+(window.__mo||0),1);
+  const first=new Date(mo), last=new Date(mo.getFullYear(),mo.getMonth()+1,0);
+  const lead=(first.getDay()+6)%7;                                  // ปฏิทินเริ่มจันทร์ (ตรงกับ index วันของแผน)
+  const today=new Date();today.setHours(0,0,0,0);
+  const MOS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const canPrev=!!slotOf(new Date(mo.getFullYear(),mo.getMonth(),0));
+  const canNext=!!slotOf(new Date(mo.getFullYear(),mo.getMonth()+1,1));
+  html+='<div class="section-l">🗓 ภาพรวมทั้งเดือน</div>';
+  html+='<div class="mg-top"><span class="mg-mo">'+MOS[mo.getMonth()]+' '+mo.getFullYear()+'</span>'+
+   '<div class="mg-nav"><button onclick="moveMonth(-1)"'+(canPrev?'':' disabled')+' aria-label="เดือนก่อน">‹</button>'+
+   '<button onclick="moveMonth(1)"'+(canNext?'':' disabled')+' aria-label="เดือนถัดไป">›</button></div></div>';
+  html+='<div class="mgrid">'+['จ','อ','พ','พฤ','ศ','ส','อา'].map(d=>'<div class="mg-dow">'+d+'</div>').join('');
+  for(let i=0;i<lead;i++)html+='<div></div>';
+  for(let dnum=1;dnum<=last.getDate();dnum++){
+   const dt=new Date(mo.getFullYear(),mo.getMonth(),dnum);
+   const sl=slotOf(dt);
+   if(!sl){html+='<div class="mg-cell mg-out"><span class="mg-c">'+dnum+'</span><span class="mg-mark"></span></div>';continue}
+   const day=W[sl.wi].d.find(x=>x.d===sl.di)||{t:'rest',ti:'พัก'};
+   const st=SESS[day.t]||SESS.rest;
+   const dn2=isDone(sl.wi,sl.di), past=dt<today, isTdy=+dt===+today, isR=day.t==='rest';
+   const lg=getLog(sl.wi,sl.di);
+   let cls='mg-cell',sty='';
+   if(dn2&&!isR){cls+=' mg-done';sty='background:'+st.c}
+   else if(past&&!isR&&!dn2){cls+=' mg-miss'}
+   else if(isR){sty='background:'+SESS.rest.bg+';color:'+SESS.rest.tc}
+   else if(day.t==='race'){cls+=' mg-race';sty='background:'+st.c}   // วันแข่ง = ดังเต็มสีเสมอ ไม่จางเหมือนวันอนาคตอื่น
+   else{cls+=' mg-fut';sty='background:'+st.c+';opacity:.42'}
+   if(isTdy)cls+=' mg-today';
+   const ttl=fmt(dt)+' · '+day.ti+(lg&&lg.km>0?' · '+lg.km+' km':'');
+   html+='<button class="'+cls+'" onclick="jumpDay('+sl.wi+','+sl.di+')" title="'+ttl.replace(/"/g,'')+'">'+
+    '<span class="mg-c" style="'+sty+'">'+dnum+'</span>'+
+    '<span class="mg-mark">'+(lg&&(lg.mix||(lg.ses&&lg.ses.length>1))?'<i></i>':'')+'</span></button>';
+  }
+  html+='</div>';
+  html+='<div class="mg-legend">'+
+   ['easy','quality','long','cross'].map(t=>'<span><i style="background:'+SESS[t].c+'"></i>'+SESS[t].l+'</span>').join('')+
+   '<span><i style="background:'+SESS.rest.bg+'"></i>พัก</span>'+
+   '<span><i style="background:'+SESS.race.bg+'"></i>แข่ง</span>'+
+   '<span><i class="o"></i>ข้าม</span>'+
+   '<span style="opacity:.7">ทึบ = ทำแล้ว · อ่อน = ยังไม่ถึง · จุดล่าง = 2 session</span></div>';
+ }
 
  // สรุปการซ้อมสัปดาห์นี้ — chart (plan vs actual) + log cards
  const doneRuns=w.d.filter(day=>{const l=getLog(selected,day.d);return l&&l.km>0});
