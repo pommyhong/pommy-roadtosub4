@@ -62,34 +62,9 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .day-log .la{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .day-log .tm{color:var(--muted);font-weight:500}
 .day-log .ef{margin-left:auto;font-size:10px;font-weight:700;color:#3a86c8;background:#e8f2fb;border:1px solid #bfdcf3;border-radius:2px;padding:3px 7px}
-.sched-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;padding:4px 8px;box-shadow:0 1px 2px rgba(0,0,0,.03);margin-top:2px;
- /* scroll-shadow: เงาขอบขวาโผล่เฉพาะตอนยังเลื่อนได้ (cover=local, shadow=scroll) */
- background:
-  linear-gradient(to right,#fff 28%,rgba(255,255,255,0)) left center/36px 100% no-repeat,
-  linear-gradient(to left,#fff 28%,rgba(255,255,255,0)) right center/36px 100% no-repeat,
-  radial-gradient(farthest-side at 0 50%,rgba(28,28,28,.10),transparent) left center/16px 100% no-repeat,
-  radial-gradient(farthest-side at 100% 50%,rgba(28,28,28,.10),transparent) right center/16px 100% no-repeat;
- background-color:#fff;background-attachment:local,local,scroll,scroll}
-.sched{width:100%;min-width:540px;border-collapse:collapse;font-size:12px;background:transparent}
-.sched th{text-align:left;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:7px 8px;border-bottom:1px solid #e3e0d7;white-space:nowrap;background:#faf9f5}
-.sched td{padding:10px 8px;border-bottom:1px solid #eceae2;vertical-align:top}
-.sched tbody tr:not(.today):not(.done):not(.rest):hover{background:#faf9f4}
-.sched tr:last-child td{border-bottom:none}
-.sched tr.today{background:#fdece9}
-.sched tr.done{background:#f4faf6}
-.sched tr.rest td{color:#706960}
-.s-day{white-space:nowrap;font-weight:700;border-left:3px solid #ccc;padding-left:8px!important}
-.s-dt{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:1px}
-.s-today-tag{font-size:7px;background:#e63012;color:#fff;padding:1px 4px;border-radius:2px;margin-left:4px;letter-spacing:.06em;vertical-align:middle}
 .s-chip{display:inline-block;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:2px;margin-bottom:4px}
-.s-ti{font-weight:600;color:#1c1c1c;line-height:1.3}
-.s-de{font-size:10px;color:var(--muted);line-height:1.45;margin-top:2px}
-.s-alt{font-size:10px;color:#9a6b00;margin-top:2px}
-.s-plan{white-space:nowrap;color:#555;font-weight:600;font-variant-numeric:tabular-nums}
-.s-res{color:#444;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 .s-res .tm{color:var(--muted)}
 .s-ef{display:inline-block;font-size:10px;font-weight:700;color:#3a86c8;background:#e8f2fb;border:1px solid #bfdcf3;border-radius:2px;padding:1px 5px;margin-left:5px}
-.s-none{color:#8a8578}
 .dist-chart{position:relative;display:flex;align-items:stretch;gap:6px;height:120px;padding:10px 6px 6px;border:1px solid #e3e0d7;border-radius:4px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03);overflow:visible}
 .dc-track{position:relative}
 .dc-ghost{position:absolute;left:0;right:0;bottom:0;background:repeating-linear-gradient(45deg,#e8e5dd,#e8e5dd 4px,#f1efe9 4px,#f1efe9 8px);border-radius:3px 3px 0 0;min-height:2px}
@@ -389,23 +364,9 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .cd-block{min-width:40px}
 .hero-race{font-size:20px}
 .race-line{flex-direction:column}
-/* ── schedule: บีบ table ให้พอดีจอ (ไม่ต้องปัดข้าง · ไม่ยืดยาว) ── */
-.sched-wrap{overflow-x:visible;background:#fff}
-.sched{min-width:0;width:100%;table-layout:fixed;font-size:12px}
-.sched th,.sched td{padding:8px 6px;white-space:normal;word-break:break-word}
-.sched th{font-size:9px;letter-spacing:.04em}
 /* ซ่อนคอลัมน์ ผลลัพธ์·Strava (col 5) — มีสรุปผลจริง+กราฟ section ล่าง */
-.sched th:nth-child(5),.sched td:nth-child(5){display:none}
 /* คุมความกว้างคอลัมน์ที่เหลือ */
-.sched th:nth-child(1),.sched td:nth-child(1){width:56px}
-.sched th:nth-child(3),.sched td:nth-child(3){width:58px}
-.sched th:nth-child(4),.sched td:nth-child(4){width:74px}
-.sched .s-ti{font-size:12px}
-.sched .s-de{font-size:10px}
 /* ช่องวัน: ไอคอน+วันบรรทัดแรก · TODAY ไม่ตกคำ */
-.sched td.s-day{line-height:1.5}
-.sched .s-state-icon{width:auto;margin-right:3px}
-.sched .s-today-tag{display:inline-block;margin:2px 0 0;white-space:nowrap}
 }
 
 /* ===== UX v2 — 2026-06-21 ===== */
@@ -424,8 +385,6 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wk-ellipsis{align-self:center;color:var(--faint);font-size:11px;padding:0 3px;user-select:none;letter-spacing:.06em}
 .wk-today-btn{font-family:inherit;font-size:10px;font-weight:700;padding:5px 10px;background:none;border:1px solid var(--line);border-radius:16px;color:var(--muted);cursor:pointer;margin-left:8px;white-space:nowrap;transition:border-color .15s,color .15s;flex-shrink:0}
 .wk-today-btn:hover{border-color:#e63012;color:#e63012}
-/* ── schedule state icons ── */
-.s-state-icon{margin-right:5px;font-size:12px;display:inline-block;width:14px;text-align:center}
 /* ── last sync ── */
 .sync-badge{font-size:10px;color:var(--faint);padding:2px 8px;border:1px solid var(--line);border-radius:10px;margin-left:auto}
 /* ── section breathing ── */
@@ -435,7 +394,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .week-stats.week-complete{animation:done-week-pop .5s cubic-bezier(.22,1,.36,1) both}
 /* ── today row highlight on jump ── */
 @keyframes row-hi{0%,100%{background:inherit}30%,70%{background:#fdece9}}
-.sched tr.jump-hi,.wk-row.jump-hi{animation:row-hi 1.2s ease}
+.wk-row.jump-hi{animation:row-hi 1.2s ease}
 /* ── pull-to-refresh ── */
 #ptr{position:fixed;top:0;left:0;right:0;height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);z-index:9999;pointer-events:none}
 #ptr.releasing{transition:height .22s cubic-bezier(.22,1,.36,1)}
@@ -555,14 +514,6 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .mg-legend i{width:9px;height:9px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.07)}
 .mg-legend i.o{background:#fff;border:1.5px dashed #d5d1c6}
 /* ── สัปดาห์หน้า (peek) ── */
-.nw-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 16px}
-.nw-row{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid #f1efe9;font-size:12px}
-.nw-row:last-child{border-bottom:none}
-.nw-d{width:26px;flex:0 0 auto;font-weight:700;color:#6b6b6b;font-size:11px}
-.nw-bar{width:3px;flex:0 0 auto;align-self:stretch;border-radius:2px}
-.nw-t{color:#1c1c1c;line-height:1.45}
-.nw-k{margin-left:auto;flex:0 0 auto;color:var(--muted);font-weight:600;white-space:nowrap;font-size:11px}
-.nw-rest .nw-t,.nw-rest .nw-d{color:#aaa69a}
 @media (prefers-reduced-motion:reduce){#fuel-sheet,#fuel-back,.fuel-cta,.mg-c{transition:none}#fuel-sheet.shown .fs-blk{transition:none}.fs-blk{opacity:1;transform:none}}
 </style>
 </head>
