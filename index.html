@@ -1604,7 +1604,23 @@ function render(){
  }
 
  c.innerHTML=html;
+ centerChip();
  initMotion();
+}
+
+// chip สัปดาห์ที่เลือกให้อยู่กลางแถบเสมอ (เดิมพอเลือกตัวริมจะค้างชิดขอบ อ่านบริบทซ้าย-ขวาไม่ได้)
+let chipCentered=false;
+function centerChip(){
+ requestAnimationFrame(()=>{
+  const nav=document.querySelector('.week-nav'),act=nav&&nav.querySelector('.wk-btn.active');
+  if(!nav||!act)return;
+  const target=act.offsetLeft-(nav.clientWidth-act.offsetWidth)/2;
+  const max=nav.scrollWidth-nav.clientWidth;
+  const left=Math.max(0,Math.min(target,max));
+  const smooth=chipCentered&&!matchMedia('(prefers-reduced-motion:reduce)').matches;
+  nav.scrollTo({left:left,behavior:smooth?'smooth':'auto'});
+  chipCentered=true;
+ });
 }
 
 // ── bottom sheet (ใช้ร่วมทุกการ์ด · เนื้อหามาจาก SHEETS[key].blocks) ──
