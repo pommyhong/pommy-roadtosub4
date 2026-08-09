@@ -429,7 +429,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 /* ── last sync ── */
 .sync-badge{font-size:10px;color:var(--faint);padding:2px 8px;border:1px solid var(--line);border-radius:10px;margin-left:auto}
 /* ── section breathing ── */
-.section-l{margin-top:28px!important}
+.section-l,.sec-h{margin-top:28px!important}
 /* ── done week flash ── */
 @keyframes done-week-pop{0%{transform:scale(1)}40%{transform:scale(1.015)}100%{transform:scale(1)}}
 .week-stats.week-complete{animation:done-week-pop .5s cubic-bezier(.22,1,.36,1) both}
@@ -489,6 +489,21 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad{border-color:#f3d3cd;background:#fef7f5}
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
+/* ── accordion section (A: ส่วนที่ดูนานๆ ครั้ง พับเก็บ) ── */
+.sec-h{width:100%;display:flex;align-items:center;gap:8px;background:none;border:none;border-bottom:1px solid var(--line);font-family:inherit;cursor:pointer;padding:0 0 8px;margin:24px 0 0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);text-align:left;-webkit-tap-highlight-color:transparent}
+.sec-h:hover{color:#1c1c1c}
+.sec-hint{font-size:9px;font-weight:600;letter-spacing:.02em;text-transform:none;color:var(--faint)}
+.sec-c{margin-left:auto;font-size:11px;color:var(--muted);transition:transform .28s cubic-bezier(.22,1,.36,1)}
+.sec-h.open .sec-c{transform:rotate(180deg)}
+.sec-body{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .34s cubic-bezier(.22,1,.36,1),opacity .24s ease}
+.sec-body>.sec-inner{overflow:hidden;min-height:0}
+.sec-body.open{grid-template-rows:1fr;opacity:1}
+.sec-body.open>.sec-inner{padding-top:12px}
+/* ── D: ปุ่มกาง log เก่า ── */
+.more-log{width:100%;font-family:inherit;font-size:11px;font-weight:700;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,color .15s}
+.more-log:hover{background:#f7f5f0;color:#1c1c1c}
+.more-log .sec-c{margin:0}
+@media (prefers-reduced-motion:reduce){.sec-body,.sec-c{transition:none}}
 /* ── ตารางซ้อมสัปดาห์ (compact rows · แทนตาราง 5 คอลัมน์เดิม) ── */
 .wk-list{background:#fff;border:1px solid var(--line);border-radius:14px;padding:2px 16px}
 .wk-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f1efe9}
@@ -1091,6 +1106,24 @@ function moveMonth(n){                                              // กัน
  if(!slotOf(t)&&!slotOf(last))return;
  window.__mo=(window.__mo||0)+n;render();
 }
+// ── accordion helper (state จำข้าม render ผ่าน window.__sec) ──
+function secOn(id,def){const st=window.__sec||{};return id in st?st[id]:def}
+function toggleSec(id,btn){
+ window.__sec=window.__sec||{};
+ const body=document.querySelector('[data-sec="'+id+'"]');
+ if(!body)return;
+ const open=!body.classList.contains('open');
+ window.__sec[id]=open;
+ body.classList.toggle('open',open);
+ if(btn)btn.classList.toggle('open',open);
+}
+function secHead(id,label,def,hint){
+ return '<button class="sec-h'+(secOn(id,def)?' open':'')+'" onclick="toggleSec(\''+id+'\',this)">'+label+
+  (hint?'<span class="sec-hint">'+hint+'</span>':'')+'<span class="sec-c">▾</span></button>';
+}
+function secWrap(id,def,inner){
+ return '<div class="sec-body'+(secOn(id,def)?' open':'')+'" data-sec="'+id+'"><div class="sec-inner">'+inner+'</div></div>';
+}
 function selWeek(i){selected=i;window.__mo=0;render();   // สลับสัปดาห์ = รีเซ็ต offset ปฏิทิน ไม่งั้นค้างเดือนเก่า
  const c=document.getElementById('content');                       // Tier 2: crossfade ตอนสลับสัปดาห์ (ลดกระตุก)
  if(c&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
@@ -1430,8 +1463,10 @@ function render(){
 
  // log cards — เฉพาะวันที่วิ่งแล้ว
  if(doneRuns.length){
-  html+='<div class="log-list">';
-  doneRuns.forEach(day=>{
+  // D: โชว์ 3 วันล่าสุด · วันเก่ากว่านั้นพับไว้ (สัปดาห์ที่วิ่งครบ 6 วัน การ์ดยาวเกินจอ)
+  const _older=doneRuns.slice(0,-3),_latest=doneRuns.slice(-3);
+  const logCard=(day)=>{
+   let html='';
    const l=getLog(selected,day.d);const dt=dateOf(selected,day.d);
    const t=l.type||day.t;const s=SESS[t]||SESS.easy;
    const _pkm=l.bkm||l.km,_pmin=l.bmin||l.min;const ps=_pmin>0?_pmin*60/_pkm:0;
@@ -1458,16 +1493,21 @@ function render(){
    html+='</div>';
    if(l.note)html+='<div class="log-note">'+l.note+'</div>';
    html+='</div></div>';
-  });
-  html+='</div>';
+   return html;
+  };
+  if(_older.length){
+   html+='<button class="more-log'+(secOn('oldlogs',false)?' open':'')+'" onclick="toggleSec(\'oldlogs\',this)">ดูอีก '+_older.length+' วันก่อนหน้า<span class="sec-c">▾</span></button>';
+   html+='<div class="sec-body'+(secOn('oldlogs',false)?' open':'')+'" data-sec="oldlogs"><div class="sec-inner"><div class="log-list" style="margin-bottom:16px">'+_older.map(logCard).join('')+'</div></div></div>';
+  }
+  html+='<div class="log-list">'+_latest.map(logCard).join('')+'</div>';
  }
 
  // กราฟ HR รายสัปดาห์ — line chart · 2 เส้น (avg + max) · มี filter chip
  const hrMode=window.__hrMode||'easy';   // 'easy' | 'all'
  const wk=[];W.forEach((ww,wi)=>{const hrs=[],mxs=[];ww.d.forEach(day=>{const l=getLog(wi,day.d);if(!l||!(l.hr>0))return;const t=l.type||day.t;if(hrMode==='easy'&&t!=='easy')return;if(hrMode==='all'&&!['easy','quality','long'].includes(t))return;hrs.push(l.hr);if(l.hx)mxs.push(l.hx)});if(hrs.length)wk.push({w:wi+1,hr:Math.round(hrs.reduce((s,x)=>s+x,0)/hrs.length),hx:mxs.length?Math.round(Math.max(...mxs)):0})});
  if(wk.length){
-  html+='<div class="section-l">HR รายสัปดาห์</div>';
-  html+='<div class="hr-tabs">'+
+  let _hrH='';
+  _hrH+='<div class="hr-tabs">'+
    '<button class="hr-tab'+(hrMode==='easy'?' active':'')+'" onclick="setHRMode(\'easy\')">Easy เท่านั้น</button>'+
    '<button class="hr-tab'+(hrMode==='all'?' active':'')+'" onclick="setHRMode(\'all\')">ทุก run</button>'+
    '</div>';
@@ -1489,7 +1529,8 @@ function render(){
   s+='</svg></div><div class="hr-leg">';
   s+='<span class="hr-lg"><span class="hr-lgd" style="background:#2faa72"></span>avg</span>';
   s+='<span class="hr-lg"><span class="hr-lgd" style="background:#b9786a"></span>max</span></div>';
-  html+=s;
+  _hrH+=s;
+  html+=secHead('hr','HR รายสัปดาห์',false,'เทรนด์ทั้ง 30 สัปดาห์')+secWrap('hr',false,_hrH);
  }
 
  // 🎯 Note — journey context + Peak-End close
@@ -1511,40 +1552,42 @@ function render(){
  const _ph=W[_cw].p;
  const _phDesc={Base:'สร้าง aerobic base',Threshold:'เพิ่ม T-pace tolerance','10K-Peak':'peak 10K speed',Recovery:'ฟื้น + adapt','M-Build':'สร้าง marathon endurance','M-Peak':'peak marathon fitness',Taper:'taper ก่อน race'}[_ph]||_ph;
 
- html+='<div class="section-l">🎯 Note</div>';
- html+='<div class="snap-card">';
- html+='<div class="snap-lead">ปอมกำลังเทรน <b>Sub-4</b> (วิ่งมาราธอน 42K ใน &lt; 4 ชม.) ที่ <b>ATM Bangkok</b> · ตอนนี้อยู่ <span class="phase-tag">'+_ph+'</span> ('+_phDesc+') สัปดาห์ <b>'+(_cw+1)+'/30</b></div>';
- if(_streak>0)html+='<div class="snap-row"><span class="snap-l">สัปดาห์ติดต่อกัน</span><span class="snap-v">'+_streak+' weeks 🔥</span></div>';
- if(_long.km>0)html+='<div class="snap-row"><span class="snap-l">Longest run</span><span class="snap-v">'+_long.km+' <span class="snap-sub">km (W'+_long.w+')</span></span></div>';
- if(_cadAvg)html+='<div class="snap-row"><span class="snap-l">Cadence baseline</span><span class="snap-v">'+_cadAvg+' <span class="snap-sub">spm '+(_cadAvg>=170?'✅':'')+'</span></span></div>';
- html+='</div>';
+ let _noteH='';
+ _noteH+='<div class="snap-card">';
+ _noteH+='<div class="snap-lead">ปอมกำลังเทรน <b>Sub-4</b> (วิ่งมาราธอน 42K ใน &lt; 4 ชม.) ที่ <b>ATM Bangkok</b> · ตอนนี้อยู่ <span class="phase-tag">'+_ph+'</span> ('+_phDesc+') สัปดาห์ <b>'+(_cw+1)+'/30</b></div>';
+ if(_streak>0)_noteH+='<div class="snap-row"><span class="snap-l">สัปดาห์ติดต่อกัน</span><span class="snap-v">'+_streak+' weeks 🔥</span></div>';
+ if(_long.km>0)_noteH+='<div class="snap-row"><span class="snap-l">Longest run</span><span class="snap-v">'+_long.km+' <span class="snap-sub">km (W'+_long.w+')</span></span></div>';
+ if(_cadAvg)_noteH+='<div class="snap-row"><span class="snap-l">Cadence baseline</span><span class="snap-v">'+_cadAvg+' <span class="snap-sub">spm '+(_cadAvg>=170?'✅':'')+'</span></span></div>';
+ _noteH+='</div>';
 
+ html+=secHead('note','🎯 Note',false,'สรุปภาพรวมแผน')+secWrap('note',false,_noteH);
  // อ้างอิง — Pace + Carb รวมใต้ section เดียว แต่คนละแถว
  // (คนละหน่วย: pace = ความเร็ว/โซน · carb = คาร์บ/วันซ้อม → ยุบเป็นตารางเดียวไม่ได้ เพราะแกนไม่ตรงกัน)
- html+='<div class="section-l">อ้างอิง</div>';
- html+='<div class="ref-sub">Carb · 65 kg <i>กรัม/วัน · กดดูเมนูทั้งวัน</i></div><div class="ref-row">';
+ let _refH='';
+ _refH+='<div class="ref-sub">Carb · 65 kg <i>กรัม/วัน · กดดูเมนูทั้งวัน</i></div><div class="ref-row">';
  [['พัก',CARB.rest,'var(--muted)','rest'],['Easy',CARB.easy,'#2f9e6a','easy'],['Quality',CARB.quality,'#e63012','quality'],['Long',CARB.long,'#3a86c8','long'],['Race',CARB.race,'#b07700','race']].forEach(c=>{
   const hm=NUTRI[c[3]];
-  html+='<span class="ref-pill'+(hm?' ref-pill-menu':'')+'"'+(hm?' onclick="toggleMenu(\''+c[3]+'\')"':'')+'><span class="ref-dot" style="background:'+c[2]+'"></span><b>'+c[0]+'</b> '+c[1][0]+'–'+c[1][1]+'g'+(hm?' <span class="ref-caret">▾</span>':'')+'</span>';
+  _refH+='<span class="ref-pill'+(hm?' ref-pill-menu':'')+'"'+(hm?' onclick="toggleMenu(\''+c[3]+'\')"':'')+'><span class="ref-dot" style="background:'+c[2]+'"></span><b>'+c[0]+'</b> '+c[1][0]+'–'+c[1][1]+'g'+(hm?' <span class="ref-caret">▾</span>':'')+'</span>';
  });
- html+='</div>';
+ _refH+='</div>';
  // 🍱 menu accordion + 🔋 recovery (responsive: desktop วางข้างกัน, mobile ซ้อน)
- html+='<div class="nutri-wrap">';
- html+='<div id="nutri-menus">';
+ _refH+='<div class="nutri-wrap">';
+ _refH+='<div id="nutri-menus">';
  ['easy','long'].forEach(t=>{const m=NUTRI[t];
-  html+='<div class="nutri-menu" id="nm-'+t+'">';
-  html+='<div class="nutri-head" style="color:'+m.color+'">🍱 '+m.label+' · เมนูเต็มวัน <span class="nutri-tg">'+m.target+'</span></div>';
-  if(m.note)html+='<div class="nutri-note">'+m.note+'</div>';
-  html+='<table class="nutri-tbl"><tr><th>มื้อ</th><th>เมนู</th><th>carb</th><th>cal</th><th>prot</th></tr>';
-  m.rows.forEach(r=>{html+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>'});
-  html+='<tr class="nutri-sum"><td colspan="2">รวม</td><td>'+m.sum.split(' · ')[0]+'</td><td colspan="2">'+m.sum.split(' · ').slice(1).join(' · ')+'</td></tr>';
-  html+='</table><div class="nutri-ok">'+m.ok+'</div></div>';
+  _refH+='<div class="nutri-menu" id="nm-'+t+'">';
+  _refH+='<div class="nutri-head" style="color:'+m.color+'">🍱 '+m.label+' · เมนูเต็มวัน <span class="nutri-tg">'+m.target+'</span></div>';
+  if(m.note)_refH+='<div class="nutri-note">'+m.note+'</div>';
+  _refH+='<table class="nutri-tbl"><tr><th>มื้อ</th><th>เมนู</th><th>carb</th><th>cal</th><th>prot</th></tr>';
+  m.rows.forEach(r=>{_refH+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>'});
+  _refH+='<tr class="nutri-sum"><td colspan="2">รวม</td><td>'+m.sum.split(' · ')[0]+'</td><td colspan="2">'+m.sum.split(' · ').slice(1).join(' · ')+'</td></tr>';
+  _refH+='</table><div class="nutri-ok">'+m.ok+'</div></div>';
  });
- html+='</div>';
- html+='<div class="recovery-block"><div class="recovery-title">🔋 Recovery · เพิ่งวิ่งเสร็จ <span class="nutri-tg">window 30 นาที</span></div>';
- RECOVERY.forEach(r=>{html+='<div class="recovery-row"><b>'+r[0]+'</b><span class="rc-goal">'+r[1]+'</span><span class="rc-eat">'+r[2]+'</span></div>'});
- html+='</div></div>';
+ _refH+='</div>';
+ _refH+='<div class="recovery-block"><div class="recovery-title">🔋 Recovery · เพิ่งวิ่งเสร็จ <span class="nutri-tg">window 30 นาที</span></div>';
+ RECOVERY.forEach(r=>{_refH+='<div class="recovery-row"><b>'+r[0]+'</b><span class="rc-goal">'+r[1]+'</span><span class="rc-eat">'+r[2]+'</span></div>'});
+ _refH+='</div></div>';
 
+ html+=secHead('ref','อ้างอิง',false,'carb + เมนู + recovery')+secWrap('ref',false,_refH);
  // ท่าเวทประจำสัปดาห์ — แสดงเฉพาะถ้าสัปดาห์นี้มี weights day
  const hasWeights=w.d.some(day=>day.t==='cross'&&/weight/i.test(day.ti));
  if(hasWeights){
@@ -1553,19 +1596,21 @@ function render(){
   const isLight=/light|เบา|-\d+%/i.test(wDay.ti+' '+(wDay.de||''));
   const wMode=window.__wMode||'run';
   const routine=wMode==='upper'?UPPER_ROUTINE:WEIGHTS_ROUTINE;
-  html+='<div class="section-l">ท่าเวทประจำสัปดาห์</div>';
-  html+='<div class="hr-tabs">'+
+  const _wToday=td>=0&&(()=>{const dd=w.d.find(x=>x.d===td);return !!dd&&dd.t==='cross'&&/weight/i.test(dd.ti)})();
+  let _wH='';
+  _wH+='<div class="hr-tabs">'+
    '<button class="hr-tab'+(wMode==='run'?' active':'')+'" onclick="setWMode(\'run\')">🏃 วิ่ง (lower)</button>'+
    '<button class="hr-tab'+(wMode==='upper'?' active':'')+'" onclick="setWMode(\'upper\')">🏸 Upper</button>'+
    '</div>';
-  html+='<div class="weights-card">';
+  _wH+='<div class="weights-card">';
   routine.forEach(grp=>{
-   html+='<div class="weights-grp"><div class="weights-grp-l">'+grp.l+'</div>';
-   grp.items.forEach(it=>{html+='<div class="weights-row"><b>'+it[0]+'</b><span>'+it[1]+'</span></div>'});
-   html+='</div>';
+   _wH+='<div class="weights-grp"><div class="weights-grp-l">'+grp.l+'</div>';
+   grp.items.forEach(it=>{_wH+='<div class="weights-row"><b>'+it[0]+'</b><span>'+it[1]+'</span></div>'});
+   _wH+='</div>';
   });
-  html+='<div class="weights-note">'+(wMode==='upper'?'🏸 Upper: ตบแรงขึ้น (lat + rotation + rotator cuff) · หลัง/ไหล่ V-taper · ไม่เน้นแขน (เลี่ยงก้ามปู) · แทรกวันที่ไม่ชน quality/long':(isLight?'🟡 Deload week — ลด volume 30% (set น้อยลง หรือ weight เบาลง)':'RPE 7 · compound หนักก่อน → accessory + glute med → plyo ปิดท้าย'))+'</div>';
-  html+='</div>';
+  _wH+='<div class="weights-note">'+(wMode==='upper'?'🏸 Upper: ตบแรงขึ้น (lat + rotation + rotator cuff) · หลัง/ไหล่ V-taper · ไม่เน้นแขน (เลี่ยงก้ามปู) · แทรกวันที่ไม่ชน quality/long':(isLight?'🟡 Deload week — ลด volume 30% (set น้อยลง หรือ weight เบาลง)':'RPE 7 · compound หนักก่อน → accessory + glute med → plyo ปิดท้าย'))+'</div>';
+  _wH+='</div>';
+  html+=secHead('weights','ท่าเวทประจำสัปดาห์',_wToday,_wToday?'วันนี้วันเวท':'')+secWrap('weights',_wToday,_wH);
  }
 
  // 🍚 การ์ดกิน race week — เมนูล่างสุดสุด · กดแล้วเด้ง bottom sheet · หายเองหลังแข่งจบ
