@@ -51,7 +51,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .race-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .race-name{font-size:13px;font-weight:600;color:#1c1c1c;line-height:1.3}
 .race-meta{font-size:10px;color:#6b6b6b;margin-top:2px}
-.prog-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.prog-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}
 .prog{background:#fff;border:1px solid #e3e0d7;border-radius:3px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .prog.ef{border-color:#bfdcf3}
 .prog-l{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
@@ -359,6 +359,8 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 @media(max-width:640px){
 .week-stats{grid-template-columns:1fr 1fr}
 .prog-bar{grid-template-columns:1fr 1fr}
+/* เหลือ 3 tile หลังย้าย 'เดือนนี้' ไปหัวปฏิทิน → ให้ EF กินเต็มแถวล่าง ไม่ให้เหลือใบโดดเดี่ยว */
+.prog-bar .prog.ef{grid-column:1/-1}
 .hero-inner{flex-direction:column;align-items:flex-start;gap:18px}
 .cd-num{font-size:34px}
 .cd-block{min-width:40px}
@@ -500,6 +502,14 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wk-row.rest .wk-ti,.wk-row.rest .wk-day,.wk-row.rest .wk-plan{color:#aaa69a}
 .wk-row.rest .wk-dow{color:#c6c2b6}
 /* ── 🗓 ปฏิทินเดือน (macro view) ── */
+/* km ของเดือนบนหัวปฏิทิน (ย้ายมาจาก tile สถิติบนสุด) */
+.mg-km{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mg-km b{font-size:14px;color:#1c1c1c}
+.mg-prog{display:flex;align-items:center;gap:10px;margin:-4px 0 12px}
+.mg-prog-bar{flex:1;height:3px;border-radius:2px;background:#e8e5dd;overflow:hidden}
+.mg-prog-bar i{display:block;height:100%;border-radius:2px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.mg-prog-t{flex:0 0 auto;font-size:10px;font-weight:700}
+
 .mg-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .mg-mo{font-size:13px;font-weight:700;color:#1c1c1c}
 .mg-nav{margin-left:auto;display:flex;gap:6px}
@@ -1204,31 +1214,12 @@ function renderProg(){
  const km=cumKm();
  const aR=RACES.find(r=>r.a);const t0=new Date();t0.setHours(0,0,0,0);
  const adays=Math.max(0,Math.round((aR.date-t0)/864e5));   // (เก็บไว้ใช้ในที่อื่น)
- // monthly mileage (เดือนปัจจุบันจริง)
- const mNow=new Date(),mIdx=mNow.getMonth(),yIdx=mNow.getFullYear();
- let mAct=0,mPlan=0;
- W.forEach((ww,wi)=>ww.d.forEach(day=>{
-  const dt=dateOf(wi,day.d);
-  if(dt.getMonth()===mIdx&&dt.getFullYear()===yIdx){mPlan+=day.k||0;const l=getLog(wi,day.d);if(l&&l.km>0)mAct+=l.km}
- }));
- const mPct=mPlan?Math.min(100,Math.round(mAct/mPlan*100)):0;
- const mColor=mPct>=100?'#52c896':mPct>=70?'#2faa72':mPct>=40?'#f5a623':'#e63012';
- const mRem=mPlan-mAct;
- const mStatus=mAct>=mPlan?'เกินเป้า ✓':'เหลือ '+(mRem<1?mRem.toFixed(1):mRem.toFixed(0))+' km';
- const ringR=18,ringC=2*Math.PI*ringR,ringOff=ringC*(1-mPct/100);
  const ef=efSeries();
  // km logged
  let h='<div class="prog"><div class="prog-l">ระยะสะสม</div><div class="prog-v" style="color:#2faa72">'+(km?km.toFixed(1):'0')+'</div><div class="prog-u">km บันทึกจริง</div></div>';
  // sessions
  h+='<div class="prog"><div class="prog-l">Sessions</div><div class="prog-v">'+dn+'<span style="font-size:13px;color:#706960">/'+tot+'</span></div><div class="prog-u">'+Math.round(dn/tot*100)+'% ของทั้งแผน</div></div>';
  // countdown
- // monthly mileage tile (แทน A-Race ที่ซ้ำกับ hero)
- h+='<div class="prog prog-month"><div class="prog-l">'+MONTHS[mIdx]+' '+yIdx+'</div>'+
-  '<div class="prog-month-row">'+
-   '<div class="prog-month-ring"><svg width="42" height="42"><circle cx="21" cy="21" r="'+ringR+'" fill="none" stroke="#f1efe9" stroke-width="4.5"/><circle cx="21" cy="21" r="'+ringR+'" fill="none" stroke="'+mColor+'" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="'+ringC.toFixed(1)+'" stroke-dashoffset="'+ringOff.toFixed(1)+'" transform="rotate(-90 21 21)"/></svg><div class="prog-month-pct">'+mPct+'%</div></div>'+
-   '<div class="prog-month-r"><div class="prog-v" style="font-size:18px">'+mAct.toFixed(1)+'<span style="font-size:11px;color:#706960;font-weight:600"> / '+mPlan+'</span></div>'+
-    '<div class="prog-u" style="color:'+mColor+';font-weight:600">'+mStatus+'</div></div>'+
-  '</div></div>';
  // aerobic efficiency · เทียบ rolling 3 ก่อนหน้า (ไม่ใช่ all-time avg = ลด outlier noise)
  let efv='–',efu='ยังไม่มีข้อมูล Easy run',efarw='';
  if(ef.length){
@@ -1362,10 +1353,24 @@ function render(){
   const MOS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   const canPrev=!!slotOf(new Date(mo.getFullYear(),mo.getMonth(),0));
   const canNext=!!slotOf(new Date(mo.getFullYear(),mo.getMonth()+1,1));
+  // ระยะสะสมของ "เดือนที่กำลังแสดง" (ไม่ใช่เดือนปัจจุบันเสมอ — เลื่อนดูเดือนอื่นตัวเลขตามไปด้วย)
+  let _mAct=0,_mPlan=0;
+  W.forEach((ww,wi)=>ww.d.forEach(day=>{
+   const dt2=dateOf(wi,day.d);
+   if(dt2.getMonth()===mo.getMonth()&&dt2.getFullYear()===mo.getFullYear()){
+    _mPlan+=day.k||0;const l2=getLog(wi,day.d);if(l2&&l2.km>0)_mAct+=l2.km;
+   }
+  }));
+  const _mPct=_mPlan?Math.min(100,_mAct/_mPlan*100):0;
+  const _mCol=_mPct>=100?'#52c896':_mPct>=70?'#2faa72':_mPct>=40?'#f5a623':'#e63012';
+  const _mRem=_mPlan-_mAct;
   html+='<div class="section-l">🗓 ภาพรวมทั้งเดือน</div>';
   html+='<div class="mg-top"><span class="mg-mo">'+MOS[mo.getMonth()]+' '+mo.getFullYear()+'</span>'+
+   (_mPlan?'<span class="mg-km"><b>'+_mAct.toFixed(1)+'</b> / '+_mPlan+' km</span>':'')+
    '<div class="mg-nav"><button onclick="moveMonth(-1)"'+(canPrev?'':' disabled')+' aria-label="เดือนก่อน">‹</button>'+
    '<button onclick="moveMonth(1)"'+(canNext?'':' disabled')+' aria-label="เดือนถัดไป">›</button></div></div>';
+  if(_mPlan)html+='<div class="mg-prog"><div class="mg-prog-bar"><i style="width:'+_mPct.toFixed(1)+'%;background:'+_mCol+'"></i></div>'+
+   '<span class="mg-prog-t" style="color:'+_mCol+'">'+Math.round(_mPct)+'% · '+(_mAct>=_mPlan?'เกินเป้า ✓':'เหลือ '+(_mRem<1?_mRem.toFixed(1):Math.round(_mRem))+' km')+'</span></div>';
   html+='<div class="mgrid">'+['จ','อ','พ','พฤ','ศ','ส','อา'].map(d=>'<div class="mg-dow">'+d+'</div>').join('');
   for(let i=0;i<lead;i++)html+='<div></div>';
   for(let dnum=1;dnum<=last.getDate();dnum++){
@@ -1730,7 +1735,6 @@ function initMotion(){
  // top stats (อยู่ในจอตอนโหลด) — reward เปิดมาเห็นเลขวิ่งขึ้น
  cu(document.querySelector('#progbar .prog:first-child .prog-v'));        // ระยะสะสม
  cu(document.querySelector('#progbar .prog:nth-child(2) .prog-v'));       // sessions
- cu(document.querySelector('#progbar .prog-month .prog-month-r .prog-v'));// km เดือนนี้
  cu(document.querySelector('#progbar .prog.ef .prog-v'));                 // aerobic eff
  document.querySelectorAll('#content .snap-card .snap-v').forEach(el=>cu(el)); // streak/longest/cadence
 
