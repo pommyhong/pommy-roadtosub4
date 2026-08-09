@@ -444,6 +444,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fuel-cta{width:100%;display:flex;align-items:center;gap:13px;text-align:left;font-family:inherit;background:linear-gradient(135deg,#fffdf8,#fdf3e0);border:1px solid #f0d89a;border-radius:13px;padding:15px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s ease}
 .fuel-cta:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(176,119,0,.15)}
 .fuel-cta:active{transform:scale(.985)}
+.fuel-cta+.fuel-cta{margin-top:10px}
 .fuel-cta-ic{font-size:23px;line-height:1;flex:0 0 auto}
 .fuel-cta-t{display:block;font-size:13px;font-weight:700;color:#1c1c1c;line-height:1.35}
 .fuel-cta-s{display:block;font-size:11px;color:#96854f;margin-top:3px;line-height:1.45}
@@ -476,6 +477,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-tbl td:first-child{white-space:nowrap;font-weight:600;color:#6b6b6b;width:1%}
 .fs-tbl td:last-child{white-space:nowrap;text-align:right;font-weight:700;color:#1c1c1c}
 .fs-tbl tr.fs-hit td{background:#fdf7e8}
+.fs-tbl2 td:last-child{white-space:normal;text-align:left;font-weight:400;color:#444;width:auto}
 .fs-list{background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 12px}
 .fs-list div{font-size:12px;color:#444;padding:7px 0;border-bottom:1px solid #f1efe9;line-height:1.5}
 .fs-list div:last-child{border-bottom:none}
@@ -535,49 +537,87 @@ const RECOVERY=[
  ['Long 17–18k','65g C / 20g P','① นมช็อค + ข้าวไก่ไข่ จานเล็ก · ② เวย์ + ขนมปังแยม + กล้วย']];
 // 🍚 การ์ดกิน race week — ปอมเลือก Option B (เริ่มโหลดศุกร์เย็น) 8 ส.ค. · ตัวเดียวกับ marathon-plan/race-fueling-card.md
 // ลดจาก dashboard เดิมตั้งใจ: D1/D2 ป้ายเขียน 8–10 g/kg (480–600g) = เลขมาราธอน · 10K ใช้คาร์บแค่ ~120–150g ถังปกติ 400–450g ไม่มีทางหมด
-const RACEFUEL={
+// registry: การ์ดล่างสุดทุกใบใช้ bottom sheet ตัวเดียวกัน (buildSheet เรนเดอร์จาก blocks · k = table|list|tips)
+const SHEETS={};
+SHEETS.fuel={
+ title:'🍚 การ์ดกิน — Race week',
  sub:'ASICS 10K · อาทิตย์ 16 ส.ค. · เริ่มโหลดศุกร์ (Option B)',
  warn:'🏁 ปล่อยตัว <b>05:00</b> · cut-off 2 ชม. · สะพานพระราม 8 — เวลาทุกช่องคิดถอยหลังจากปืนแล้ว',
- days:[
-  {l:'ศุกร์ 14',tag:'พักสนิท · D1',tg:'~370g',rows:[
+ blocks:[
+  {k:'table',l:'ศุกร์ 14',tag:'พักสนิท · D1',tg:'~370g',rows:[
    ['เช้า','ข้าวเหนียว 1 ห่อ + หมูปิ้ง 2 ไม้ + น้ำส้ม 200 ml','85g'],
    ['กลางวัน','🍱 ทงคัตสึเซ็ต + ขอข้าวเพิ่ม + น้ำผลไม้ <i>(ข้ามมายองเนส)</i>','120g'],
    ['บ่าย','กล้วยหอม 1 + ขนมปังปิ้งแยม 2 แผ่น','70g'],
    ['เย็น','ข้าวกะเพราไก่ 2 ทัพพี ไม่ราดมัน + ไข่ต้ม + ผลไม้','95g']]},
-  {l:'เสาร์ 15',tag:'Shakeout 3 km · D2',tg:'~440g',rows:[
+  {k:'table',l:'เสาร์ 15',tag:'Shakeout 3 km · D2',tg:'~440g',rows:[
    ['07:00','🏃 shakeout 3 km + 4×100m strides','—'],
    ['08:00','ข้าวต้มหมู 1 ถ้วย + ขนมปังแยม 2 แผ่น + กล้วย','105g'],
    ['12:00','ข้าวมันไก่ (ไก่ไม่มีหนัง) + น้ำเต้าหู้หวานน้อย','110g'],
    ['15:00','ซาลาเปาไส้ครีม 1 + กล้วย 1 + น้ำผลไม้','85g'],
    ['18:00','ผัดไทยไม่เผ็ด + ข้าวเปล่า 1 ทัพพี + electrolyte <b>← กินหัวค่ำ อย่าดึก</b>','140g'],
    ['22:00','น้ำ 250 ml + เข้านอน','—']],hit:4},
-  {l:'อาทิตย์ 16',tag:'🏁 Race day · ปืน 05:00',tg:'~110g',rows:[
+  {k:'table',l:'อาทิตย์ 16',tag:'🏁 Race day · ปืน 05:00',tg:'~110g',rows:[
    ['01:40','⏰ ตื่น — น้ำ 300–400 ml + electrolyte','—'],
    ['02:00','<b>-3 ชม.</b> ข้าวต้มกุ้งใส + ขนมปังแยม 1 แผ่น + กล้วย 1','85g'],
-   ['03:00','🚗 ออกจากบ้าน <i>(ปรับตามระยะทาง — ให้ถึง 03:30)</i>','—'],
-   ['03:30','🎒 ถึงสนาม — เผื่อคนเยอะ/หาที่จอด/ปิดถนน','—'],
-   ['03:40','🚻 เข้าห้องน้ำรอบแรก <i>(คิวยาวสุดช่วง 04:00–04:30 — ไปก่อน)</i>','—'],
-   ['04:05','🎒 ฝากกระเป๋าให้เสร็จ <i>(เคาน์เตอร์มักปิด ~30′ ก่อนปืน)</i>','—'],
-   ['04:15','🏃 warm up — jog 12–15′ → drills 5′ → strides 4×100m','—'],
-   ['04:45','<b>-15′</b> gel 1 ซอง + น้ำเปล่า · เข้า corral','25g'],
-   ['05:00','🏁 ออกตัว — open 4:38–4:40 → 4:32–4:35 → all-out 8–10','—'],
-   ['หลังแข่ง 30′','3:1 carb:protein — ข้าว+ไก่+ไข่ / นมช็อค+กล้วย','—']],hit:1}],
- avoid:[
+   ['04:45','<b>-15′</b> gel 1 ซอง + น้ำเปล่า','25g'],
+   ['ระหว่างแข่ง','ไม่ต้องกิน (&lt; 60 นาที) · จิบน้ำตามจุด','—'],
+   ['หลังแข่ง 30′','3:1 carb:protein — ข้าว+ไก่+ไข่ / นมช็อค+กล้วย','—']],hit:1,
+   foot:'🕐 เวลาเดินทาง/ฝากของ/วอม → ดูการ์ด <b>ไทม์ไลน์วันแข่ง</b>'},
+ {k:'list',l:'❌ ห้ามศุกร์–เสาร์',bad:1,rows:[
   ['ส้มตำ / ยำ / แกงเผ็ด','พริกกระตุ้นลำไส้'],
   ['สลัดผักดิบจานใหญ่','fiber สูง ท้องอืดเช้า'],
   ['ปิ้งย่าง / ชาบูหมูสามชั้น','ไขมันสูง + มักกินดึก'],
   ['เบียร์ / เหล้า','ขาดน้ำ + นอนตื้น'],
   ['อาหารใหม่ที่ไม่เคยกิน','ไม่รู้ท้องจะเอาไง'],
-  ['เช้าวันแข่ง: นม / โยเกิร์ต / ไข่ดาว / ของทอด','lactose + ไขมันย่อยช้า <i>(ศุกร์เสาร์กินได้ปกติ)</i>']],
- swap:[
+  ['เช้าวันแข่ง: นม / โยเกิร์ต / ไข่ดาว / ของทอด','lactose + ไขมันย่อยช้า <i>(ศุกร์เสาร์กินได้ปกติ)</i>']]},
+ {k:'list',l:'🔁 สลับได้',tag:'ร้านปิด / เบื่อ',sep:'↔',rows:[
   ['ข้าวมันไก่','ข้าวหมูแดง / ก๋วยเตี๋ยวน้ำใสเส้นใหญ่ (ไม่ต้มยำ)'],
   ['ผัดไทย','สปาเกตตี้ซอสมะเขือเทศ 200 g + ขนมปังกระเทียม'],
   ['ซาลาเปา','ขนมปังไส้สังขยา / กล้วยตาก'],
-  ['น้ำผลไม้','น้ำหวาน / สปอร์ตดริงก์ (คาร์บเหลว ท้องไม่แน่น)']],
- tips:[
+  ['น้ำผลไม้','น้ำหวาน / สปอร์ตดริงก์ (คาร์บเหลว ท้องไม่แน่น)']]},
+ {k:'tips',l:'📌 จำไว้',rows:[
   '⚖️ น้ำหนักขึ้น 0.5–1 กก. ศุกร์→อาทิตย์ = <b>น้ำ</b> ปกติ (ไกลโคเจนดูดน้ำ 1:3) ห้ามอดชดเชย',
   '😴 ตัวแปรใหญ่กว่าคาร์บ = <b>นอน</b> — พฤ 13 / ศ 14 / ส 15 สามคืน สำคัญกว่าคืนเสาร์คืนเดียว',
-  '🍯 gel วันแข่งใช้ตัวที่เคยซ้อม ห้ามเปลี่ยนยี่ห้อ · ตามด้วยน้ำเปล่าไม่ใช่สปอร์ตดริงก์']};
+  '🍯 gel วันแข่งใช้ตัวที่เคยซ้อม ห้ามเปลี่ยนยี่ห้อ · ตามด้วยน้ำเปล่าไม่ใช่สปอร์ตดริงก์']}]};
+
+// 🕐 ไทม์ไลน์วันแข่ง — logistics (เดินทาง · ฝากของ · วอม) แยกจากการ์ดกิน · ปอมขอ 9 ส.ค.
+SHEETS.raceday={
+ title:'🕐 ไทม์ไลน์วันแข่ง',
+ sub:'ASICS 10K · อาทิตย์ 16 ส.ค. · สะพานพระราม 8',
+ warn:'🏁 ปล่อยตัว <b>05:00</b> · cut-off 2 ชม. · finish 07:00 — เวลาทุกช่องคิดถอยหลังจากปืน',
+ blocks:[
+  {k:'table',l:'ตื่น → ออกจากบ้าน',tag:'ที่บ้าน',rows:[
+   ['01:40','⏰ ตื่น — น้ำ 300–400 ml + electrolyte',''],
+   ['02:00','🍚 มื้อ -3 ชม. (~85 g) <i>→ ดูการ์ดกิน</i>',''],
+   ['02:30','นั่งเล่น/เอนพัก — ไม่ต้องนอนลึกต่อ',''],
+   ['03:00','🚗 ออกจากบ้าน <b>← ปรับตามระยะทางจริง</b>','']]},
+  {k:'table',l:'ถึงสนาม → ปล่อยตัว',tag:'ที่สนาม',rows:[
+   ['03:30','🎒 ถึงสนาม — เผื่อคนเยอะ / หาที่จอด / ปิดถนน',''],
+   ['03:40','🚻 ห้องน้ำรอบแรก <i>(คิวยาวสุด 04:00–04:30 ไปก่อนได้เปรียบ)</i>',''],
+   ['04:05','🎒 ฝากกระเป๋าให้เสร็จ <i>(เคาน์เตอร์มักปิด ~30′ ก่อนปืน)</i>',''],
+   ['04:15','🏃 warm up — jog easy 12–15′',''],
+   ['04:32','drills 5′ — leg swing · A-skip · ankling',''],
+   ['04:38','strides 4×100m',''],
+   ['04:45','🍯 gel + น้ำเปล่า · เดินเข้า corral',''],
+   ['04:50','ยืนในบล็อก — ย่ำเท้า/jog อยู่กับที่ <b>ห้ามยืนนิ่งจนตัวเย็น</b>',''],
+   ['05:00','🏁 ออกตัว','']],hit:8},
+  {k:'tips',l:'🏁 แผนวิ่ง',rows:[
+   'กม. 1–3 — <b>4:38–4:40</b> เปิดช้าไว้ก่อน · คนรอบตัวจะออกเร็วกว่านี้ ปล่อยเขาไป',
+   'กม. 4–7 — <b>4:32–4:35</b> เข้าจังหวะจริง',
+   'กม. 8–10 — <b>all-out</b> เหลือเท่าไหร่ใส่หมด',
+   '⚠️ นิสัยล่าสุด 4 session ติดวิ่งเร็วกว่าที่สั่ง — <b>คุมด้วยนาฬิกา ไม่ใช่ความรู้สึก</b> ใน 3 กม.แรก']},
+  {k:'list',l:'✂️ ถ้าคิวยาว/เวลาไม่พอ',tag:'ตัดตามลำดับ',sep:'→',rows:[
+   ['ตัดอันดับ 1','ห้องน้ำรอบสอง'],
+   ['ตัดอันดับ 2','ย่อ jog เหลือ 8–10 นาที'],
+   ['ตัดอันดับ 3','ย่อ drills เหลือ 2–3 ท่า'],
+   ['❌ ห้ามตัด','strides 4×100m — ตัวที่ทำให้ 3 กม.แรกไม่หนืด']]},
+  {k:'list',l:'🎒 เตรียมคืนวันเสาร์',tag:'วางไว้ข้างประตู',sep:'·',rows:[
+   ['BIB + เข็มกลัด','ติดเสื้อให้เรียบร้อยตั้งแต่คืนก่อน'],
+   ['👟 Metaspeed Sky Tokyo','ใส่มาแล้ว 1 ครั้ง — วันแข่งคือครั้งที่ 2'],
+   ['gel 1 ซอง','ยี่ห้อที่เคยซ้อม ห้ามเปลี่ยน'],
+   ['นาฬิกาชาร์จเต็ม','+ ตั้ง alarm 01:40 สองตัว'],
+   ['เสื้อเปลี่ยน + ผ้าเช็ดตัว','ใส่กระเป๋าฝาก'],
+   ['น้ำ + electrolyte','จิบระหว่างรอ หยุดจิบ ~04:30']]}]};
 const PHCOLOR={Base:'#2f9e6a',Threshold:'#cf8f00','10K-Peak':'#e63012',Recovery:'#3a86c8','M-Build':'#2f9e6a','M-Peak':'#e63012',Taper:'#3a86c8'};
 // races (A-race = ATM marathon) · เพซเป้าหมายตามประเภท (ใช้ใน schedule)
 const RACES=[
@@ -1403,13 +1443,13 @@ function render(){
   const _dd=Math.round((_rfR.date-new Date(new Date().setHours(0,0,0,0)))/864e5);
   if(_dd>=0){
    const _sub=_dd===0?'วันนี้แข่ง 🏁 · เช็ค gel -15′':(_dd===1?'พรุ่งนี้แข่ง · มื้อ -3 ชม. + gel -15′':'อีก '+_dd+' วัน · เริ่มโหลดศุกร์ 14 ส.ค. (Option B)');
-   html+='<div class="section-l">🍚 การ์ดกิน · Race week</div>';
-   html+='<button class="fuel-cta" onclick="openFuel()">'+
-    '<span class="fuel-cta-ic">🍚</span>'+
-    '<span><span class="fuel-cta-t">กินอะไร ศุกร์ → เสาร์ → วันแข่ง</span>'+
-    '<span class="fuel-cta-s">'+_sub+' · ทุกมื้อ + กรัม + ของห้ามกิน + ตัวสลับ</span></span>'+
-    '<span class="fuel-cta-go">เปิด<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 8.5V1.5M2 4.5 5 1.5l3 3"/></svg></span>'+
-    '</button>';
+   const _arrow='<span class="fuel-cta-go">เปิด<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 8.5V1.5M2 4.5 5 1.5l3 3"/></svg></span>';
+   const _card=(k,ic,t,s)=>'<button class="fuel-cta" onclick="openSheet(\''+k+'\')">'+
+    '<span class="fuel-cta-ic">'+ic+'</span>'+
+    '<span><span class="fuel-cta-t">'+t+'</span><span class="fuel-cta-s">'+s+'</span></span>'+_arrow+'</button>';
+   html+='<div class="section-l">🏁 Race week</div>';
+   html+=_card('fuel','🍚','กินอะไร ศุกร์ → เสาร์ → วันแข่ง',_sub+' · ทุกมื้อ + กรัม + ของห้ามกิน + ตัวสลับ');
+   html+=_card('raceday','🕐','ไทม์ไลน์วันแข่ง','ปืน 05:00 · ตื่นกี่โมง ออกกี่โมง วอมกี่โมง + ของที่ต้องเตรียม');
   }
  }
 
@@ -1417,28 +1457,39 @@ function render(){
  initMotion();
 }
 
-// ── 🍚 bottom sheet การ์ดกิน ──
-let fuelBuilt=false;
-function buildFuel(){
- if(fuelBuilt)return;fuelBuilt=true;
- document.getElementById('fs-sub').textContent=RACEFUEL.sub;
- let h='<div class="fs-warn">'+RACEFUEL.warn+'</div>',i=0;
+// ── bottom sheet (ใช้ร่วมทุกการ์ด · เนื้อหามาจาก SHEETS[key].blocks) ──
+const sheetCache={};
+function buildSheet(key){
+ const S=SHEETS[key];if(!S)return;
+ document.getElementById('fs-title').innerHTML=S.title;
+ document.getElementById('fs-sub').textContent=S.sub;
+ if(sheetCache[key]){document.getElementById('fs-body').innerHTML=sheetCache[key];return}
+ let h=S.warn?'<div class="fs-warn">'+S.warn+'</div>':'',i=0;
  const blk=(inner)=>{const s='<div class="fs-blk" style="--d:'+(i*45)+'ms">'+inner+'</div>';i++;return s};
- RACEFUEL.days.forEach(d=>{
-  let t='<div class="fs-dhead"><span class="fs-dl">'+d.l+'</span><span class="fs-dtag">'+d.tag+'</span><span class="fs-dtg">'+d.tg+'</span></div><table class="fs-tbl">';
-  d.rows.forEach((r,ri)=>{t+='<tr'+(d.hit===ri?' class="fs-hit"':'')+'><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>'});
-  h+=blk(t+'</table>');
+ S.blocks.forEach(b=>{
+  let t='<div class="fs-dhead"><span class="fs-dl">'+b.l+'</span>'+
+   (b.tag?'<span class="fs-dtag">'+b.tag+'</span>':'')+
+   (b.tg?'<span class="fs-dtg">'+b.tg+'</span>':'')+'</div>';
+  if(b.k==='table'){
+   const c3=b.rows.some(r=>r[2]);                                  // 2 คอลัมน์ = ให้ช่องท้ายตัดบรรทัดได้ (ไม่งั้นล้นแนวนอน)
+   t+='<table class="fs-tbl'+(c3?'':' fs-tbl2')+'">';
+   b.rows.forEach((r,ri)=>{t+='<tr'+(b.hit===ri?' class="fs-hit"':'')+'><td>'+r[0]+'</td><td>'+r[1]+'</td>'+(c3?'<td>'+(r[2]||'')+'</td>':'')+'</tr>'});
+   t+='</table>'+(b.foot?'<div class="fs-tip">'+b.foot+'</div>':'');
+  }else if(b.k==='list'){
+   t+='<div class="fs-list'+(b.bad?' fs-bad':'')+'">'+
+    b.rows.map(r=>'<div><b>'+r[0]+'</b> '+(b.sep||'—')+' '+r[1]+'</div>').join('')+'</div>';
+  }else{
+   t+=b.rows.map(r=>'<div class="fs-tip">'+r+'</div>').join('');
+  }
+  h+=blk(t);
  });
- h+=blk('<div class="fs-dhead"><span class="fs-dl">❌ ห้ามศุกร์–เสาร์</span></div><div class="fs-list fs-bad">'+
-  RACEFUEL.avoid.map(a=>'<div><b>'+a[0]+'</b> — '+a[1]+'</div>').join('')+'</div>');
- h+=blk('<div class="fs-dhead"><span class="fs-dl">🔁 สลับได้</span><span class="fs-dtag">ร้านปิด / เบื่อ</span></div><div class="fs-list">'+
-  RACEFUEL.swap.map(s=>'<div><b>'+s[0]+'</b> ↔ '+s[1]+'</div>').join('')+'</div>');
- h+=blk('<div class="fs-dhead"><span class="fs-dl">📌 จำไว้</span></div>'+RACEFUEL.tips.map(t=>'<div class="fs-tip">'+t+'</div>').join(''));
+ sheetCache[key]=h;
  document.getElementById('fs-body').innerHTML=h;
 }
-function openFuel(){
- buildFuel();
+function openSheet(key){
+ buildSheet(key);
  const s=document.getElementById('fuel-sheet');
+ document.getElementById('fs-body').scrollTop=0;
  document.getElementById('fuel-back').classList.add('on');
  s.classList.add('on');s.setAttribute('aria-hidden','false');
  document.body.style.overflow='hidden';
