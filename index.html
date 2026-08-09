@@ -454,7 +454,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 #fuel-back{position:fixed;inset:0;background:rgba(22,20,16,.44);opacity:0;pointer-events:none;transition:opacity .24s ease-out;z-index:9998}
 #fuel-back.on{opacity:1;pointer-events:auto}
 /* ปิด: ต้องเลื่อนพ้นจอ + เผื่อความฟุ้งของ box-shadow (34px) ไม่งั้นเหลือเงาดำคาขอบล่างตอนสไลด์ออก */
-#fuel-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:var(--bg);border-radius:20px 20px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(calc(100% + 50px));transition:transform .36s cubic-bezier(.22,1,.36,1),visibility 0s linear .36s;box-shadow:0 -10px 34px rgba(0,0,0,.2);visibility:hidden}
+#fuel-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;width:min(100%,640px);margin-inline:auto;background:var(--bg);border-radius:20px 20px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(calc(100% + 50px));transition:transform .36s cubic-bezier(.22,1,.36,1),visibility 0s linear .36s;box-shadow:0 -10px 34px rgba(0,0,0,.2);visibility:hidden}
 /* visibility ต้องหน่วงจนสไลด์จบ ไม่งั้นแผ่นหายวับตั้งแต่เฟรมแรก เหลือแต่ backdrop ค่อยๆ จาง = เงาดำค้าง */
 #fuel-sheet.on{transform:translateY(0);visibility:visible;transition:transform .36s cubic-bezier(.22,1,.36,1),visibility 0s}
 #fuel-sheet.dragging{transition:none}
@@ -1494,7 +1494,9 @@ function openSheet(key){
  document.getElementById('fs-body').scrollTop=0;
  document.getElementById('fuel-back').classList.add('on');
  s.classList.add('on');s.setAttribute('aria-hidden','false');
+ const sbw=window.innerWidth-document.documentElement.clientWidth;   // ล็อกสกรอลล์แล้ว scrollbar หาย → หน้าเด้งกว้างขึ้น · ชดเชยด้วย padding เท่าความกว้าง scrollbar
  document.body.style.overflow='hidden';
+ if(sbw>0)document.body.style.paddingRight=sbw+'px';
  requestAnimationFrame(()=>s.classList.add('shown'));
 }
 function closeFuel(){
@@ -1503,6 +1505,7 @@ function closeFuel(){
  s.setAttribute('aria-hidden','true');
  document.getElementById('fuel-back').classList.remove('on');
  document.body.style.overflow='';
+ document.body.style.paddingRight='';
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('fuel-sheet').classList.contains('on'))closeFuel()});
 // ลากลงเพื่อปิด (native feel บนมือถือ) — ปิดเมื่อลากเกิน 90px หรือสะบัดเร็ว
@@ -1515,7 +1518,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElement
  g.addEventListener('pointerup',e=>{
   if(!on)return;on=false;s.classList.remove('dragging');
   const v=dy/Math.max(1,performance.now()-t0);
-  if(dy>90||v>.6){s.style.transform='';closeFuel()}else{s.style.transform=''}
+  if(dy>90||v>.6)closeFuel();     // closeFuel เคลียร์ inline transform เอง — เคลียร์ก่อนจะเด้งกลับ 0 แล้วค่อยไหลลง (กระตุก)
+  else s.style.transform='';      // ไม่ถึง threshold = สปริงกลับ (transition กลับมาแล้วเพราะถอด .dragging ไปก่อนหน้า)
  });
  g.addEventListener('pointercancel',()=>{on=false;s.classList.remove('dragging');s.style.transform=''});
 })();
@@ -1627,12 +1631,14 @@ setTimeout(()=>{
  const TH=70,MAX=110; // threshold / max pull (px after damping)
  let startY=0,pulling=false,h=0;
  const at=()=>{txt.textContent=h>=TH?'ปล่อยเพื่อรีเฟรช':'ดึงลงเพื่อรีเฟรช';};
+ const sheetOpen=()=>document.getElementById('fuel-sheet').classList.contains('on'); // sheet เปิดอยู่ = ห้าม PTR (ลากอ่านในชีทแล้วหน้ารีโหลดทิ้ง)
  addEventListener('touchstart',e=>{
-  if(scrollY>0||ptr.classList.contains('loading'))return;
+  if(scrollY>0||sheetOpen()||ptr.classList.contains('loading'))return;
   startY=e.touches[0].clientY;pulling=true;h=0;ptr.classList.remove('releasing');
  },{passive:true});
  addEventListener('touchmove',e=>{
   if(!pulling)return;
+  if(sheetOpen()){pulling=false;ptr.style.height='0';return;}
   const d=e.touches[0].clientY-startY;
   if(d<=0){pulling=false;ptr.style.height='0';return;}
   e.preventDefault(); // override native overscroll bounce
