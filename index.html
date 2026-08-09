@@ -1742,7 +1742,7 @@ setInterval(renderHero,6e4);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderHero()});
 // auto-scroll to today's schedule row on first load
 setTimeout(()=>{
- const todayRow=document.querySelector('.sched tr.today');
+ const todayRow=document.querySelector('.wk-row.today');   // ตารางเปลี่ยนจาก <table> เป็น row list แล้ว
  if(todayRow)todayRow.scrollIntoView({behavior:'smooth',block:'center'});
 },500);
 // last sync timestamp (document.lastModified reflects when file was deployed)
