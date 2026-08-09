@@ -440,6 +440,50 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 #ptr .ptr-spin{width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--muted);border-radius:50%}
 #ptr.loading .ptr-spin{animation:ptrspin .6s linear infinite}
 @keyframes ptrspin{to{transform:rotate(360deg)}}
+/* ── 🍚 race-fuel bottom sheet ── */
+.fuel-cta{width:100%;display:flex;align-items:center;gap:13px;text-align:left;font-family:inherit;background:linear-gradient(135deg,#fffdf8,#fdf3e0);border:1px solid #f0d89a;border-radius:13px;padding:15px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s ease}
+.fuel-cta:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(176,119,0,.15)}
+.fuel-cta:active{transform:scale(.985)}
+.fuel-cta-ic{font-size:23px;line-height:1;flex:0 0 auto}
+.fuel-cta-t{display:block;font-size:13px;font-weight:700;color:#1c1c1c;line-height:1.35}
+.fuel-cta-s{display:block;font-size:11px;color:#96854f;margin-top:3px;line-height:1.45}
+.fuel-cta-go{margin-left:auto;flex:0 0 auto;font-size:10px;font-weight:700;color:#b07700;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.fuel-cta-go svg{transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.fuel-cta:hover .fuel-cta-go svg{transform:translateY(-2px)}
+#fuel-back{position:fixed;inset:0;background:rgba(22,20,16,.44);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:9998}
+#fuel-back.on{opacity:1;pointer-events:auto}
+#fuel-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:var(--bg);border-radius:20px 20px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(103%);transition:transform .36s cubic-bezier(.22,1,.36,1);box-shadow:0 -10px 34px rgba(0,0,0,.2);visibility:hidden}
+#fuel-sheet.on{transform:translateY(0);visibility:visible}
+#fuel-sheet.dragging{transition:none}
+.fs-grab{padding:11px 0 7px;display:flex;justify-content:center;touch-action:none;cursor:grab}
+.fs-grab i{width:40px;height:4px;border-radius:2px;background:#d5d1c6;display:block}
+.fs-head{padding:0 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:10px}
+.fs-title{font-size:15px;font-weight:700;color:#1c1c1c;line-height:1.3}
+.fs-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.fs-x{margin-left:auto;flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:15px;line-height:1;cursor:pointer;font-family:inherit;transition:background .15s,transform .15s}
+.fs-x:hover{background:#f1efe9;transform:rotate(90deg)}
+.fs-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 18px calc(28px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+.fs-warn{font-size:11px;color:#b07700;background:#fdf7e8;border-radius:8px;padding:7px 10px;line-height:1.5;margin-bottom:14px}
+.fs-blk{margin-bottom:16px;opacity:0;transform:translateY(10px)}
+#fuel-sheet.shown .fs-blk{opacity:1;transform:none;transition:opacity .4s ease var(--d),transform .4s cubic-bezier(.22,1,.36,1) var(--d)}
+.fs-dhead{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.fs-dl{font-size:13px;font-weight:700;color:#1c1c1c}
+.fs-dtag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fs-dtg{margin-left:auto;font-size:11px;font-weight:700;color:#b07700}
+.fs-tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fs-tbl td{padding:8px 10px;border-bottom:1px solid #f1efe9;font-size:12px;color:#444;line-height:1.5;vertical-align:top}
+.fs-tbl tr:last-child td{border-bottom:none}
+.fs-tbl td:first-child{white-space:nowrap;font-weight:600;color:#6b6b6b;width:1%}
+.fs-tbl td:last-child{white-space:nowrap;text-align:right;font-weight:700;color:#1c1c1c}
+.fs-tbl tr.fs-hit td{background:#fdf7e8}
+.fs-list{background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 12px}
+.fs-list div{font-size:12px;color:#444;padding:7px 0;border-bottom:1px solid #f1efe9;line-height:1.5}
+.fs-list div:last-child{border-bottom:none}
+.fs-list b{color:#1c1c1c}
+.fs-bad{border-color:#f3d3cd;background:#fef7f5}
+.fs-bad div{border-bottom-color:#f9e7e3}
+.fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
+@media (prefers-reduced-motion:reduce){#fuel-sheet,#fuel-back,.fuel-cta{transition:none}#fuel-sheet.shown .fs-blk{transition:none}.fs-blk{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -449,6 +493,12 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 <div id="races"></div>
 <div class="prog-bar" id="progbar"></div>
 <div id="content"></div>
+</div>
+<div id="fuel-back" onclick="closeFuel()"></div>
+<div id="fuel-sheet" role="dialog" aria-modal="true" aria-labelledby="fs-title" aria-hidden="true">
+ <div class="fs-grab" id="fs-grab"><i></i></div>
+ <div class="fs-head"><div><div class="fs-title" id="fs-title">🍚 การ์ดกิน — Race week</div><div class="fs-sub" id="fs-sub"></div></div><button class="fs-x" onclick="closeFuel()" aria-label="ปิด">✕</button></div>
+ <div class="fs-body" id="fs-body"></div>
 </div>
 
 <script>
@@ -483,6 +533,45 @@ const RECOVERY=[
  ['Easy','ไม่เร่ง','มื้อปกติพอ ไม่ต้องพิเศษ'],
  ['Quality','45g C / 15g P','นมช็อค 1 กล่อง + กล้วย 1'],
  ['Long 17–18k','65g C / 20g P','① นมช็อค + ข้าวไก่ไข่ จานเล็ก · ② เวย์ + ขนมปังแยม + กล้วย']];
+// 🍚 การ์ดกิน race week — ปอมเลือก Option B (เริ่มโหลดศุกร์เย็น) 8 ส.ค. · ตัวเดียวกับ marathon-plan/race-fueling-card.md
+// ลดจาก dashboard เดิมตั้งใจ: D1/D2 ป้ายเขียน 8–10 g/kg (480–600g) = เลขมาราธอน · 10K ใช้คาร์บแค่ ~120–150g ถังปกติ 400–450g ไม่มีทางหมด
+const RACEFUEL={
+ sub:'ASICS 10K · อาทิตย์ 16 ส.ค. · เริ่มโหลดศุกร์ (Option B)',
+ warn:'⚠️ เวลาในวันแข่งคิดจากปล่อยตัว <b>05:30 (สมมติ)</b> — ได้บัตรวิ่งจริงแล้วเลื่อนทุกมื้อตาม',
+ days:[
+  {l:'ศุกร์ 14',tag:'พักสนิท · D1',tg:'~370g',rows:[
+   ['เช้า','ข้าวเหนียว 1 ห่อ + หมูปิ้ง 2 ไม้ + น้ำส้ม 200 ml','85g'],
+   ['กลางวัน','🍱 ทงคัตสึเซ็ต + ขอข้าวเพิ่ม + น้ำผลไม้ <i>(ข้ามมายองเนส)</i>','120g'],
+   ['บ่าย','กล้วยหอม 1 + ขนมปังปิ้งแยม 2 แผ่น','70g'],
+   ['เย็น','ข้าวกะเพราไก่ 2 ทัพพี ไม่ราดมัน + ไข่ต้ม + ผลไม้','95g']]},
+  {l:'เสาร์ 15',tag:'Shakeout 3 km · D2',tg:'~440g',rows:[
+   ['07:00','🏃 shakeout 3 km + 4×100m strides','—'],
+   ['08:00','ข้าวต้มหมู 1 ถ้วย + ขนมปังแยม 2 แผ่น + กล้วย','105g'],
+   ['12:00','ข้าวมันไก่ (ไก่ไม่มีหนัง) + น้ำเต้าหู้หวานน้อย','110g'],
+   ['15:00','ซาลาเปาไส้ครีม 1 + กล้วย 1 + น้ำผลไม้','85g'],
+   ['18:00','ผัดไทยไม่เผ็ด + ข้าวเปล่า 1 ทัพพี + electrolyte <b>← กินหัวค่ำ อย่าดึก</b>','140g'],
+   ['22:00','น้ำ 250 ml + เข้านอน','—']],hit:4},
+  {l:'อาทิตย์ 16',tag:'🏁 Race day',tg:'~110g',rows:[
+   ['02:30','<b>-3 ชม.</b> ข้าวต้มกุ้งใส + ขนมปังแยม 1 แผ่น + กล้วย 1<br>น้ำ 300–400 ml + electrolyte','85g'],
+   ['05:15','<b>-15′</b> gel 1 ซอง + น้ำเปล่า','25g'],
+   ['ระหว่างแข่ง','ไม่ต้องกิน (&lt; 60 นาที) · จิบน้ำตามจุด','—'],
+   ['หลังแข่ง 30′','3:1 carb:protein — ข้าว+ไก่+ไข่ / นมช็อค+กล้วย','—']],hit:0}],
+ avoid:[
+  ['ส้มตำ / ยำ / แกงเผ็ด','พริกกระตุ้นลำไส้'],
+  ['สลัดผักดิบจานใหญ่','fiber สูง ท้องอืดเช้า'],
+  ['ปิ้งย่าง / ชาบูหมูสามชั้น','ไขมันสูง + มักกินดึก'],
+  ['เบียร์ / เหล้า','ขาดน้ำ + นอนตื้น'],
+  ['อาหารใหม่ที่ไม่เคยกิน','ไม่รู้ท้องจะเอาไง'],
+  ['เช้าวันแข่ง: นม / โยเกิร์ต / ไข่ดาว / ของทอด','lactose + ไขมันย่อยช้า <i>(ศุกร์เสาร์กินได้ปกติ)</i>']],
+ swap:[
+  ['ข้าวมันไก่','ข้าวหมูแดง / ก๋วยเตี๋ยวน้ำใสเส้นใหญ่ (ไม่ต้มยำ)'],
+  ['ผัดไทย','สปาเกตตี้ซอสมะเขือเทศ 200 g + ขนมปังกระเทียม'],
+  ['ซาลาเปา','ขนมปังไส้สังขยา / กล้วยตาก'],
+  ['น้ำผลไม้','น้ำหวาน / สปอร์ตดริงก์ (คาร์บเหลว ท้องไม่แน่น)']],
+ tips:[
+  '⚖️ น้ำหนักขึ้น 0.5–1 กก. ศุกร์→อาทิตย์ = <b>น้ำ</b> ปกติ (ไกลโคเจนดูดน้ำ 1:3) ห้ามอดชดเชย',
+  '😴 ตัวแปรใหญ่กว่าคาร์บ = <b>นอน</b> — พฤ 13 / ศ 14 / ส 15 สามคืน สำคัญกว่าคืนเสาร์คืนเดียว',
+  '🍯 gel วันแข่งใช้ตัวที่เคยซ้อม ห้ามเปลี่ยนยี่ห้อ · ตามด้วยน้ำเปล่าไม่ใช่สปอร์ตดริงก์']};
 const PHCOLOR={Base:'#2f9e6a',Threshold:'#cf8f00','10K-Peak':'#e63012',Recovery:'#3a86c8','M-Build':'#2f9e6a','M-Peak':'#e63012',Taper:'#3a86c8'};
 // races (A-race = ATM marathon) · เพซเป้าหมายตามประเภท (ใช้ใน schedule)
 const RACES=[
@@ -804,35 +893,35 @@ try{const s=localStorage.getItem('mp-done');if(s)done=JSON.parse(s)}catch(e){}
 // env:'tm'=treadmill/incline → ตัดออกจาก EF · mix:1=หลาย activity วันเดียว → ตัดจาก EF
 const SEED=/*SEED:START*/{
  'w0d5':{km:14.36,min:102.4,hr:169,hx:180,cad:171,type:"long",te:3.8,dc:11.6,note:"Aerobic base กลับมา · 0 soreness post-run · dc 11.6% (retro-calc)"},'w0d1':{km:5.02,min:31.2,hr:162,hx:173,cad:178,env:"tm",type:"easy",te:3.5,note:"TM easy 5.0km/31:22 · 6:15/km · HR162 (backfill)"},'w0d2':{type:"cross",te:2.7,note:"แบด Beat 17min · HR153/max188 สั้นแต่แรง (backfill)"},'w0d6':{type:"cross",te:1.7,note:"แบด Tito 85min · HR113 เบา (backfill)"},
- 'w1d6':{km:16.57,min:109.9,hr:170,hx:182,cad:176,type:"long",te:4.5,dc:10.5,note:"Breakthrough — ระยะ+pace ดีขึ้น HR เท่าเดิม · dc 10.5% (retro-calc · ยัง decoupled, ดีกว่า W0 นิดเดียว)"},'w1d3':{km:4.03,min:41.6,hr:161,hx:196,cad:160,type:"easy",te:3.6,note:"easy 4.0km Phra Khanong สะพาน · HR161/max196 (backfill)"},'w1d2':{km:6.66,min:46.6,hr:168,hx:182,cad:172,type:"easy",te:3.3,note:"easy effort จริง แม้ heat 31°C"},'w1d1':{km:6.24,min:46.7,hr:159.99,hx:174,cad:171,mix:1,ses:[5.71,0.53],bkm:5.71,bmin:40.2,type:"easy",te:3.1,note:"easy 5.7km/40:19 · 7:04/km · HR165 + jog 0.5km แยก (backfill)"},'w1d0':{type:"cross",te:2.1,note:"เวท 48min · HR123 · squat+deadlift+pull-up (backfill)"},
- 'w2d5':{km:18.12,min:128.9,hr:174,hx:185,cad:169,type:"long",te:4.6,dc:15.1,note:"18km milestone แต่ HR เกิน cap · fatigue carry + shoe issue · dc 15.1% (retro-calc · overreach ไม่ใช่ base แย่)"},'w2d4':{km:6,min:36.9,hr:154,hx:164,cad:181,env:"tm",type:"easy",rpe:2,te:3.1,note:"Treadmill · cadence 182 breakthrough · feel Very Strong"},'w2d2':{km:5.45,min:35,hr:163.17,hx:193,cad:170,mix:1,ses:[3.39,2.06],bkm:3.39,bmin:20.9,type:"quality",rpe:8,te:3.1,note:"Intervals 3×4min ครบ แต่ overpace (วิ่ง I แทน T) · max HR 193"},'w2d1':{km:6.44,min:42.6,hr:157,hx:179,cad:168,type:"easy",te:3,note:"easy 6.4km/43:30 · 6:45/km · HR157 เขา (backfill)"},'w2d0':{type:"cross",te:2.2,note:"เวท 60min · HR130 · core+push+squat+deadlift+pull-up (backfill)"},
- 'w3d5':{km:9.79,min:68.7,hr:157.84,hx:175,cad:171,mix:1,ses:[5.18,4.61],bkm:5.18,bmin:33,type:"long",te:3.1,note:"Easy long split 2 รอบ · recovery > long-run adaptation"},'w3d2':{km:4.23,min:28.5,hr:159.91,hx:181,cad:169,mix:1,ses:[3.04,1.19],bkm:3.04,bmin:19.7,type:"easy",te:2.6,note:"Easy + 5 strides · cadence ramp 184→193"},'w3d1':{km:6.16,min:35.1,hr:163,hx:170,cad:177,env:"tm",type:"easy",te:3.4,note:"Treadmill incline 2.5% · easy baseline ติดแน่น"},'w3d0':{type:"cross",te:1,note:"เวท LIGHT 67min · HR112 · deload week ✓ (backfill)"},
- 'w4d5':{km:20.14,min:146.8,hr:165.24,hx:183,cad:168,mix:1,ses:[18.13,2.01],bkm:18.13,bmin:123.3,type:"long",rpe:4,te:4.2,dc:11.1,note:"18.1km long + 2km cd (2 session) · HR171 สูงแต่จบไม่เหนื่อย=heat · Superblast3 เด้งดี shoe issue resolved"},'w4d3':{km:4.61,min:29.8,hr:165,hx:176,cad:168,type:"easy",te:3.1,note:"Shakeout 4.6km/30min ✅ · km1 6:09 ใต้ floor 6:30 อีก (3rd ติด) · HR 165 เกิน cap 160 แค่ +5 คุมกว่า Wed"},'w4d2':{km:8.16,min:54.7,hr:166,hx:178,cad:170,type:"easy",rpe:5,te:3.3,dc:10.4,note:"fueled+fresh แต่ dc 10.4% · L1 6:14 เร็วกว่า target 11s = ออกเร็ว + heat drift"},'w4d1':{km:11.26,min:77.9,hr:166.83,hx:183,cad:172,mix:1,ses:[10.05,1.21],bkm:10.05,bmin:68.8,type:"quality",rpe:7,te:3.7,dc:16.2,note:"10K under-fueled (ไม่ได้กินก่อนซ้อม) · HR drift +17 = lactate accumulate ก่อน aerobic ceiling · max HR 179 = ไม่ redline · dc 16.2% (retro lap-approx · fueling ไม่ใช่ base)"},'w4d0':{type:"cross",te:2.1,note:"เวท 62min · HR127 · squat+deadlift+pull-up+เชือก (backfill)"},'w4d4':{type:"cross",te:0.2,note:"Pilates 35min · HR93 recovery ล้วน (backfill)"},'w4d6':{type:"cross",rpe:4,te:2.4,note:"แบด 2h21 · HR120avg/170max · rest day → active recovery (intensity ต่ำ ขายังโดน pivot)"},
- 'w5d5':{km:21.9,min:146.1,hr:165.39,hx:183,cad:168,mix:1,ses:[21.04,0.86],bkm:21.04,bmin:134.1,type:"long",rpe:7,te:3.8,dc:6.1,note:"21km long จบครบ · pace 6:28 moving · HR169 สูง=humid หลังฝน หายใจลำบาก (ไม่ใช่ base อ่อน) · dc 6.1% (W4 11.1%→ดีขึ้น) · พร้อม quality"},'w5d4':{km:5.31,min:32.1,hr:143,hx:149,cad:172,env:"tm",type:"easy",rpe:3,te:2.4,note:"treadmill easy 32min · HR142.6 ต่ำสุดของ W6 · easy ที่ทำถูกจริง เบา-คุม zone2"},'w5d3':{km:10.63,min:60.5,hr:165,hx:173,cad:178,env:"tm",type:"easy",rpe:6,te:3.9,note:"Easy 55+strides treadmill · 10.6km/60:35 · HR drift +17 (pattern ปกติ) · เกิน plan +5min · cadence 180 ✅"},'w5d2':{km:5.32,min:30.2,hr:154,hx:164,cad:177,env:"tm",type:"easy",rpe:5,te:3,note:"Bonus treadmill บน rest day · 5:40/km (≈5:52-5:55 outdoor) · HR154 ต่ำกว่า outdoor · load เบา 30min ไม่กระทบ Thu"},'w5d1':{km:4.9,min:38.8,hr:158.51,hx:178,cad:166,mix:1,ses:[4.4,0.5],bkm:4.4,bmin:34.7,type:"easy",rpe:5,te:3.1,note:"easy ~5km+ ตัดสั้นจาก 10km · HR163 สูง (เขา80m + heat + first run back) · 7:14 ช้า"},'w5d0':{type:"cross",rpe:6,te:1.9,note:"เวท 63min · HR124 · check-in 8/8/good→full · ขาฟื้นเต็มหลัง long+แบด · ปิด base block"},
- 'w6d6':{km:5.25,min:30.2,hr:152,hx:160,cad:174,env:"tm",type:"easy",rpe:3,te:2.7,note:"bonus 5.25km TM rest day · HR 152 avg / 160 max · treadmill"},'w6d5':{km:17.43,min:102.7,hr:158,hx:170,cad:174,env:"tm",type:"long",rpe:5,te:3.9,dc:1.5,note:"Long 17.4km treadmill · 5:54 moving · HR158 · dc 1.5% coupled (treadmill bias) · RPE สบาย ITB ปกติ · เร็วกว่า plan แต่ effort เบา"},'w6d1':{km:5.09,min:28.8,hr:171.31,hx:192,cad:182,env:"tm",mix:1,ses:[2.05,2.04,1],bkm:2.05,bmin:10.8,type:"quality",rpe:7,te:2.6,note:"Q1 T 3×1km ครบ · set1 outdoor 5:22 in-zone ✅ ฝนตก→treadmill set2-3 5:15/5:17 เร็วนิด · ไม่ได้ CD (หิว) · cad 175 · te 2.6=segment ใหญ่สุด (session แยก 3 activity, ค่าต่ำกว่าจริง)"},'w6d0':{type:"cross",te:2,note:"เวท 54min · HR128 (backfill)"},'w6d2':{type:"cross",rpe:8,te:3.6,note:"เตะบอล 11v11 แทน easy day · 84min HR169avg/201max = cross-train หนัก ไม่ใช่ easy · ITB ระวัง (cut/lateral) · พรุ่งนี้ rest ถูกจังหวะ"},
- 'w7d6':{km:1.81,min:24.6,hr:124,hx:159,cad:102},'w7d5':{km:17.59,min:126.8,hr:158.34,hx:179,cad:161,mix:1,ses:[16.15,1.44],bkm:16.15,bmin:110.5,type:"long",rpe:7,te:4.1,dc:10,note:"Long 16.15km outdoor · 6:53 moving · HR164avg/178max · dc 10% (outdoor heat real vs TM 1.5% bias) · overpace start→fade+walk · RPE inferred รอ confirm"},'w7d4':{km:6.33,min:36.4,hr:148,hx:157,cad:177,env:"tm",type:"easy",rpe:3,te:2.5,note:"Easy TM 6.33km · 5:44/km display (~5:57 effort outdoor) · HR148avg/157max · cadence 180 · ตรง plan 35min ✅"},'w7d1':{km:7.04,min:41.5,hr:163,hx:173,cad:174,env:"tm",type:"easy",rpe:5,te:3.5,note:"Easy TM 7km swap จาก Weights · 5:54/km display · HR drift 152→173 avg163 = treadmill effect (no airflow + day-after Q1) · cadence 175 ✅"},'w7d0':{km:8.71,min:57.9,hr:168.41,hx:193,cad:166,mix:1,ses:[4.58,2.09,2.04],bkm:4.58,bmin:26.5,type:"quality",rpe:8,te:3.5,note:"Q1 4×1km ครบ · swap จาก Tue (ฝนไม่ตก+ขาพร้อม) · overpace 5:03-5:10 vs target 5:20-5:30 · HR drift 177→187 = above T-zone pattern ซ้ำจาก w2d2 · cadence 168-171 ดี"},'w7d2':{type:"cross",rpe:4,te:2,note:"Weights swap จาก Easy (วางไว้แล้ว) · 75min HR119avg/166max · strength เบาต่อ aerobic · recovery-friendly ก่อน long เสาร์"},
- 'w8d5':{km:18.22,min:105.1,hr:163,hx:172,cad:176,env:"tm",type:"long",rpe:6,te:4.1,dc:-2.4,note:"ฝนตกย้าย TM 18.22km/105:05 · 5:46/km เร็วกว่า plan 6:10 แต่ HR163 avg คุมดี · negative split (2.82→2.96 m/s) dc -2.4% (lap-approx) = EF ดีขึ้นช่วงหลัง · Garmin feel=Very Strong/RPE6 self-report"},'w8d4':{km:6.25,min:36.7,hr:155,hx:163,cad:174,env:"tm",type:"easy",te:3,sl:71,note:"TM 6.25km/36:42 · 5:52/km display (~6:05 effort) · HR155/163 · cadence174.5 ต่ำกว่า w7d4(180)/HR สูงกว่า(148) = sleep score 71 🟡 predicted mild dip ✅"},'w8d2':{km:8.19,min:48.1,hr:151,hx:158,cad:175,env:"tm",type:"easy",te:2.9,dc:2.8,note:"HR151 ต่ำกว่า TM easy เดิม(163) pace ใกล้เท่ากัน = ฟิตขึ้น · dc lap-approx (Garmin ไม่มี per-sec) · ไม่เจอ strides ใน laps"},'w8d1':{km:8.98,min:64.6,hr:157.31,hx:191,cad:169,mix:1,ses:[4.53,3.03,1.42],bkm:4.53,bmin:26.4,type:"quality",rpe:8,te:3.4,note:"Q1 T-intervals outdoor 22:05 · 4×1km @ T (5:03/5:12/5:12/5:07) rest 90″ + WU3km+CD · pace ใน T zone เป๊ะ · HR drift 172→184 pace ไม่หล่น · ทำ 1km ไม่ใช่ 1.5km ตาม plan · RPE inferred"},'w8d0':{type:"cross",te:2,note:"เวท 71min · HR121 (backfill)"},
- 'w9d5':{km:16.13,min:90.1,hr:164,hx:176,cad:177,env:"tm",type:"long",te:4.2,dc:-2,note:"TM 16.13km/90:05 · deload week แต่ตั้งใจใส่แรงทดสอบ 5:37/km avg (confirm ไม่ใช่ overpace) · dc -2% negative split (lap-approx)"},'w9d4':{km:5.41,min:30.5,hr:155,hx:165,cad:176,env:"tm",type:"easy",te:3,note:"TM 5.41km/30:31 · 5:38/km (~5:51 effort) HR141→163 drift+22 · เร็วกว่า E-zone ครั้งที่ 3 ของสัปดาห์"},'w9d2':{km:6.31,min:36.1,hr:156,hx:163,cad:175,env:"tm",type:"easy",te:3.1,note:"TM 6.31km/36:05 · 5:43/km (~5:56 effort) HR156 cad171→182 · pace เร็วกว่า E-zone วันที่ 2 หลัง hill effort"},'w9d1':{km:3.73,min:31.4,hr:162.47,hx:199,cad:166,mix:1,ses:[2.01,1.06,0.66],bkm:2.01,bmin:15.6,type:"quality",rpe:10,te:3.1,note:"Phra Khanong hill reps ครบ 8km (ปอม confirm, GPS under-record ใต้ตึก) · HR199/RPE10/feel50 = max effort ไม่ใช่ T คุมได้ (สะพานชัน)"},'w9d0':{type:"cross",te:1.7,sl:69,note:"เวทเบา 57min (moving ~20min) · HR118/max163 · cal280 · ตรง plan -30% recovery ก่อนเข้า Interval phase"},
- 'w10d5':{km:22.25,min:148,hr:160.18,hx:179,cad:173,mix:1,ses:[20.22,2.03],bkm:20.22,bmin:127.5,type:"long",rpe:4,te:4.5,dc:6.6,sl:69,note:"Long 20.2km outdoor 6:18 · HR166 · dc 6.6% mild · เกิน plan +2.2km · เร็วกว่า w7d5 ~35s/km ที่ HR เท่ากัน"},'w10d4':{km:5.15,min:30.5,hr:157,hx:167,cad:173,env:"tm",type:"easy",te:3.1,sl:34,note:"Easy 30' ตรง cap sleep34 🟠 · 5:55 TM · HR drift 146→164 · lap4 เร่ง 5:41"},'w10d2':{km:7.63,min:43.5,hr:155.5,hx:182,cad:189,env:"tm",mix:1,ses:[4.01,2.59,1.03],bkm:4.01,bmin:18.3,type:"quality",rpe:6,te:2.9,note:"Q2 4×1000m I-pace ครั้งแรก ครบ · display 4:52→4:14 ไต่เร็วเกิน target · HR 167→171 คุมได้ · TM ไม่ calibrate · sleep glitch ข้าม sl"},'w10d1':{km:4.33,min:41.4,hr:138.43,hx:177,cad:166,mix:1,ses:[3.65,0.68],bkm:3.65,bmin:33.4,type:"cross",te:2.3,sl:51,note:"เวท recovery ตาม plan + bonus jog 3.65km ช้ามาก 9:09 แต่ HR145 (สะพาน+ร้อน+นอน5.98h)"},'w10d0':{km:8.4,min:50.9,hr:167.41,hx:189,cad:172,mix:1,ses:[3.52,2.65,2.23],bkm:3.52,bmin:19.8,type:"quality",te:3.1,note:"Q1 3×1km T 5:07/5:09/5:10 in-zone (target 5:00-5:30) · HR drift 171→181avg คุมได้ · CD ยาวกว่าแผน"},
- 'w11d5':{km:18.75,min:133.3,hr:154.33,hx:175,cad:168,mix:1,ses:[18.23,0.52],bkm:18.23,bmin:125.9,type:"long",rpe:8,te:3.7,dc:3.5,sl:51,note:"Long 18.23km LSD ตั้งใจช้า (วิ่งกับเพื่อน) วิ่ง 6:10 ได้แต่เลือกช้า · 6:54/km · HR156 · dc 3.5% (lap-approx) base ติด · จบ strong (lap18-19 เร็วขึ้น)"},'w11d4':{km:6.14,min:38.2,hr:153.21,hx:168,cad:177,env:"tm",mix:1,ses:[4.03,2.11],bkm:4.03,bmin:23.2,type:"easy",rpe:3,te:2.7,sl:77,note:"Easy 6.14km · outdoor 2.11km 7:07 แล้วต่อ treadmill 4.03km 5:45 · HR153 easy · 38min < plan 40 · sleep 6h score77"},'w11d2':{km:8.6,min:48.6,hr:159.12,hx:187,cad:188,env:"tm",mix:1,ses:[5.03,2.72,0.85],bkm:5.03,bmin:24.7,type:"quality",rpe:8,te:3.2,note:"Q2 5×1000m I-pace treadmill · 4:48-5:02/km (eff outdoor ~5:05-5:15) · HR174 avg/max187 · cad187 · ครบ 5 rep ไม่ตัดเหลือ 4 · sleep data ว่าง"},'w11d1':{km:5.41,min:38.3,hr:141.12,hx:163,cad:163,mix:1,ses:[5.03,0.38],bkm:5.03,bmin:32.8,type:"easy",rpe:3,te:2.4,sl:74,note:"Easy 5.03km outdoor 6:32 · HR146 วันหลัง T-190 = ฟื้นดี · plan=weights แต่วิ่งแทน · แบ่ง lap สลับ 6:19/6:53 จากไฟแดง"},'w11d0':{km:8.06,min:51.3,hr:166.68,hx:190,cad:176,mix:1,ses:[3.41,2.5,2.15],bkm:3.41,bmin:18,type:"quality",rpe:10,te:3.2,sl:66,note:"Q1 T-18 outdoor evening Dynafish · pace 5:17 ตรงเป้าแต่ HR180/max190 ทะลุ guardrail 178 ตั้งแต่ min5-6 ไม่ตัดจบ · sleep 5.12h score66 = ทายถูก ฝืนวิ่งเจ็บจริง"},
- 'w12d5':{km:16.12,min:105.4,hr:164,hx:179,cad:168,type:"long",rpe:7,te:3.9,dc:3.9,sl:69,note:"Long 16.12km Khlong Toei · 6:32/km moving vs plan 6:10 (ช้า 22วิ) · HR164=73%HRR ขอบบน E · dc 3.9% coupled + negative split · strides หาย · นอน 5h score69"},'w12d2':{km:10.57,min:91,hr:135,hx:170,cad:139,type:"easy",rpe:3,te:3,dc:3.1,note:"Q2 หลุด (ต่างจังหวัด) → easy effort แทน Bang Lamung 10.6km เนิน+129m ดันเวลานาน · TE3.0/anaerobic0.2 ยืนยัน easy · dc lap-approx noisy (เนินสวิง)"},'w12d0':{km:10.64,min:79.2,hr:154.89,hx:191,cad:168,mix:1,ses:[6.41,2.55,1.68],bkm:6.41,bmin:36.1,type:"quality",rpe:10,te:3.8,note:"Q1 T-pace 4×1.5km outdoor Vadhana · reps 5:04/5:05/5:08/5:06 (เร็วกว่า T 5:16 · ในช่วง 5:00-5:15) · HR179/max191 · RPE10 = อัดหนักไปนิด · sleep glitch ข้าม sl"},
- 'w13d2':{km:8.05,min:44.1,hr:162.56,hx:189,cad:187,env:"tm",mix:1,ses:[3.02,3.01,2.02],bkm:3.02,bmin:14.8,type:"quality",te:3,sl:68,note:"Q1 T 3×1km TM · reps 4:56/4:58/4:52 displayed (~5:04-5:13 outdoor effective) · HR175/max189 ดีกว่า 27/07 (179/191) · rep3 เร็วสุดไม่ fade · WU 5:34 เร็วเกิน · anaerobic TE1.4 แตะโซน I"},'w13d1':{km:7.21,min:40.2,hr:162,hx:169,cad:177,env:"tm",type:"easy",te:3.3,note:"Easy TM 7.21km 40:10 · 5:34/km displayed (~5:46-5:49 outdoor) = เร็วกว่า E band · HR162=72%HRR ยังในโซน · TE3.3 สูงไปสำหรับ easy taper · sleep glitch ข้าม sl"},'w13d0':{type:"cross",rpe:3,te:1.7,note:"Weights เบา 24 นาที working (56 elapsed) · HR124/max164 · TE1.7 maintenance = ถูกตาม taper · ซ้อมดึก 22:04"}
+ 'w1d3':{km:4.03,min:41.6,hr:161,hx:196,cad:160,type:"easy",te:3.6,note:"easy 4.0km Phra Khanong สะพาน · HR161/max196 (backfill)"},'w1d2':{km:6.66,min:46.6,hr:168,hx:182,cad:172,type:"easy",te:3.3,note:"easy effort จริง แม้ heat 31°C"},'w1d1':{km:6.24,min:46.7,hr:159.99,hx:174,cad:171,mix:1,ses:[5.71,0.53],bkm:5.71,bmin:40.2,type:"easy",te:3.1,note:"easy 5.7km/40:19 · 7:04/km · HR165 + jog 0.5km แยก (backfill)"},'w1d6':{km:16.57,min:109.9,hr:170,hx:182,cad:176,type:"long",te:4.5,dc:10.5,note:"Breakthrough — ระยะ+pace ดีขึ้น HR เท่าเดิม · dc 10.5% (retro-calc · ยัง decoupled, ดีกว่า W0 นิดเดียว)"},'w1d0':{type:"cross",te:2.1,note:"เวท 48min · HR123 · squat+deadlift+pull-up (backfill)"},
+ 'w2d1':{km:6.44,min:42.6,hr:157,hx:179,cad:168,type:"easy",te:3,note:"easy 6.4km/43:30 · 6:45/km · HR157 เขา (backfill)"},'w2d2':{km:5.45,min:35,hr:163.17,hx:193,cad:170,mix:1,ses:[3.39,2.06],bkm:3.39,bmin:20.9,type:"quality",rpe:8,te:3.1,note:"Intervals 3×4min ครบ แต่ overpace (วิ่ง I แทน T) · max HR 193"},'w2d4':{km:6,min:36.9,hr:154,hx:164,cad:181,env:"tm",type:"easy",rpe:2,te:3.1,note:"Treadmill · cadence 182 breakthrough · feel Very Strong"},'w2d5':{km:18.12,min:128.9,hr:174,hx:185,cad:169,type:"long",te:4.6,dc:15.1,note:"18km milestone แต่ HR เกิน cap · fatigue carry + shoe issue · dc 15.1% (retro-calc · overreach ไม่ใช่ base แย่)"},'w2d0':{type:"cross",te:2.2,note:"เวท 60min · HR130 · core+push+squat+deadlift+pull-up (backfill)"},
+ 'w3d1':{km:6.16,min:35.1,hr:163,hx:170,cad:177,env:"tm",type:"easy",te:3.4,note:"Treadmill incline 2.5% · easy baseline ติดแน่น"},'w3d2':{km:4.23,min:28.5,hr:159.91,hx:181,cad:169,mix:1,ses:[3.04,1.19],bkm:3.04,bmin:19.7,type:"easy",te:2.6,note:"Easy + 5 strides · cadence ramp 184→193"},'w3d5':{km:9.79,min:68.7,hr:157.84,hx:175,cad:171,mix:1,ses:[5.18,4.61],bkm:5.18,bmin:33,type:"long",te:3.1,note:"Easy long split 2 รอบ · recovery > long-run adaptation"},'w3d0':{type:"cross",te:1,note:"เวท LIGHT 67min · HR112 · deload week ✓ (backfill)"},
+ 'w4d1':{km:11.26,min:77.9,hr:166.83,hx:183,cad:171,mix:1,ses:[10.05,1.21],bkm:10.05,bmin:68.8,type:"quality",rpe:7,te:3.7,dc:16.2,note:"10K under-fueled (ไม่ได้กินก่อนซ้อม) · HR drift +17 = lactate accumulate ก่อน aerobic ceiling · max HR 179 = ไม่ redline · dc 16.2% (retro lap-approx · fueling ไม่ใช่ base)"},'w4d2':{km:8.16,min:54.7,hr:166,hx:178,cad:170,type:"easy",rpe:5,te:3.3,dc:10.4,note:"fueled+fresh แต่ dc 10.4% · L1 6:14 เร็วกว่า target 11s = ออกเร็ว + heat drift"},'w4d3':{km:4.61,min:29.8,hr:165,hx:176,cad:168,type:"easy",te:3.1,note:"Shakeout 4.6km/30min ✅ · km1 6:09 ใต้ floor 6:30 อีก (3rd ติด) · HR 165 เกิน cap 160 แค่ +5 คุมกว่า Wed"},'w4d5':{km:20.14,min:146.8,hr:165.24,hx:183,cad:168,mix:1,ses:[18.13,2.01],bkm:18.13,bmin:123.3,type:"long",rpe:4,te:4.2,dc:11.1,note:"18.1km long + 2km cd (2 session) · HR171 สูงแต่จบไม่เหนื่อย=heat · Superblast3 เด้งดี shoe issue resolved"},'w4d0':{type:"cross",te:2.1,note:"เวท 62min · HR127 · squat+deadlift+pull-up+เชือก (backfill)"},'w4d4':{type:"cross",te:0.2,note:"Pilates 35min · HR93 recovery ล้วน (backfill)"},'w4d6':{type:"cross",rpe:4,te:2.4,note:"แบด 2h21 · HR120avg/170max · rest day → active recovery (intensity ต่ำ ขายังโดน pivot)"},
+ 'w5d1':{km:4.9,min:38.8,hr:158.51,hx:178,cad:166,mix:1,ses:[4.4,0.5],bkm:4.4,bmin:34.7,type:"easy",rpe:5,te:3.1,note:"easy ~5km+ ตัดสั้นจาก 10km · HR163 สูง (เขา80m + heat + first run back) · 7:14 ช้า"},'w5d2':{km:5.32,min:30.2,hr:154,hx:164,cad:178,env:"tm",type:"easy",rpe:5,te:3,note:"Bonus treadmill บน rest day · 5:40/km (≈5:52-5:55 outdoor) · HR154 ต่ำกว่า outdoor · load เบา 30min ไม่กระทบ Thu"},'w5d3':{km:10.63,min:60.5,hr:165,hx:173,cad:178,env:"tm",type:"easy",rpe:6,te:3.9,note:"Easy 55+strides treadmill · 10.6km/60:35 · HR drift +17 (pattern ปกติ) · เกิน plan +5min · cadence 180 ✅"},'w5d4':{km:5.31,min:32.1,hr:143,hx:149,cad:172,env:"tm",type:"easy",rpe:3,te:2.4,note:"treadmill easy 32min · HR142.6 ต่ำสุดของ W6 · easy ที่ทำถูกจริง เบา-คุม zone2"},'w5d5':{km:21.9,min:146.1,hr:165.39,hx:183,cad:168,mix:1,ses:[21.04,0.86],bkm:21.04,bmin:134.1,type:"long",rpe:7,te:3.8,dc:6.1,note:"21km long จบครบ · pace 6:28 moving · HR169 สูง=humid หลังฝน หายใจลำบาก (ไม่ใช่ base อ่อน) · dc 6.1% (W4 11.1%→ดีขึ้น) · พร้อม quality"},'w5d0':{type:"cross",rpe:6,te:1.9,note:"เวท 63min · HR124 · check-in 8/8/good→full · ขาฟื้นเต็มหลัง long+แบด · ปิด base block"},
+ 'w6d1':{km:5.09,min:28.8,hr:171.31,hx:192,cad:182,env:"tm",mix:1,ses:[2.05,2.04,1],bkm:2.05,bmin:10.8,type:"quality",rpe:7,te:2.6,note:"Q1 T 3×1km ครบ · set1 outdoor 5:22 in-zone ✅ ฝนตก→treadmill set2-3 5:15/5:17 เร็วนิด · ไม่ได้ CD (หิว) · cad 175 · te 2.6=segment ใหญ่สุด (session แยก 3 activity, ค่าต่ำกว่าจริง)"},'w6d5':{km:17.43,min:102.7,hr:158,hx:170,cad:174,env:"tm",type:"long",rpe:5,te:3.9,dc:1.5,note:"Long 17.4km treadmill · 5:54 moving · HR158 · dc 1.5% coupled (treadmill bias) · RPE สบาย ITB ปกติ · เร็วกว่า plan แต่ effort เบา"},'w6d6':{km:5.25,min:30.2,hr:152,hx:160,cad:175,env:"tm",type:"easy",rpe:3,te:2.7,note:"bonus 5.25km TM rest day · HR 152 avg / 160 max · treadmill"},'w6d0':{type:"cross",te:2,note:"เวท 54min · HR128 (backfill)"},'w6d2':{type:"cross",rpe:8,te:3.6,note:"เตะบอล 11v11 แทน easy day · 84min HR169avg/201max = cross-train หนัก ไม่ใช่ easy · ITB ระวัง (cut/lateral) · พรุ่งนี้ rest ถูกจังหวะ"},
+ 'w7d0':{km:8.71,min:57.9,hr:168.41,hx:193,cad:166,mix:1,ses:[4.58,2.09,2.04],bkm:4.58,bmin:26.5,type:"quality",rpe:8,te:3.5,note:"Q1 4×1km ครบ · swap จาก Tue (ฝนไม่ตก+ขาพร้อม) · overpace 5:03-5:10 vs target 5:20-5:30 · HR drift 177→187 = above T-zone pattern ซ้ำจาก w2d2 · cadence 168-171 ดี"},'w7d1':{km:7.04,min:41.5,hr:163,hx:173,cad:174,env:"tm",type:"easy",rpe:5,te:3.5,note:"Easy TM 7km swap จาก Weights · 5:54/km display · HR drift 152→173 avg163 = treadmill effect (no airflow + day-after Q1) · cadence 175 ✅"},'w7d4':{km:6.33,min:36.4,hr:148,hx:157,cad:177,env:"tm",type:"easy",rpe:3,te:2.5,note:"Easy TM 6.33km · 5:44/km display (~5:57 effort outdoor) · HR148avg/157max · cadence 180 · ตรง plan 35min ✅"},'w7d5':{km:17.59,min:126.8,hr:158.34,hx:179,cad:161,mix:1,ses:[16.15,1.44],bkm:16.15,bmin:110.5,type:"long",rpe:7,te:4.1,dc:10,note:"Long 16.15km outdoor · 6:53 moving · HR164avg/178max · dc 10% (outdoor heat real vs TM 1.5% bias) · overpace start→fade+walk · RPE inferred รอ confirm"},'w7d6':{km:1.81,min:24.6,hr:124,hx:159,cad:102},'w7d2':{type:"cross",rpe:4,te:2,note:"Weights swap จาก Easy (วางไว้แล้ว) · 75min HR119avg/166max · strength เบาต่อ aerobic · recovery-friendly ก่อน long เสาร์"},
+ 'w8d1':{km:8.98,min:64.6,hr:157.31,hx:191,cad:168,mix:1,ses:[4.53,3.03,1.42],bkm:4.53,bmin:26.4,type:"quality",rpe:8,te:3.4,note:"Q1 T-intervals outdoor 22:05 · 4×1km @ T (5:03/5:12/5:12/5:07) rest 90″ + WU3km+CD · pace ใน T zone เป๊ะ · HR drift 172→184 pace ไม่หล่น · ทำ 1km ไม่ใช่ 1.5km ตาม plan · RPE inferred"},'w8d2':{km:8.19,min:48.1,hr:151,hx:158,cad:175,env:"tm",type:"easy",te:2.9,dc:2.8,note:"HR151 ต่ำกว่า TM easy เดิม(163) pace ใกล้เท่ากัน = ฟิตขึ้น · dc lap-approx (Garmin ไม่มี per-sec) · ไม่เจอ strides ใน laps"},'w8d4':{km:6.25,min:36.7,hr:155,hx:163,cad:174,env:"tm",type:"easy",te:3,sl:71,note:"TM 6.25km/36:42 · 5:52/km display (~6:05 effort) · HR155/163 · cadence174.5 ต่ำกว่า w7d4(180)/HR สูงกว่า(148) = sleep score 71 🟡 predicted mild dip ✅"},'w8d5':{km:18.22,min:105.1,hr:163,hx:172,cad:176,env:"tm",type:"long",rpe:6,te:4.1,dc:-2.4,note:"ฝนตกย้าย TM 18.22km/105:05 · 5:46/km เร็วกว่า plan 6:10 แต่ HR163 avg คุมดี · negative split (2.82→2.96 m/s) dc -2.4% (lap-approx) = EF ดีขึ้นช่วงหลัง · Garmin feel=Very Strong/RPE6 self-report"},'w8d0':{type:"cross",te:2,note:"เวท 71min · HR121 (backfill)"},
+ 'w9d1':{km:3.73,min:31.4,hr:162.47,hx:199,cad:166,mix:1,ses:[2.01,1.06,0.66],bkm:2.01,bmin:15.6,type:"quality",rpe:10,te:3.1,note:"Phra Khanong hill reps ครบ 8km (ปอม confirm, GPS under-record ใต้ตึก) · HR199/RPE10/feel50 = max effort ไม่ใช่ T คุมได้ (สะพานชัน)"},'w9d2':{km:6.31,min:36.1,hr:156,hx:163,cad:175,env:"tm",type:"easy",te:3.1,note:"TM 6.31km/36:05 · 5:43/km (~5:56 effort) HR156 cad171→182 · pace เร็วกว่า E-zone วันที่ 2 หลัง hill effort"},'w9d4':{km:5.41,min:30.5,hr:155,hx:165,cad:176,env:"tm",type:"easy",te:3,note:"TM 5.41km/30:31 · 5:38/km (~5:51 effort) HR141→163 drift+22 · เร็วกว่า E-zone ครั้งที่ 3 ของสัปดาห์"},'w9d5':{km:16.13,min:90.1,hr:164,hx:176,cad:177,env:"tm",type:"long",te:4.2,dc:-2,note:"TM 16.13km/90:05 · deload week แต่ตั้งใจใส่แรงทดสอบ 5:37/km avg (confirm ไม่ใช่ overpace) · dc -2% negative split (lap-approx)"},'w9d0':{type:"cross",te:1.7,sl:69,note:"เวทเบา 57min (moving ~20min) · HR118/max163 · cal280 · ตรง plan -30% recovery ก่อนเข้า Interval phase"},
+ 'w10d0':{km:8.4,min:50.9,hr:167.41,hx:189,cad:172,mix:1,ses:[3.52,2.65,2.23],bkm:3.52,bmin:19.8,type:"quality",te:3.1,note:"Q1 3×1km T 5:07/5:09/5:10 in-zone (target 5:00-5:30) · HR drift 171→181avg คุมได้ · CD ยาวกว่าแผน"},'w10d1':{km:4.33,min:41.4,hr:138.43,hx:177,cad:166,mix:1,ses:[3.65,0.68],bkm:3.65,bmin:33.4,type:"cross",te:2.3,sl:51,note:"เวท recovery ตาม plan + bonus jog 3.65km ช้ามาก 9:09 แต่ HR145 (สะพาน+ร้อน+นอน5.98h)"},'w10d2':{km:7.63,min:43.5,hr:155.5,hx:182,cad:189,env:"tm",mix:1,ses:[4.01,2.59,1.03],bkm:4.01,bmin:18.3,type:"quality",rpe:6,te:2.9,note:"Q2 4×1000m I-pace ครั้งแรก ครบ · display 4:52→4:14 ไต่เร็วเกิน target · HR 167→171 คุมได้ · TM ไม่ calibrate · sleep glitch ข้าม sl"},'w10d4':{km:5.15,min:30.5,hr:157,hx:167,cad:173,env:"tm",type:"easy",te:3.1,sl:34,note:"Easy 30' ตรง cap sleep34 🟠 · 5:55 TM · HR drift 146→164 · lap4 เร่ง 5:41"},'w10d5':{km:22.25,min:148,hr:160.18,hx:179,cad:173,mix:1,ses:[20.22,2.03],bkm:20.22,bmin:127.5,type:"long",rpe:4,te:4.5,dc:6.6,sl:69,note:"Long 20.2km outdoor 6:18 · HR166 · dc 6.6% mild · เกิน plan +2.2km · เร็วกว่า w7d5 ~35s/km ที่ HR เท่ากัน"},
+ 'w11d0':{km:8.06,min:51.3,hr:166.68,hx:190,cad:176,mix:1,ses:[3.41,2.5,2.15],bkm:3.41,bmin:18,type:"quality",rpe:10,te:3.2,sl:66,note:"Q1 T-18 outdoor evening Dynafish · pace 5:17 ตรงเป้าแต่ HR180/max190 ทะลุ guardrail 178 ตั้งแต่ min5-6 ไม่ตัดจบ · sleep 5.12h score66 = ทายถูก ฝืนวิ่งเจ็บจริง"},'w11d1':{km:5.41,min:38.3,hr:141.12,hx:163,cad:163,mix:1,ses:[5.03,0.38],bkm:5.03,bmin:32.8,type:"easy",rpe:3,te:2.4,sl:74,note:"Easy 5.03km outdoor 6:32 · HR146 วันหลัง T-190 = ฟื้นดี · plan=weights แต่วิ่งแทน · แบ่ง lap สลับ 6:19/6:53 จากไฟแดง"},'w11d2':{km:8.6,min:48.6,hr:159.12,hx:187,cad:188,env:"tm",mix:1,ses:[5.03,2.72,0.85],bkm:5.03,bmin:24.7,type:"quality",rpe:8,te:3.2,note:"Q2 5×1000m I-pace treadmill · 4:48-5:02/km (eff outdoor ~5:05-5:15) · HR174 avg/max187 · cad187 · ครบ 5 rep ไม่ตัดเหลือ 4 · sleep data ว่าง"},'w11d4':{km:6.14,min:38.2,hr:153.21,hx:168,cad:178,env:"tm",mix:1,ses:[4.03,2.11],bkm:4.03,bmin:23.2,type:"easy",rpe:3,te:2.7,sl:77,note:"Easy 6.14km · outdoor 2.11km 7:07 แล้วต่อ treadmill 4.03km 5:45 · HR153 easy · 38min < plan 40 · sleep 6h score77"},'w11d5':{km:18.75,min:133.3,hr:154.33,hx:175,cad:168,mix:1,ses:[18.23,0.52],bkm:18.23,bmin:125.9,type:"long",rpe:8,te:3.7,dc:3.5,sl:51,note:"Long 18.23km LSD ตั้งใจช้า (วิ่งกับเพื่อน) วิ่ง 6:10 ได้แต่เลือกช้า · 6:54/km · HR156 · dc 3.5% (lap-approx) base ติด · จบ strong (lap18-19 เร็วขึ้น)"},
+ 'w12d0':{km:10.64,min:79.2,hr:154.89,hx:191,cad:169,mix:1,ses:[6.41,2.55,1.68],bkm:6.41,bmin:36.1,type:"quality",rpe:10,te:3.8,note:"Q1 T-pace 4×1.5km outdoor Vadhana · reps 5:04/5:05/5:08/5:06 (เร็วกว่า T 5:16 · ในช่วง 5:00-5:15) · HR179/max191 · RPE10 = อัดหนักไปนิด · sleep glitch ข้าม sl"},'w12d2':{km:10.57,min:91,hr:135,hx:170,cad:139,type:"easy",rpe:3,te:3,dc:3.1,note:"Q2 หลุด (ต่างจังหวัด) → easy effort แทน Bang Lamung 10.6km เนิน+129m ดันเวลานาน · TE3.0/anaerobic0.2 ยืนยัน easy · dc lap-approx noisy (เนินสวิง)"},'w12d5':{km:16.12,min:105.4,hr:164,hx:179,cad:168,type:"long",rpe:7,te:3.9,dc:3.9,sl:69,note:"Long 16.12km Khlong Toei · 6:32/km moving vs plan 6:10 (ช้า 22วิ) · HR164=73%HRR ขอบบน E · dc 3.9% coupled + negative split · strides หาย · นอน 5h score69"},
+ 'w13d1':{km:7.21,min:40.2,hr:162,hx:169,cad:177,env:"tm",type:"easy",te:3.3,note:"Easy TM 7.21km 40:10 · 5:34/km displayed (~5:46-5:49 outdoor) = เร็วกว่า E band · HR162=72%HRR ยังในโซน · TE3.3 สูงไปสำหรับ easy taper · sleep glitch ข้าม sl"},'w13d2':{km:8.05,min:44.1,hr:162.56,hx:189,cad:187,env:"tm",mix:1,ses:[3.02,3.01,2.02],bkm:3.02,bmin:14.8,type:"quality",te:3,sl:68,note:"Q1 T 3×1km TM · reps 4:56/4:58/4:52 displayed (~5:04-5:13 outdoor effective) · HR175/max189 ดีกว่า 27/07 (179/191) · rep3 เร็วสุดไม่ fade · WU 5:34 เร็วเกิน · anaerobic TE1.4 แตะโซน I"},'w13d5':{km:12.01,min:67.8,hr:169,hx:178,cad:179,env:"tm",type:"long",rpe:7,te:4.2,dc:3.4,note:"Easy long TM 12.01km @5:38 displayed (~5:50 outdoor = ขอบล่าง E) ใส่ Superblast 3 · ตั้งใจ easy ไม่กดเพซ · แต่ fasted + ไม่ load carb + นอนไม่พอ → HR169/TE4.2/RPE7 = under-fuel ไม่ใช่ overpace (ซ้ำเคส 2/06) · dc3.4% coupled ทั้งที่โดน 3 เด้ง = base แข็ง · sleep glitch ข้าม sl"},'w13d0':{type:"cross",rpe:3,te:1.7,note:"Weights เบา 24 นาที working (56 elapsed) · HR124/max164 · TE1.7 maintenance = ถูกตาม taper · ซ้อมดึก 22:04"}
 }/*SEED:END*/;
 const DONESEED=/*DONE:START*/{
  'w0d6':1,'w0d5':1,'w0d2':1,'w0d1':1,
- 'w1d6':1,'w1d3':1,'w1d2':1,'w1d1':1,'w1d0':1,
- 'w2d5':1,'w2d4':1,'w2d2':1,'w2d1':1,'w2d0':1,
- 'w3d6':1,'w3d5':1,'w3d2':1,'w3d1':1,'w3d0':1,
- 'w4d6':1,'w4d5':1,'w4d4':1,'w4d3':1,'w4d2':1,'w4d1':1,'w4d0':1,
- 'w5d5':1,'w5d4':1,'w5d3':1,'w5d2':1,'w5d1':1,'w5d0':1,
- 'w6d6':1,'w6d5':1,'w6d2':1,'w6d1':1,'w6d0':1,
- 'w7d6':1,'w7d5':1,'w7d4':1,'w7d2':1,'w7d1':1,'w7d0':1,
- 'w8d5':1,'w8d4':1,'w8d2':1,'w8d1':1,'w8d0':1,
- 'w9d5':1,'w9d4':1,'w9d2':1,'w9d1':1,'w9d0':1,
- 'w10d5':1,'w10d4':1,'w10d2':1,'w10d1':1,'w10d0':1,
- 'w11d5':1,'w11d4':1,'w11d3':1,'w11d2':1,'w11d1':1,'w11d0':1,
- 'w12d5':1,'w12d2':1,'w12d1':1,'w12d0':1,
- 'w13d2':1,'w13d1':1,'w13d0':1
+ 'w1d3':1,'w1d2':1,'w1d1':1,'w1d0':1,'w1d6':1,
+ 'w2d0':1,'w2d1':1,'w2d2':1,'w2d4':1,'w2d5':1,
+ 'w3d0':1,'w3d1':1,'w3d2':1,'w3d5':1,'w3d6':1,
+ 'w4d0':1,'w4d1':1,'w4d2':1,'w4d3':1,'w4d4':1,'w4d5':1,'w4d6':1,
+ 'w5d0':1,'w5d1':1,'w5d2':1,'w5d3':1,'w5d4':1,'w5d5':1,
+ 'w6d0':1,'w6d1':1,'w6d2':1,'w6d5':1,'w6d6':1,
+ 'w7d0':1,'w7d1':1,'w7d2':1,'w7d4':1,'w7d5':1,'w7d6':1,
+ 'w8d0':1,'w8d1':1,'w8d2':1,'w8d4':1,'w8d5':1,
+ 'w9d0':1,'w9d1':1,'w9d2':1,'w9d4':1,'w9d5':1,
+ 'w10d0':1,'w10d1':1,'w10d2':1,'w10d4':1,'w10d5':1,
+ 'w11d0':1,'w11d1':1,'w11d2':1,'w11d3':1,'w11d4':1,'w11d5':1,
+ 'w12d0':1,'w12d1':1,'w12d2':1,'w12d5':1,
+ 'w13d0':1,'w13d1':1,'w13d2':1,'w13d5':1
 }/*DONE:END*/;
 // data = Strava-generated SEED/DONESEED เท่านั้น (read-only dashboard · ไม่อ่าน/เขียน localStorage)
 let log=JSON.parse(JSON.stringify(SEED));
@@ -1302,9 +1391,75 @@ function render(){
   html+='</div>';
  }
 
+ // 🍚 การ์ดกิน race week — เมนูล่างสุดสุด · กดแล้วเด้ง bottom sheet · หายเองหลังแข่งจบ
+ const _rfR=RACES.find(r=>r.short==='ASICS 10K');
+ if(_rfR){
+  const _dd=Math.round((_rfR.date-new Date(new Date().setHours(0,0,0,0)))/864e5);
+  if(_dd>=0){
+   const _sub=_dd===0?'วันนี้แข่ง 🏁 · เช็ค gel -15′':(_dd===1?'พรุ่งนี้แข่ง · มื้อ -3 ชม. + gel -15′':'อีก '+_dd+' วัน · เริ่มโหลดศุกร์ 14 ส.ค. (Option B)');
+   html+='<div class="section-l">🍚 การ์ดกิน · Race week</div>';
+   html+='<button class="fuel-cta" onclick="openFuel()">'+
+    '<span class="fuel-cta-ic">🍚</span>'+
+    '<span><span class="fuel-cta-t">กินอะไร ศุกร์ → เสาร์ → วันแข่ง</span>'+
+    '<span class="fuel-cta-s">'+_sub+' · ทุกมื้อ + กรัม + ของห้ามกิน + ตัวสลับ</span></span>'+
+    '<span class="fuel-cta-go">เปิด<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 8.5V1.5M2 4.5 5 1.5l3 3"/></svg></span>'+
+    '</button>';
+  }
+ }
+
  c.innerHTML=html;
  initMotion();
 }
+
+// ── 🍚 bottom sheet การ์ดกิน ──
+let fuelBuilt=false;
+function buildFuel(){
+ if(fuelBuilt)return;fuelBuilt=true;
+ document.getElementById('fs-sub').textContent=RACEFUEL.sub;
+ let h='<div class="fs-warn">'+RACEFUEL.warn+'</div>',i=0;
+ const blk=(inner)=>{const s='<div class="fs-blk" style="--d:'+(i*45)+'ms">'+inner+'</div>';i++;return s};
+ RACEFUEL.days.forEach(d=>{
+  let t='<div class="fs-dhead"><span class="fs-dl">'+d.l+'</span><span class="fs-dtag">'+d.tag+'</span><span class="fs-dtg">'+d.tg+'</span></div><table class="fs-tbl">';
+  d.rows.forEach((r,ri)=>{t+='<tr'+(d.hit===ri?' class="fs-hit"':'')+'><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>'});
+  h+=blk(t+'</table>');
+ });
+ h+=blk('<div class="fs-dhead"><span class="fs-dl">❌ ห้ามศุกร์–เสาร์</span></div><div class="fs-list fs-bad">'+
+  RACEFUEL.avoid.map(a=>'<div><b>'+a[0]+'</b> — '+a[1]+'</div>').join('')+'</div>');
+ h+=blk('<div class="fs-dhead"><span class="fs-dl">🔁 สลับได้</span><span class="fs-dtag">ร้านปิด / เบื่อ</span></div><div class="fs-list">'+
+  RACEFUEL.swap.map(s=>'<div><b>'+s[0]+'</b> ↔ '+s[1]+'</div>').join('')+'</div>');
+ h+=blk('<div class="fs-dhead"><span class="fs-dl">📌 จำไว้</span></div>'+RACEFUEL.tips.map(t=>'<div class="fs-tip">'+t+'</div>').join(''));
+ document.getElementById('fs-body').innerHTML=h;
+}
+function openFuel(){
+ buildFuel();
+ const s=document.getElementById('fuel-sheet');
+ document.getElementById('fuel-back').classList.add('on');
+ s.classList.add('on');s.setAttribute('aria-hidden','false');
+ document.body.style.overflow='hidden';
+ requestAnimationFrame(()=>s.classList.add('shown'));
+}
+function closeFuel(){
+ const s=document.getElementById('fuel-sheet');
+ s.classList.remove('on','shown','dragging');s.style.transform='';
+ s.setAttribute('aria-hidden','true');
+ document.getElementById('fuel-back').classList.remove('on');
+ document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('fuel-sheet').classList.contains('on'))closeFuel()});
+// ลากลงเพื่อปิด (native feel บนมือถือ) — ปิดเมื่อลากเกิน 90px หรือสะบัดเร็ว
+(function(){
+ const g=document.getElementById('fs-grab'),s=document.getElementById('fuel-sheet');
+ if(!g)return;
+ let y0=0,t0=0,dy=0,on=false;
+ g.addEventListener('pointerdown',e=>{on=true;y0=e.clientY;t0=performance.now();dy=0;s.classList.add('dragging');g.setPointerCapture(e.pointerId)});
+ g.addEventListener('pointermove',e=>{if(!on)return;dy=Math.max(0,e.clientY-y0);s.style.transform='translateY('+dy+'px)'});
+ g.addEventListener('pointerup',e=>{
+  if(!on)return;on=false;s.classList.remove('dragging');
+  const v=dy/Math.max(1,performance.now()-t0);
+  if(dy>90||v>.6){s.style.transform='';closeFuel()}else{s.style.transform=''}
+ });
+ g.addEventListener('pointercancel',()=>{on=false;s.classList.remove('dragging');s.style.transform=''});
+})();
 
 // motion layer — แต่ละ effect ผูกกับหน้าที่ (ไม่ใช่ขยับเปล่า)
 function initMotion(){
