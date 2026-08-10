@@ -454,19 +454,18 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad{border-color:#f3d3cd;background:#fef7f5}
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
-/* ── week header (เรฟ Runna) ── */
-.wkh{margin:var(--s-3) 0}
-.wkh-top{display:flex;align-items:center;gap:var(--s-2);flex-wrap:wrap}
-.wkh-range{font-size:var(--fs-body);font-weight:700;color:#1c1c1c}
-.wkh-badge{font-size:var(--fs-micro);font-weight:800;letter-spacing:.1em;color:#fff;background:var(--ink);border-radius:20px;padding:var(--s-1) var(--s-2)}
-.wkh-tag{font-size:var(--fs-micro);font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:var(--s-1) var(--s-2)}
-.wkh-total{font-size:var(--fs-label);color:var(--ink-2);margin-top:var(--s-1)}
-.wkh-total b{font-size:var(--fs-body);color:#1c1c1c}
-.wkh-act{color:var(--muted);font-weight:600}
-.wkh-bar{height:4px;border-radius:2px;background:#e8e5dd;margin-top:var(--s-2);overflow:hidden}
-.wkh-meta{display:flex;align-items:center;gap:var(--s-2);margin-top:var(--s-2);font-size:var(--fs-label);color:var(--muted)}
-.wkh-load{flex:0 0 44px;height:4px;border-radius:2px;background:#e8e5dd;overflow:hidden}
-.wkh-load i{display:block;height:100%;border-radius:2px}
+/* ── week header — ลำดับ: eyebrow → เลขหลัก → bar → meta ── */
+.wkh{margin:var(--s-4) 0 var(--s-5)}
+.wkh-eye{display:flex;align-items:center;gap:var(--s-2);font-size:var(--fs-label);font-weight:600;color:var(--muted)}
+.wkh-tag{font-size:var(--fs-micro);font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:20px;padding:2px var(--s-2);opacity:.85}
+.wkh-num{font-family:var(--font-display);font-size:32px;font-weight:700;line-height:1;letter-spacing:-.01em;color:#1c1c1c;margin-top:var(--s-1);display:flex;align-items:baseline;gap:var(--s-2)}
+.wkh-unit{font-size:var(--fs-body);color:var(--muted);font-weight:700}
+.wkh-act{font-family:'Google Sans',sans-serif;font-size:var(--fs-label);font-weight:600;color:#2faa72;margin-left:auto}
+.wkh-bar{height:4px;border-radius:2px;background:#e8e5dd;margin-top:var(--s-3);overflow:hidden}
+.wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.wkh-meta{display:flex;align-items:center;gap:var(--s-1);flex-wrap:wrap;margin-top:var(--s-2);font-size:var(--fs-label);color:var(--muted)}
+.wkh-meta b{color:#1c1c1c}
+.wkh-dot{margin:0 var(--s-1);color:var(--faint)}
 .wkh-q{margin-left:auto;font-weight:700;color:#e63012}
 .wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
 /* ── chip เลือกสัปดาห์: โชว์ระยะ (เรฟ KGT) ── */
@@ -1306,17 +1305,14 @@ function render(){
  {const _act=w.d.reduce((sum,day)=>{const l=getLog(selected,day.d);return sum+(l&&l.km>0?l.km:0)},0);
   const _pct=w.k>0?Math.min(100,_act/w.k*100):0;
   html+='<div class="wkh">'+
-   '<div class="wkh-top"><span class="wkh-range">'+fmt(ws)+' – '+fmt(we)+'</span>'+
-   '<span class="wkh-badge">WEEK '+w.w+'</span>'+
-   '<span class="wkh-tag" style="color:'+phc+';background:'+phc+'1a">'+w.p+'</span></div>'+
-   '<div class="wkh-total">Total: <b>'+w.k+' km</b>'+(_act>0?'<span class="wkh-act"> · วิ่งแล้ว '+_act.toFixed(1)+' km</span>':'')+
-    '<span class="wkh-act"> · '+dn+'/'+tot+' sessions'+(pct===100?' 🎉':'')+'</span></div>'+
+   // ลำดับสายตา: eyebrow (บริบท) → ตัวเลขหลักของสัปดาห์ → แถบความคืบหน้า → meta
+   '<div class="wkh-eye">'+fmt(ws)+' – '+fmt(we)+'<span class="wkh-tag" style="color:'+phc+'">'+w.p+'</span></div>'+
+   '<div class="wkh-num">'+w.k+'<span class="wkh-unit">km</span>'+
+    (_act>0?'<span class="wkh-act">วิ่งแล้ว '+_act.toFixed(1)+'</span>':'')+'</div>'+
    '<div class="wkh-bar"><i style="width:'+_pct.toFixed(1)+'%"></i></div>'+
-   '<div class="wkh-meta">'+
-    '<span class="wkh-load"><i style="width:'+Math.min(100,w.ls/90*100).toFixed(0)+'%;background:'+lc+'"></i></span>'+
-    '<span>load <b style="color:'+lc+'">'+w.ls+'</b>/90 · '+lt+'</span>'+
-    (qd?'<span class="wkh-q">'+qd+' quality</span>':'')+
-   '</div>'+
+   '<div class="wkh-meta"><b>'+dn+'/'+tot+'</b> sessions'+(pct===100?' 🎉':'')+
+    '<span class="wkh-dot">·</span>load <b style="color:'+lc+'">'+w.ls+'</b>/90 '+lt+
+    (qd?'<span class="wkh-q">'+qd+' quality</span>':'')+'</div>'+
    '</div>';}
  // compact row list (เลิกใช้ตาราง 5 คอลัมน์ — ซ้ำกับบล็อก "สัปดาห์หน้า" เดิม + กินที่)
  // เลย์เอาต์: [วันที่] [แถบสี type] [ชื่อ + รายละเอียด + ผลจริง] [แผน + สถานะ]
