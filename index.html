@@ -51,7 +51,13 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .race-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .race-name{font-size:13px;font-weight:600;color:#1c1c1c;line-height:1.3}
 .race-meta{font-size:10px;color:#6b6b6b;margin-top:2px}
-.prog-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}
+.prog-bar{display:grid;grid-template-columns:repeat(3,1fr);margin-top:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ps{padding:14px 4px 13px}
+.ps+.ps{border-left:1px solid var(--line);padding-left:14px}
+.ps-n{font-family:var(--font-display);font-size:30px;font-weight:700;line-height:1;letter-spacing:-.01em;color:#1c1c1c}
+.ps-n small{font-size:15px;color:var(--muted);font-weight:700}
+.ps-n .arw{font-family:'Google Sans',sans-serif;font-size:14px;margin-left:2px}
+.ps-k{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-top:6px}
 .prog{background:#fff;border:1px solid #e3e0d7;border-radius:3px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .prog.ef{border-color:#bfdcf3}
 .prog-l{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
@@ -170,7 +176,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 /* ===== v2 redesign — radius 16, hero, race timeline, chips, HR chart ===== */
 .prog,.stat,.progress,.dist-chart{border-radius:16px}
 .prog{padding:16px}
-.prog-bar{gap:16px;margin-top:24px}
+.prog-bar{margin-top:24px}
 .pace,.legend{border-radius:12px}
 /* hero — dark race-poster style · checkered subtle texture */
 .hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 30% 22%,#22a6d6 0%,#1583b8 45%,#0a5578 100%);border-radius:20px;padding:16px;margin-top:16px;color:#fff;box-shadow:0 8px 28px rgba(0,0,0,.18)}
@@ -358,9 +364,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .rl-item.next .rl-dot{animation:pulse 1.8s infinite}
 @media(max-width:640px){
 .week-stats{grid-template-columns:1fr 1fr}
-.prog-bar{grid-template-columns:1fr 1fr}
-/* เหลือ 3 tile หลังย้าย 'เดือนนี้' ไปหัวปฏิทิน → ให้ EF กินเต็มแถวล่าง ไม่ให้เหลือใบโดดเดี่ยว */
-.prog-bar .prog.ef{grid-column:1/-1}
+
 .hero-inner{flex-direction:column;align-items:flex-start;gap:18px}
 .cd-num{font-size:34px}
 .cd-block{min-width:40px}
@@ -1215,10 +1219,9 @@ function renderProg(){
  const aR=RACES.find(r=>r.a);const t0=new Date();t0.setHours(0,0,0,0);
  const adays=Math.max(0,Math.round((aR.date-t0)/864e5));   // (เก็บไว้ใช้ในที่อื่น)
  const ef=efSeries();
- // km logged
- let h='<div class="prog"><div class="prog-l">ระยะสะสม</div><div class="prog-v" style="color:#2faa72">'+(km?km.toFixed(1):'0')+'</div><div class="prog-u">km บันทึกจริง</div></div>';
- // sessions
- h+='<div class="prog"><div class="prog-l">Sessions</div><div class="prog-v">'+dn+'<span style="font-size:13px;color:#706960">/'+tot+'</span></div><div class="prog-u">'+Math.round(dn/tot*100)+'% ของทั้งแผน</div></div>';
+ // editorial strip — เส้นขนคั่นแทนการ์ด (การ์ดเดิมหน้าตาซ้ำ hero + ตัวเลข sessions ซ้ำ % ใน hero)
+ let h='<div class="ps"><div class="ps-n" style="color:#2faa72">'+(km?km.toFixed(1):'0')+'</div><div class="ps-k">km สะสม</div></div>';
+ h+='<div class="ps"><div class="ps-n">'+dn+'<small>/'+tot+'</small></div><div class="ps-k">sessions</div></div>';
  // countdown
  // aerobic efficiency · เทียบ rolling 3 ก่อนหน้า (ไม่ใช่ all-time avg = ลด outlier noise)
  let efv='–',efu='ยังไม่มีข้อมูล Easy run',efarw='';
@@ -1239,7 +1242,8 @@ function renderProg(){
    efu=band+' · '+trendL+' '+window.length+' run ก่อน ('+prior.toFixed(2)+')';
   }else{efu=band+' · baseline ≥ 0.85';}
  }
- h+='<div class="prog ef"><div class="prog-l tip">Aerobic Eff.<i class="tip-i">i</i><span class="tip-body"><b>EF (Aerobic Efficiency)</b> = pace ÷ HR · สูงขึ้น = วิ่งเร็วขึ้นที่หัวใจทำงานเท่าเดิม · <b>0.85+</b> = base aerobic ติดแล้ว</span></div><div class="prog-v" style="color:var(--blue)">'+efv+efarw+'</div><div class="prog-u">'+efu+'</div></div>';
+ h+='<div class="ps"><div class="ps-n" style="color:var(--blue)">'+efv+efarw+'</div>'+
+  '<div class="ps-k tip">aerobic eff<i class="tip-i">i</i><span class="tip-body"><b>EF (Aerobic Efficiency)</b> = pace ÷ HR · สูงขึ้น = วิ่งเร็วขึ้นที่หัวใจทำงานเท่าเดิม · <b>0.85+</b> = base ติดแล้ว<br>ตอนนี้: '+efu+'</span></div></div>';
  pb.innerHTML=h;
 }
 
@@ -1733,9 +1737,9 @@ function initMotion(){
   (function step(t){const p=Math.min(1,(t-t0)/(dur||800)),e=1-Math.pow(1-p,3);tn.nodeValue=(tg*e).toFixed(dec)+suf;if(p<1)requestAnimationFrame(step)})(t0);
  }
  // top stats (อยู่ในจอตอนโหลด) — reward เปิดมาเห็นเลขวิ่งขึ้น
- cu(document.querySelector('#progbar .prog:first-child .prog-v'));        // ระยะสะสม
- cu(document.querySelector('#progbar .prog:nth-child(2) .prog-v'));       // sessions
- cu(document.querySelector('#progbar .prog.ef .prog-v'));                 // aerobic eff
+ cu(document.querySelector('#progbar .ps:nth-child(1) .ps-n'));           // ระยะสะสม
+ cu(document.querySelector('#progbar .ps:nth-child(2) .ps-n'));           // sessions
+ cu(document.querySelector('#progbar .ps:nth-child(3) .ps-n'));           // aerobic eff
  document.querySelectorAll('#content .snap-card .snap-v').forEach(el=>cu(el)); // streak/longest/cadence
 
  // ── Tier 1: viz motion (set ค่าว่างทันที = ไม่ flash · คืนค่าจริงตอน scroll ถึง) ──
