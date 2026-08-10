@@ -454,16 +454,13 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad{border-color:#f3d3cd;background:#fef7f5}
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
-/* ── โน้ตโค้ชประจำสัปดาห์ (แทน text ล้วน) ── */
-.wnote{position:relative;background:color-mix(in srgb,var(--pc) 7%,#fff);border:1px solid color-mix(in srgb,var(--pc) 22%,#fff);border-radius:16px;padding:var(--s-4) var(--s-4) var(--s-3) var(--s-5);overflow:hidden}
-.wnote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--pc)}
-.wnote::after{content:'\201C';position:absolute;right:var(--s-3);top:-6px;font-family:Georgia,serif;font-size:56px;line-height:1;color:var(--pc);opacity:.14}
-.wnote-top{display:flex;align-items:baseline;gap:var(--s-2);font-size:var(--fs-label);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.wnote-top .we-w{color:var(--red);font-size:var(--fs-label)}
-.wnote-sep{opacity:.7}
-.wnote-ph{color:var(--pc)}
-.wnote-q{font-size:var(--fs-body);font-weight:700;line-height:1.45;color:var(--ink);margin-top:var(--s-2);position:relative;z-index:1}
-.wnote-by{font-size:var(--fs-label);color:var(--muted);margin-top:var(--s-2)}
+/* ── บรรทัดเฟสประจำสัปดาห์ (เงียบ · ไม่ใช่การ์ด) ── */
+.wph{display:flex;align-items:center;gap:var(--s-2);flex-wrap:wrap;font-size:var(--fs-label);color:var(--muted)}
+.wph-w{font-weight:800;letter-spacing:.06em;color:var(--red)}
+.wph-sep{opacity:.6}
+.wph-tag{font-size:var(--fs-micro);font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:20px;padding:2px var(--s-2)}
+.wph-why{opacity:.9}
+.wph-f{font-size:var(--fs-label);font-weight:700;color:var(--ink);margin-top:var(--s-1);line-height:1.45}
 /* ── week header — ลำดับ: eyebrow → เลขหลัก → bar → meta ── */
 .wkh{margin:var(--s-3) 0 var(--s-4);background:#fff;border:1px solid var(--line);border-radius:16px;padding:var(--s-4)}
 .wkh-eye{display:flex;align-items:center;gap:var(--s-2);font-size:var(--fs-label);font-weight:600;color:var(--muted)}
@@ -1290,14 +1287,13 @@ function render(){
  const lt=w.ls<45?'เบา — Recovery':w.ls<65?'ปานกลาง':'หนัก — Focus';
  const phc=PHCOLOR[w.p]||'#888';
 
- // โน้ตโค้ช — แทนข้อความล้วน · แถบสีซ้าย + พื้นอ่อนตามเฟส (วันที่ย้ายไปอยู่หัวตารางแล้ว ไม่ซ้ำ)
+ // บรรทัดเฟส — เล็ก เงียบ (เดิมเป็นโน้ตกรอบใหญ่ แต่เนื้อหาแค่บอกเฟส ไม่คุ้มพื้นที่)
+ const _why={Base:'วิ่งช้าให้เยอะ สร้างฐาน aerobic',Threshold:'ดัน T-pace ให้ทนนานขึ้น','10K-Peak':'คมความเร็ว 10K',Recovery:'ฟื้น + ให้ร่างกาย adapt','M-Build':'สร้าง endurance มาราธอน','M-Peak':'ดัน fitness ขึ้นจุดสูงสุด',Taper:'ลดโหลด ให้ถึงวันแข่งด้วยขาสด'}[w.p]||'';
  let html='<div class="week-hero">'+
-  '<div class="wnote" style="--pc:'+phc+'">'+
-   '<div class="wnote-top"><span class="we-w">WEEK '+w.w+'</span><span class="wnote-sep">/ 30</span>'+
-    '<span class="wnote-ph">'+w.p+' PHASE</span></div>'+
-   '<div class="wnote-q">'+w.f+'</div>'+
-   '<div class="wnote-by">— โค้ชแจ็ค</div>'+
-  '</div>';
+  '<div class="wph"><span class="wph-w">W'+w.w+'</span><span class="wph-sep">/30</span>'+
+   '<span class="wph-tag" style="color:'+phc+';background:'+phc+'14">'+w.p+'</span>'+
+   '<span class="wph-why">'+_why+'</span></div>'+
+  '<div class="wph-f">'+w.f+'</div>';
  // phase bar
  html+='<div class="phase-banner">';
  W.forEach((ww,i)=>{
