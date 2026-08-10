@@ -238,7 +238,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .hr-glab span{font-size:10px;color:var(--muted);font-weight:600}
 .hr-k{width:30px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;flex-shrink:0}
 /* type chip legend */
-.type-legend{display:flex;flex-wrap:wrap;gap:var(--s-2);padding:var(--s-3) 0;border-bottom:1px solid var(--line)}
+.type-legend{display:flex;flex-wrap:wrap;gap:var(--s-2);padding:var(--s-3) 0 var(--s-1);border-top:1px solid var(--line)}
 .tl-chip{font-size:var(--fs-micro);font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:var(--s-1) var(--s-2);border-radius:16px}
 /* compact reference pills (pace + carb) */
 .ref-row{display:flex;flex-wrap:wrap;gap:8px}
@@ -455,19 +455,19 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
 /* ── week header — ลำดับ: eyebrow → เลขหลัก → bar → meta ── */
-.wkh{margin:var(--s-4) 0 var(--s-5)}
+.wkh{margin:var(--s-3) 0 var(--s-4);background:#fff;border:1px solid var(--line);border-radius:16px;padding:var(--s-4)}
 .wkh-eye{display:flex;align-items:center;gap:var(--s-2);font-size:var(--fs-label);font-weight:600;color:var(--muted)}
 .wkh-tag{font-size:var(--fs-micro);font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:20px;padding:2px var(--s-2);opacity:.85}
-.wkh-num{font-family:var(--font-display);font-size:var(--fs-num);font-weight:700;line-height:1;letter-spacing:-.01em;color:#1c1c1c;margin-top:var(--s-1);display:flex;align-items:baseline;gap:var(--s-2)}
-.wkh-unit{font-size:var(--fs-body);color:var(--muted);font-weight:700}
+.wkh-num{font-family:var(--font-display);font-size:var(--fs-num);font-weight:700;line-height:1;letter-spacing:-.01em;color:#2faa72;margin-top:var(--s-2);display:flex;align-items:baseline;gap:var(--s-2)}
+.wkh-plan{font-size:var(--fs-body);color:var(--muted);font-weight:700}
+.wkh-pct{margin-left:auto;font-family:'Google Sans',sans-serif;font-size:var(--fs-label);font-weight:700;color:var(--muted)}
 .wkh-act{font-family:'Google Sans',sans-serif;font-size:var(--fs-label);font-weight:600;color:#2faa72;margin-left:auto}
-.wkh-bar{height:4px;border-radius:2px;background:#e8e5dd;margin-top:var(--s-3);overflow:hidden}
-.wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.wkh-bar{height:8px;border-radius:4px;background:#eeece6;margin-top:var(--s-2);overflow:hidden}
+.wkh-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#52c896,#2faa72);transition:width .6s cubic-bezier(.22,1,.36,1)}
 .wkh-meta{display:flex;align-items:center;gap:var(--s-1);flex-wrap:wrap;margin-top:var(--s-2);font-size:var(--fs-label);color:var(--muted)}
 .wkh-meta b{color:#1c1c1c}
 .wkh-dot{margin:0 var(--s-1);color:var(--faint)}
 .wkh-q{margin-left:auto;font-weight:700;color:#e63012}
-.wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
 /* ── chip เลือกสัปดาห์: โชว์ระยะ (เรฟ KGT) ── */
 .wk-btn-w{display:block;font-size:var(--fs-micro);letter-spacing:.08em;opacity:.75}
 .wk-btn-k{display:block;font-size:var(--fs-body);font-weight:700;letter-spacing:0;margin-top:var(--s-1);font-variant-numeric:tabular-nums}
@@ -1307,8 +1307,8 @@ function render(){
   html+='<div class="wkh">'+
    // ลำดับสายตา: eyebrow (บริบท) → ตัวเลขหลักของสัปดาห์ → แถบความคืบหน้า → meta
    '<div class="wkh-eye">'+fmt(ws)+' – '+fmt(we)+'<span class="wkh-tag" style="color:'+phc+'">'+w.p+'</span></div>'+
-   '<div class="wkh-num">'+w.k+'<span class="wkh-unit">km</span>'+
-    (_act>0?'<span class="wkh-act">วิ่งแล้ว '+_act.toFixed(1)+'</span>':'')+'</div>'+
+   '<div class="wkh-num">'+(_act>0?_act.toFixed(1):'0')+'<span class="wkh-plan">/ '+w.k+' km</span>'+
+    '<span class="wkh-pct">'+Math.round(_pct)+'%</span></div>'+
    '<div class="wkh-bar"><i style="width:'+_pct.toFixed(1)+'%"></i></div>'+
    '<div class="wkh-meta"><b>'+dn+'/'+tot+'</b> sessions'+(pct===100?' 🎉':'')+
     '<span class="wkh-dot">·</span>load <b style="color:'+lc+'">'+w.ls+'</b>/90 '+lt+
@@ -1317,7 +1317,6 @@ function render(){
  // compact row list (เลิกใช้ตาราง 5 คอลัมน์ — ซ้ำกับบล็อก "สัปดาห์หน้า" เดิม + กินที่)
  // เลย์เอาต์: [วันที่] [แถบสี type] [ชื่อ + รายละเอียด + ผลจริง] [แผน + สถานะ]
  html+='<div class="wk-list">';
- html+='<div class="type-legend">'+['easy','quality','long','cross','rest'].map(t=>{const s=SESS[t];return '<span class="tl-chip" style="color:'+s.tc+';background:'+s.bg+'">'+s.l+'</span>'}).join('')+'</div>';
  w.d.forEach(day=>{
   const st=SESS[day.t]||SESS.rest;
   const dt=dateOf(selected,day.d);
@@ -1349,6 +1348,7 @@ function render(){
   html+='<div class="wk-plan">'+(isR?'พัก':(plan.join('<br>')||'—'))+'</div>';
   html+='</div>';
  });
+ html+='<div class="type-legend">'+['easy','quality','long','cross','rest'].map(t=>{const s=SESS[t];return '<span class="tl-chip" style="color:'+s.tc+';background:'+s.bg+'">'+s.l+'</span>'}).join('')+'</div>';
  html+='</div>';
  // เพซเป้าหมายย้ายมาอยู่ใต้ตาราง (เดิมเป็นคอลัมน์ในตาราง + ซ้ำใน section อ้างอิง)
  html+='<div class="ref-sub" style="margin-top:14px">เพซเป้าหมาย · VDOT 42 <i>นาที/กม.</i></div><div class="ref-row">';
