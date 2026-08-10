@@ -276,28 +276,28 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .section-l + .ref-sub{margin-top:0}
 .ref-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 /* บันทึกผลการซ้อม — card (big date · RPE · badges · note) */
-.log-list{display:flex;flex-direction:column;gap:16px}
-.log-item{display:flex;gap:16px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
-.log-date{flex-shrink:0;text-align:center;line-height:1;min-width:44px}
-.log-date .ld-num{display:block;font-size:30px;font-weight:700;color:var(--ink)}
-.log-date .ld-mo{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-top:3px}
+.log-list{display:flex;flex-direction:column;gap:var(--s-2)}
+.log-item{display:flex;gap:var(--s-3);background:#fff;border:1px solid var(--line);border-radius:16px;padding:var(--s-3)}
+.log-date{flex-shrink:0;text-align:center;line-height:1;min-width:32px}
+.log-date .ld-num{display:block;font-family:var(--font-display);font-size:var(--fs-num-s);font-weight:700;color:var(--ink)}
+.log-date .ld-mo{display:block;font-size:var(--fs-micro);font-weight:700;color:var(--muted);margin-top:var(--s-1)}
 .log-body{flex:1;min-width:0}
 .log-head{display:flex;align-items:flex-start;gap:10px}
-.log-title{flex:1;font-size:15px;font-weight:700;color:var(--ink);line-height:1.3}
-.log-tw{font-size:11px;font-weight:600;color:var(--muted)}
-.log-rpe{flex-shrink:0;text-align:right;font-size:20px;font-weight:800;color:var(--gold);line-height:1}
+.log-title{flex:1;font-size:var(--fs-label);font-weight:700;color:var(--ink);line-height:1.3}
+.log-tw{font-size:var(--fs-micro);font-weight:600;color:var(--muted)}
+.log-rpe{flex-shrink:0;text-align:right;font-family:var(--font-display);font-size:var(--fs-body);font-weight:800;color:var(--muted);line-height:1}
 .log-rpe>span{display:block;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-top:2px;display:flex;align-items:center;justify-content:flex-end;gap:2px}
 .log-rpe .tip-i{margin-left:2px}
 .log-item .s-chip{display:inline-block;margin:7px 0 0}
-.log-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.lb{font-size:11px;font-weight:600;padding:4px 10px;border-radius:16px;background:#f1efe9;color:var(--ink-2);white-space:nowrap}
-.lb-km{background:#e8f2fb;color:#3a86c8}
+.log-badges{display:flex;flex-wrap:wrap;gap:var(--s-1);margin-top:var(--s-2)}
+.lb{font-size:var(--fs-label);font-weight:600;padding:2px var(--s-2);border-radius:16px;background:#f1efe9;color:var(--ink-2);white-space:nowrap}
+.lb-km{background:#f1efe9;color:var(--ink)}
 .ses-split{font-weight:500;opacity:.7;font-size:10px}
-.s-multi{display:inline-block;font-size:10px;font-weight:700;color:#8a6d1f;background:#f7eccb;border-radius:8px;padding:1px 6px;vertical-align:middle;cursor:help}
-.lb-pace{background:#f0ebff;color:#7d5cf0}
-.lb-hr{background:#fdece9;color:#d62a0e}
-.lb-te{background:#eaf7f0;color:#2faa72}
-.lb-ef{background:#e8f2fb;color:#3a86c8}
+.s-multi{display:inline-block;font-size:var(--fs-micro);font-weight:700;color:var(--muted);background:#f1efe9;border-radius:8px;padding:1px var(--s-1);vertical-align:middle;cursor:help}
+.lb-pace{background:#f1efe9;color:var(--ink-2)}
+.lb-hr{background:#f1efe9;color:var(--ink-2)}
+.lb-te{background:#f1efe9;color:var(--ink-2)}
+.lb-ef{background:#f1efe9;color:var(--ink-2)}
 .lb-tm{background:#fdf6e3;color:#9a6b00}
 .lb-warn{background:#fdf6e3;color:#9a6b00;font-size:10px;padding:2px 8px}
 .lb-toggle{border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:2px}
@@ -305,7 +305,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .lb-toggle.open .lb-chev{transform:rotate(180deg)}
 .lb-more{display:none;gap:6px}
 .lb-more.open{display:contents}
-.log-note{font-size:12px;color:var(--ink-2);line-height:1.55;margin-top:10px}
+.log-note{font-size:var(--fs-label);color:var(--muted);line-height:1.55;margin-top:var(--s-2)}
 .log-empty{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #ddd9cf;border-radius:16px;padding:18px;text-align:center}
 /* 🎯 Note — Peak-End close + journey context */
 .snap-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:0 1px 2px rgba(0,0,0,.03);margin-top:8px}
@@ -386,7 +386,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 @media(min-width:641px){.week-stats{grid-template-columns:1.6fr 1fr 1fr 1fr!important}}
 .stat:first-child .stat-v{font-size:28px!important;font-family:var(--font-display)!important;letter-spacing:-.02em!important;line-height:1.1!important}
 /* ── bar chart taller ── */
-.dist-chart{height:180px!important}
+.dist-chart{height:132px!important}
 /* ── week nav extras ── */
 .wk-ellipsis{align-self:center;color:var(--faint);font-size:var(--fs-label);padding:0 3px;user-select:none;letter-spacing:.06em}
 .wk-today-btn{font-family:inherit;font-size:var(--fs-label);font-weight:700;padding:5px 10px;background:none;border:1px solid var(--line);border-radius:16px;color:var(--muted);cursor:pointer;margin-left:8px;white-space:nowrap;transition:border-color .15s,color .15s;flex-shrink:0}
@@ -474,7 +474,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wkh-meta{display:flex;align-items:center;gap:var(--s-1);flex-wrap:wrap;margin-top:var(--s-2);font-size:var(--fs-label);color:var(--muted)}
 .wkh-meta b{color:#1c1c1c}
 .wkh-dot{margin:0 var(--s-1);color:var(--faint)}
-.wkh-q{margin-left:auto;font-weight:700;color:#e63012}
+.wkh-q{margin-left:auto;font-weight:700;color:var(--ink-2)}
 /* ── chip เลือกสัปดาห์: โชว์ระยะ (เรฟ KGT) ── */
 .wk-btn-w{display:block;font-size:var(--fs-micro);letter-spacing:.08em;opacity:.75}
 .wk-btn-k{display:block;font-size:var(--fs-body);font-weight:700;letter-spacing:0;margin-top:var(--s-1);font-variant-numeric:tabular-nums}
@@ -1123,10 +1123,10 @@ function secWrap(id,def,inner){
  return '<div class="sec-body'+(secOn(id,def)?' open':'')+'" data-sec="'+id+'"><div class="sec-inner">'+inner+'</div></div>';
 }
 function selWeek(i){selected=i;window.__mo=0;render();   // สลับสัปดาห์ = รีเซ็ต offset ปฏิทิน ไม่งั้นค้างเดือนเก่า
- const c=document.getElementById('content');                       // Tier 2: crossfade ตอนสลับสัปดาห์ (ลดกระตุก)
+ const c=document.getElementById('content');   // เฟดสั้นๆ จาก .82 (ไม่ดับจอ ไม่ขยับ) = รู้สึกว่า "เปลี่ยนข้อมูล" ไม่ใช่ "โหลดหน้าใหม่"
  if(c&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
-  c.style.opacity='0';c.style.transform='translateY(6px)';
-  requestAnimationFrame(()=>{c.style.transition='opacity .3s ease,transform .35s cubic-bezier(.22,1,.36,1)';c.style.opacity='1';c.style.transform='none';});
+  c.style.transition='none';c.style.opacity='.82';c.style.transform='none';
+  requestAnimationFrame(()=>{c.style.transition='opacity .16s ease-out';c.style.opacity='1';});
  }
 }
 function setHRMode(m){window.__hrMode=m;render()}
@@ -1262,7 +1262,7 @@ function renderProg(){
    efu=band+' · '+trendL+' '+window.length+' run ก่อน ('+prior.toFixed(2)+')';
   }else{efu=band+' · baseline ≥ 0.85';}
  }
- h+='<div class="ps"><div class="ps-n" style="color:var(--blue)">'+efv+efarw+'</div>'+
+ h+='<div class="ps"><div class="ps-n">'+efv+efarw+'</div>'+
   '<div class="ps-k tip">aerobic ef<i class="tip-i">i</i><span class="tip-body"><b>EF (Aerobic Efficiency)</b> = pace ÷ HR · สูงขึ้น = วิ่งเร็วขึ้นที่หัวใจทำงานเท่าเดิม · <b>0.85+</b> = base ติดแล้ว<br>ตอนนี้: '+efu+'</span></div></div>';
  pb.innerHTML=h;
 }
@@ -1321,7 +1321,7 @@ function render(){
     '<span class="wkh-pct">'+Math.round(_pct)+'%</span></div>'+
    '<div class="wkh-bar"><i style="width:'+_pct.toFixed(1)+'%"></i></div>'+
    '<div class="wkh-meta"><b>'+dn+'/'+tot+'</b> sessions'+(pct===100?' 🎉':'')+
-    '<span class="wkh-dot">·</span>load <b style="color:'+lc+'">'+w.ls+'</b>/90 '+lt+
+    '<span class="wkh-dot">·</span>load <b>'+w.ls+'</b>/90 '+lt+
     (qd?'<span class="wkh-q">'+qd+' quality</span>':'')+'</div>'+
    '</div>';}
  // compact row list (เลิกใช้ตาราง 5 คอลัมน์ — ซ้ำกับบล็อก "สัปดาห์หน้า" เดิม + กินที่)
@@ -1480,15 +1480,15 @@ function render(){
    html+='</div>';
    html+='<span class="s-chip" style="color:'+s.tc+';background:'+s.bg+'">'+s.l+'</span>';
    const more=[];
-   if(l.cad>0)more.push('<span class="lb tip">👣 '+l.cad+'<span class="tip-body"><b>Cadence</b> = ก้าว/นาที · target <b>170+</b> ลด impact, efficient stride</span></span>');
-   if(l.te)more.push('<span class="lb lb-te tip">📈 TE '+l.te+'<span class="tip-body"><b>Training Effect</b> (Garmin) · 1-5 · บอกว่า run นี้กระตุ้น aerobic ระดับไหน · 3-4 = optimal stimulus</span></span>');
-   if(l.dc)more.push('<span class="lb lb-hr tip">📊 dc '+l.dc+'%<span class="tip-body"><b>Decoupling</b> (Pa:HR) · &lt;5% = aerobic base ติด · &gt;10% = base ไม่พอ / overpace / under-fueled</span></span>');
+   if(l.cad>0)more.push('<span class="lb tip">cad '+l.cad+'<span class="tip-body"><b>Cadence</b> = ก้าว/นาที · target <b>170+</b> ลด impact, efficient stride</span></span>');
+   if(l.te)more.push('<span class="lb lb-te tip">TE '+l.te+'<span class="tip-body"><b>Training Effect</b> (Garmin) · 1-5 · บอกว่า run นี้กระตุ้น aerobic ระดับไหน · 3-4 = optimal stimulus</span></span>');
+   if(l.dc)more.push('<span class="lb lb-hr tip">dc '+l.dc+'%<span class="tip-body"><b>Decoupling</b> (Pa:HR) · &lt;5% = aerobic base ติด · &gt;10% = base ไม่พอ / overpace / under-fueled</span></span>');
    const e=efOf(l);if(e&&t==='easy'&&l.env!=='tm'&&!l.mix)more.push('<span class="lb lb-ef">EF '+e.toFixed(2)+'</span>');
-   if(l.env==='tm')more.push('<span class="lb lb-tm">🏠 treadmill</span>');
+   if(l.env==='tm')more.push('<span class="lb lb-tm">treadmill</span>');
    html+='<div class="log-badges">';
-   html+='<span class="lb lb-km">📍 '+l.km+' กม.'+(l.ses&&l.ses.length>1?' <span class="ses-split">('+l.ses.length+' ช่วง: '+l.ses.join(' + ')+')</span>':'')+'</span>';
-   if(pace)html+='<span class="lb lb-pace">⚡ '+pace+'/กม.</span>';
-   if(l.hr>0)html+='<span class="lb lb-hr">❤️ HR '+Math.round(l.hr)+(l.hx>0?'/'+Math.round(l.hx):'')+'</span>';
+   html+='<span class="lb lb-km"><b>'+l.km+'</b> กม.'+(l.ses&&l.ses.length>1?' <span class="ses-split">('+l.ses.length+' ช่วง: '+l.ses.join(' + ')+')</span>':'')+'</span>';
+   if(pace)html+='<span class="lb lb-pace"><b>'+pace+'</b>/กม.</span>';
+   if(l.hr>0)html+='<span class="lb lb-hr">HR <b>'+Math.round(l.hr)+'</b>'+(l.hx>0?'/'+Math.round(l.hx):'')+'</span>';
    if(more.length){
     html+='<button type="button" class="lb lb-toggle" onclick="toggleMore(this)">+'+more.length+' <span class="lb-chev">▾</span></button>';
     html+='<span class="lb-more">'+more.join('')+'</span>';
