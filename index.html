@@ -52,12 +52,12 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .race-name{font-size:13px;font-weight:600;color:#1c1c1c;line-height:1.3}
 .race-meta{font-size:10px;color:#6b6b6b;margin-top:2px}
 .prog-bar{display:grid;grid-template-columns:repeat(3,1fr);margin-top:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.ps{padding:14px 4px 13px}
-.ps+.ps{border-left:1px solid var(--line);padding-left:14px}
-.ps-n{font-family:var(--font-display);font-size:24px;font-weight:700;line-height:1;letter-spacing:-.01em;color:#1c1c1c}
-.ps-n small{font-size:13px;color:var(--muted);font-weight:700}
+.ps{padding:var(--s-4) var(--s-1) var(--s-4)}
+.ps+.ps{border-left:1px solid var(--line);padding-left:var(--s-3)}
+.ps-n{font-family:var(--font-display);font-size:var(--fs-num);font-weight:700;line-height:1;letter-spacing:-.01em;color:#1c1c1c}
+.ps-n small{font-size:var(--fs-label);color:var(--muted);font-weight:700}
 .ps-n .arw{font-family:'Google Sans',sans-serif;font-size:14px;margin-left:2px}
-.ps-k{font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.ps-k{font-size:var(--fs-label);font-weight:700;letter-spacing:.04em;white-space:nowrap;text-transform:uppercase;color:var(--muted);margin-top:var(--s-2)}
 .prog{background:#fff;border:1px solid #e3e0d7;border-radius:3px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .prog.ef{border-color:#bfdcf3}
 .prog-l{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
@@ -87,7 +87,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .dc-d{font-size:10px;color:var(--muted)}
 .week-nav{display:flex;align-items:center;gap:0;overflow-x:auto;padding:16px 0 0;border-bottom:1px solid #e3e0d7;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .week-nav::-webkit-scrollbar{display:none}
-.wk-btn{font-family:inherit;font-size:10px;font-weight:600;padding:8px 10px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;letter-spacing:.06em}
+.wk-btn{font-family:inherit;font-size:var(--fs-label);font-weight:600;padding:8px 10px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;letter-spacing:.06em}
 .wk-btn:hover{color:#1c1c1c}
 .wk-btn.active{color:#1c1c1c;border-bottom-color:#e63012}
 .wk-btn.current{color:#b07700}
@@ -146,7 +146,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .progress-v{font-size:11px;font-weight:700}
 .progress-track{height:8px;background:#ece9e1;border-radius:4px;overflow:hidden}
 .progress-fill{height:100%;border-radius:4px;transition:width .4s}
-.section-l{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-top:24px}
+.section-l{font-size:var(--fs-label);font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line);margin-top:24px}
 .days{display:grid;grid-template-columns:1fr;gap:10px}
 .day{background:#fff;border:1px solid #e7e4db;border-radius:4px;padding:14px 16px;position:relative;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .day.today{background:#fdece9;border-color:#e63012}
@@ -388,8 +388,8 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 /* ── bar chart taller ── */
 .dist-chart{height:180px!important}
 /* ── week nav extras ── */
-.wk-ellipsis{align-self:center;color:var(--faint);font-size:11px;padding:0 3px;user-select:none;letter-spacing:.06em}
-.wk-today-btn{font-family:inherit;font-size:10px;font-weight:700;padding:5px 10px;background:none;border:1px solid var(--line);border-radius:16px;color:var(--muted);cursor:pointer;margin-left:8px;white-space:nowrap;transition:border-color .15s,color .15s;flex-shrink:0}
+.wk-ellipsis{align-self:center;color:var(--faint);font-size:var(--fs-label);padding:0 3px;user-select:none;letter-spacing:.06em}
+.wk-today-btn{font-family:inherit;font-size:var(--fs-label);font-weight:700;padding:5px 10px;background:none;border:1px solid var(--line);border-radius:16px;color:var(--muted);cursor:pointer;margin-left:8px;white-space:nowrap;transition:border-color .15s,color .15s;flex-shrink:0}
 .wk-today-btn:hover{border-color:#e63012;color:#e63012}
 /* ── last sync ── */
 .sync-badge{font-size:10px;color:var(--faint);padding:2px 8px;border:1px solid var(--line);border-radius:10px;margin-left:auto}
@@ -455,24 +455,24 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fs-bad div{border-bottom-color:#f9e7e3}
 .fs-tip{font-size:12px;color:var(--ink-2);line-height:1.6;padding:7px 0}
 /* ── week header (เรฟ Runna) ── */
-.wkh{margin:12px 0 12px}
-.wkh-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.wkh-range{font-size:14px;font-weight:700;color:#1c1c1c}
-.wkh-badge{font-size:9px;font-weight:800;letter-spacing:.1em;color:#fff;background:var(--ink);border-radius:20px;padding:3px 9px}
-.wkh-tag{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:3px 9px}
-.wkh-total{font-size:12px;color:var(--ink-2);margin-top:5px}
-.wkh-total b{font-size:13px;color:#1c1c1c}
+.wkh{margin:var(--s-3) 0}
+.wkh-top{display:flex;align-items:center;gap:var(--s-2);flex-wrap:wrap}
+.wkh-range{font-size:var(--fs-body);font-weight:700;color:#1c1c1c}
+.wkh-badge{font-size:var(--fs-micro);font-weight:800;letter-spacing:.1em;color:#fff;background:var(--ink);border-radius:20px;padding:var(--s-1) var(--s-2)}
+.wkh-tag{font-size:var(--fs-micro);font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:var(--s-1) var(--s-2)}
+.wkh-total{font-size:var(--fs-label);color:var(--ink-2);margin-top:var(--s-1)}
+.wkh-total b{font-size:var(--fs-body);color:#1c1c1c}
 .wkh-act{color:var(--muted);font-weight:600}
-.wkh-bar{height:3px;border-radius:2px;background:#e8e5dd;margin-top:7px;overflow:hidden}
+.wkh-bar{height:4px;border-radius:2px;background:#e8e5dd;margin-top:var(--s-2);overflow:hidden}
 .wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
 /* ── chip เลือกสัปดาห์: โชว์ระยะ (เรฟ KGT) ── */
-.wk-btn-w{display:block;font-size:9px;letter-spacing:.06em;opacity:.75}
-.wk-btn-k{display:block;font-size:13px;font-weight:700;letter-spacing:0;margin-top:1px;font-variant-numeric:tabular-nums}
+.wk-btn-w{display:block;font-size:var(--fs-micro);letter-spacing:.08em;opacity:.75}
+.wk-btn-k{display:block;font-size:var(--fs-body);font-weight:700;letter-spacing:0;margin-top:var(--s-1);font-variant-numeric:tabular-nums}
 /* ── accordion section (A: ส่วนที่ดูนานๆ ครั้ง พับเก็บ) ── */
-.sec-h{width:100%;display:flex;align-items:center;gap:8px;background:none;border:none;border-bottom:1px solid var(--line);font-family:inherit;cursor:pointer;padding:0 0 8px;margin:24px 0 0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);text-align:left;-webkit-tap-highlight-color:transparent}
+.sec-h{width:100%;display:flex;align-items:center;gap:var(--s-2);background:none;border:none;border-bottom:1px solid var(--line);font-family:inherit;cursor:pointer;padding:0 0 var(--s-2);margin:var(--s-6) 0 0;font-size:var(--fs-label);font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);text-align:left;-webkit-tap-highlight-color:transparent}
 .sec-h:hover{color:#1c1c1c}
-.sec-hint{font-size:9px;font-weight:600;letter-spacing:.02em;text-transform:none;color:var(--faint)}
-.sec-c{margin-left:auto;font-size:11px;color:var(--muted);transition:transform .28s cubic-bezier(.22,1,.36,1)}
+.sec-hint{font-size:var(--fs-label);font-weight:600;letter-spacing:.02em;text-transform:none;color:var(--faint)}
+.sec-c{margin-left:auto;font-size:var(--fs-label);color:var(--muted);transition:transform .28s cubic-bezier(.22,1,.36,1)}
 .sec-h.open .sec-c{transform:rotate(180deg)}
 .sec-body{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .34s cubic-bezier(.22,1,.36,1),opacity .24s ease}
 .sec-body>.sec-inner{overflow:hidden;min-height:0}
@@ -483,23 +483,33 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .more-log:hover{background:#f7f5f0;color:#1c1c1c}
 .more-log .sec-c{margin:0}
 @media (prefers-reduced-motion:reduce){.sec-body,.sec-c{transition:none}}
+:root{
+ /* type scale — ทุกค่าหาร 4 ลงตัว (8/12/16/20/24/32) */
+ --fs-micro:8px;   /* tag ละติน TODAY/WEEK */
+ --fs-label:12px;  /* label · caption · meta */
+ --fs-body:16px;   /* ชื่อรายการ · body */
+ --fs-num-s:20px;  /* ตัวเลขรอง */
+ --fs-num:24px;    /* ตัวเลขหลัก */
+ /* spacing scale */
+ --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px;
+}
 /* ── ตารางซ้อมสัปดาห์ (compact rows · แทนตาราง 5 คอลัมน์เดิม) ── */
-.wk-list{background:#fff;border:1px solid var(--line);border-radius:14px;padding:2px 16px}
-.wk-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #f1efe9}
+.wk-list{background:#fff;border:1px solid var(--line);border-radius:16px;padding:var(--s-1) var(--s-4)}
+.wk-row{display:flex;gap:var(--s-3);align-items:flex-start;padding:var(--s-2) 0;border-bottom:1px solid #f1efe9}
 .wk-row:last-child{border-bottom:none}
-.wk-dt{width:28px;flex:0 0 auto;text-align:center;padding-top:1px}
-.wk-dow{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--muted)}
-.wk-day{font-family:var(--font-display);font-size:19px;font-weight:700;color:#1c1c1c;line-height:1.05;letter-spacing:-.01em}
+.wk-dt{width:32px;flex:0 0 auto;text-align:center}
+.wk-dow{font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.wk-day{font-family:var(--font-display);font-size:var(--fs-num-s);font-weight:700;color:#1c1c1c;line-height:1.05;letter-spacing:-.01em}
 .wk-bar{width:3px;border-radius:2px;align-self:stretch;flex:0 0 auto}
 .wk-main{flex:1;min-width:0}
-.wk-ti{font-size:13px;font-weight:600;color:#1c1c1c;line-height:1.35}
-.wk-de{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
-.wk-alt{font-size:11px;color:#9a6b00;background:#fdf6e3;border:1px solid #f0d89a;border-radius:6px;padding:4px 7px;line-height:1.45;margin-top:5px;display:inline-block}
-.wk-res{font-size:11px;color:#2faa72;font-weight:600;margin-top:4px;line-height:1.5}
-.wk-plan{flex:0 0 auto;text-align:right;font-size:11px;font-weight:700;color:#6b6b6b;white-space:nowrap;line-height:1.5;padding-top:2px}
-.wk-tag{font-size:8px;font-weight:800;letter-spacing:.08em;color:#fff;background:#e63012;border-radius:3px;padding:1px 5px;margin-left:7px;vertical-align:2px}
+.wk-ti{font-size:var(--fs-body);font-weight:600;color:#1c1c1c;line-height:1.25}
+.wk-de{font-size:var(--fs-label);color:var(--muted);margin-top:var(--s-1);line-height:1.5}
+.wk-alt{font-size:var(--fs-label);color:#9a6b00;background:#fdf6e3;border:1px solid #f0d89a;border-radius:8px;padding:var(--s-1) var(--s-2);line-height:1.45;margin-top:var(--s-1);display:inline-block}
+.wk-res{font-size:var(--fs-label);color:#2faa72;font-weight:600;margin-top:var(--s-1);line-height:1.5}
+.wk-plan{flex:0 0 auto;text-align:right;font-size:var(--fs-label);font-weight:700;color:#6b6b6b;white-space:nowrap;line-height:1.5}
+.wk-tag{font-size:var(--fs-micro);font-weight:800;letter-spacing:.08em;color:#fff;background:#e63012;border-radius:4px;padding:var(--s-1) var(--s-2);margin-left:var(--s-2);vertical-align:2px}
 .wk-ok{color:#2faa72;font-weight:800;margin-left:7px}
-.wk-row.today{background:#fdece9;margin:0 -16px;padding-left:16px;padding-right:16px}
+.wk-row.today{background:#fdece9;margin:0 calc(var(--s-4)*-1);padding-left:var(--s-4);padding-right:var(--s-4)}
 .wk-row.today:first-child{border-radius:13px 13px 0 0;margin-top:-2px;padding-top:13px}
 .wk-row.today:last-child{border-radius:0 0 13px 13px;margin-bottom:-2px;padding-bottom:13px}
 .wk-row.done .wk-ti{color:#3c3c3c}
@@ -507,24 +517,24 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wk-row.rest .wk-dow{color:#c6c2b6}
 /* ── 🗓 ปฏิทินเดือน (macro view) ── */
 /* km ของเดือนบนหัวปฏิทิน (ย้ายมาจาก tile สถิติบนสุด) */
-.mg-km{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.mg-km b{font-size:14px;color:#1c1c1c}
+.mg-km{font-size:var(--fs-label);color:var(--muted);font-variant-numeric:tabular-nums}
+.mg-km b{font-size:var(--fs-body);color:#1c1c1c}
 .mg-prog{display:flex;align-items:center;gap:10px;margin:-4px 0 12px}
 .mg-prog-bar{flex:1;height:3px;border-radius:2px;background:#e8e5dd;overflow:hidden}
 .mg-prog-bar i{display:block;height:100%;border-radius:2px;transition:width .6s cubic-bezier(.22,1,.36,1)}
-.mg-prog-t{flex:0 0 auto;font-size:10px;font-weight:700}
+.mg-prog-t{flex:0 0 auto;font-size:var(--fs-label);font-weight:700}
 
 .mg-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.mg-mo{font-size:13px;font-weight:700;color:#1c1c1c}
+.mg-mo{font-size:var(--fs-body);font-weight:700;color:#1c1c1c}
 .mg-nav{margin-left:auto;display:flex;gap:6px}
 .mg-nav button{font-family:inherit;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:13px;line-height:1;cursor:pointer;transition:background .15s,transform .15s}
 .mg-nav button:hover:not(:disabled){background:#f1efe9;transform:scale(1.08)}
 .mg-nav button:disabled{opacity:.3;cursor:default}
 .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.mg-dow{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;padding-bottom:2px}
-.mg-cell{height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;font-family:inherit;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mg-dow{font-size:var(--fs-micro);font-weight:700;letter-spacing:.06em;color:var(--muted);text-align:center;padding-bottom:2px}
+.mg-cell{height:52px;font-size:var(--fs-label);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;font-family:inherit;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mg-cell:disabled{cursor:default}
-.mg-c{width:100%;max-width:38px;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:transform .16s cubic-bezier(.22,1,.36,1)}
+.mg-c{width:100%;max-width:40px;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--fs-label);font-weight:700;transition:transform .16s cubic-bezier(.22,1,.36,1)}
 .mg-cell:hover:not(:disabled) .mg-c{transform:scale(1.12)}
 .mg-cell:active:not(:disabled) .mg-c{transform:scale(.94)}
 .mg-out{cursor:default;pointer-events:none}
@@ -537,7 +547,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .mg-sel .mg-c{outline:2px solid #e63012;outline-offset:2px}
 .mg-mark{height:4px;display:flex;gap:3px;align-items:center}
 .mg-mark i{width:4px;height:4px;border-radius:50%;background:#9a968a;display:block}
-.mg-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:10px;font-weight:600;color:var(--muted)}
+.mg-legend{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-3);font-size:var(--fs-label);font-weight:600;color:var(--muted)}
 .mg-legend span{display:flex;align-items:center;gap:4px}
 .mg-legend i{width:9px;height:9px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.07)}
 .mg-legend i.o{background:#fff;border:1.5px dashed #d5d1c6}
@@ -1243,7 +1253,7 @@ function renderProg(){
   }else{efu=band+' · baseline ≥ 0.85';}
  }
  h+='<div class="ps"><div class="ps-n" style="color:var(--blue)">'+efv+efarw+'</div>'+
-  '<div class="ps-k tip">aerobic eff<i class="tip-i">i</i><span class="tip-body"><b>EF (Aerobic Efficiency)</b> = pace ÷ HR · สูงขึ้น = วิ่งเร็วขึ้นที่หัวใจทำงานเท่าเดิม · <b>0.85+</b> = base ติดแล้ว<br>ตอนนี้: '+efu+'</span></div></div>';
+  '<div class="ps-k tip">aerobic ef<i class="tip-i">i</i><span class="tip-body"><b>EF (Aerobic Efficiency)</b> = pace ÷ HR · สูงขึ้น = วิ่งเร็วขึ้นที่หัวใจทำงานเท่าเดิม · <b>0.85+</b> = base ติดแล้ว<br>ตอนนี้: '+efu+'</span></div></div>';
  pb.innerHTML=h;
 }
 
