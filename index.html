@@ -1141,19 +1141,16 @@ function toggleMore(btn){
 }
 // chip buttons (ใช้ซ้ำได้ทั้ง top nav + ใน section)
 function chipBtns(){
+ // render ครบทุกสัปดาห์เสมอ — เดิมโชว์แค่ selected±4 + ตัวแรก/ตัวท้าย
+ // ทำให้ทุกครั้งที่กด สมาชิกในแถบเปลี่ยน (บางตัวหาย บางตัวโผล่) = อ่านเป็น "หน้าโหลดใหม่"
  const cw=curWeek();
- const show=new Set([0,W.length-1,Math.max(0,cw)]);
- for(let d=-4;d<=4;d++){const ix=selected+d;if(ix>=0&&ix<W.length)show.add(ix);}
- const idx=[...show].sort((a,b)=>a-b);
- let h='',prev=-2;
- idx.forEach(i=>{
-  if(prev>=0&&i>prev+1)h+='<span class="wk-ellipsis">···</span>';
+ let h='';
+ W.forEach((ww,i)=>{
   const dn=wkDone(i),tot=wkTotal(i);
   const isDoneWk=dn===tot&&tot>0;
   h+='<button class="wk-btn'+(i===selected?' active':'')+(i===cw?' current':'')+(isDoneWk?' done':'')+'" onclick="selWeek('+i+')">'+
-   '<span class="wk-btn-w">W'+W[i].w+'</span><span class="wk-btn-k">'+W[i].k+'</span>'+
+   '<span class="wk-btn-w">W'+ww.w+'</span><span class="wk-btn-k">'+ww.k+'</span>'+
    (isDoneWk?'<span class="wk-dot"></span>':'')+'</button>';
-  prev=i;
  });
  return h;
 }
@@ -1657,8 +1654,7 @@ function centerChip(){
   const target=act.offsetLeft-(nav.clientWidth-act.offsetWidth)/2;
   const max=nav.scrollWidth-nav.clientWidth;
   const left=Math.max(0,Math.min(target,max));
-  const smooth=chipCentered&&!matchMedia('(prefers-reduced-motion:reduce)').matches;
-  nav.scrollTo({left:left,behavior:smooth?'smooth':'auto'});
+  nav.scrollLeft=left;   // instant — แถบถูก re-render ทุกครั้ง ถ้า smooth จะเห็นมันไถลจาก 0 ทุกทีที่กด
   chipCentered=true;
  });
 }
