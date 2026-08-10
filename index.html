@@ -464,6 +464,10 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wkh-total b{font-size:var(--fs-body);color:#1c1c1c}
 .wkh-act{color:var(--muted);font-weight:600}
 .wkh-bar{height:4px;border-radius:2px;background:#e8e5dd;margin-top:var(--s-2);overflow:hidden}
+.wkh-meta{display:flex;align-items:center;gap:var(--s-2);margin-top:var(--s-2);font-size:var(--fs-label);color:var(--muted)}
+.wkh-load{flex:0 0 44px;height:4px;border-radius:2px;background:#e8e5dd;overflow:hidden}
+.wkh-load i{display:block;height:100%;border-radius:2px}
+.wkh-q{margin-left:auto;font-weight:700;color:#e63012}
 .wkh-bar i{display:block;height:100%;border-radius:2px;background:#2faa72;transition:width .5s cubic-bezier(.22,1,.36,1)}
 /* ── chip เลือกสัปดาห์: โชว์ระยะ (เรฟ KGT) ── */
 .wk-btn-w{display:block;font-size:var(--fs-micro);letter-spacing:.08em;opacity:.75}
@@ -1291,15 +1295,9 @@ function render(){
   html+='<div class="ph-seg" style="background:'+bg+';opacity:'+op+'"></div>';
  });
  html+='</div>';
- // stats
- html+='<div class="week-stats'+(wkDone(selected)===wkTotal(selected)&&wkTotal(selected)>0?' week-complete':'')+'">'+
-  '<div class="stat"><div class="stat-l">Training Load</div><div class="load-bar"><div class="track"><div class="fill" style="width:'+Math.min(100,w.ls/90*100)+'%;background:'+lc+'"></div></div><div class="num" style="color:'+lc+'">'+w.ls+'<span style="font-size:9px;color:var(--muted);font-weight:600">/90</span></div></div><div class="stat-u" style="margin-top:4px">'+lt+'</div></div>'+
-  '<div class="stat"><div class="stat-l">Quality</div><div class="stat-v" style="color:'+(qd?'#e63012':'#9a968a')+'">'+(qd||'—')+'</div><div class="stat-u">'+(qd?'days hard work':w.p+' phase')+'</div></div>';
+ // stats: การ์ด Training Load / Quality / progress ยุบเข้าหัวตาราง (.wkh) แล้ว
  const cmin=Math.min(...w.d.map(x=>(CARB[x.ca]||CARB.rest)[0]));
  const cmax=Math.max(...w.d.map(x=>(CARB[x.ca]||CARB.rest)[1]));
- html+='</div>';
- // progress
- html+='<div class="progress"><div class="progress-top"><span class="progress-l">ความคืบหน้าสัปดาห์นี้</span><span class="progress-v" style="color:'+(pct===100?'#2faa72':'#1c1c1c')+'">'+dn+'/'+tot+' sessions '+(pct===100?'🎉':'')+'</span></div><div class="progress-track"><div class="progress-fill" style="width:'+pct+'%;background:'+(pct===100?'#52c896':pct>=50?'#f5a623':'#e63012')+'"></div></div></div>';
  html+='</div>';
 
  // days
@@ -1311,8 +1309,14 @@ function render(){
    '<div class="wkh-top"><span class="wkh-range">'+fmt(ws)+' – '+fmt(we)+'</span>'+
    '<span class="wkh-badge">WEEK '+w.w+'</span>'+
    '<span class="wkh-tag" style="color:'+phc+';background:'+phc+'1a">'+w.p+'</span></div>'+
-   '<div class="wkh-total">Total: <b>'+w.k+' km</b>'+(_act>0?'<span class="wkh-act"> · วิ่งแล้ว '+_act.toFixed(1)+' km</span>':'')+'</div>'+
+   '<div class="wkh-total">Total: <b>'+w.k+' km</b>'+(_act>0?'<span class="wkh-act"> · วิ่งแล้ว '+_act.toFixed(1)+' km</span>':'')+
+    '<span class="wkh-act"> · '+dn+'/'+tot+' sessions'+(pct===100?' 🎉':'')+'</span></div>'+
    '<div class="wkh-bar"><i style="width:'+_pct.toFixed(1)+'%"></i></div>'+
+   '<div class="wkh-meta">'+
+    '<span class="wkh-load"><i style="width:'+Math.min(100,w.ls/90*100).toFixed(0)+'%;background:'+lc+'"></i></span>'+
+    '<span>load <b style="color:'+lc+'">'+w.ls+'</b>/90 · '+lt+'</span>'+
+    (qd?'<span class="wkh-q">'+qd+' quality</span>':'')+
+   '</div>'+
    '</div>';}
  // compact row list (เลิกใช้ตาราง 5 คอลัมน์ — ซ้ำกับบล็อก "สัปดาห์หน้า" เดิม + กินที่)
  // เลย์เอาต์: [วันที่] [แถบสี type] [ชื่อ + รายละเอียด + ผลจริง] [แผน + สถานะ]
