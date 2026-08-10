@@ -130,7 +130,7 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .weights-row span{color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
 .weights-note{font-size:11px;color:var(--muted);margin-top:14px;padding-top:10px;border-top:1px dashed var(--line);line-height:1.55}
 .phase-banner{display:flex;gap:3px;margin:16px 0}
-.ph-seg{flex:1;height:5px;border-radius:2px}
+.ph-seg{flex:1;height:5px;border-radius:2px;min-width:3px}
 .week-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:16px 0 24px}
 .stat{background:#fff;border:1px solid #e3e0d7;border-radius:3px;padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .stat-l{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
@@ -335,14 +335,14 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .tip{position:relative;display:inline-flex;align-items:center;cursor:help}
 .tip-i{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:#cfccc2;color:#fff;font-size:9px;font-weight:700;font-style:normal;margin-left:4px;line-height:1;flex-shrink:0}
 .tip-i:hover{background:#9a968a}
-.tip-body{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:8px 10px;border-radius:6px;font-size:11px;font-weight:500;line-height:1.5;white-space:normal;width:200px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:30;box-shadow:0 4px 14px rgba(0,0,0,.18);text-align:left;letter-spacing:0;text-transform:none}
-.tip-body::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a1a1a}
+.tip-body{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px);background:#1a1a1a;color:#fff;padding:8px 10px;border-radius:6px;font-size:11px;font-weight:500;line-height:1.5;white-space:normal;width:200px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:30;box-shadow:0 4px 14px rgba(0,0,0,.18);text-align:left;letter-spacing:0;text-transform:none}
+.tip-body::after{content:'';position:absolute;top:100%;left:calc(50% - var(--ax,0px));transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a1a1a}
 .tip:hover .tip-body{opacity:1}
 .tip-body b{color:#d4f54a;font-weight:600}
 /* dist chart tooltip */
 .dc-col{position:relative;cursor:pointer}
-.dc-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 12px;border-radius:8px;font-size:11px;line-height:1.5;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:10;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:180px;text-align:left}
-.dc-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a1a1a}
+.dc-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);max-width:calc(100vw - 24px);white-space:normal;background:#1a1a1a;color:#fff;padding:10px 12px;border-radius:8px;font-size:11px;line-height:1.5;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:10;box-shadow:0 6px 18px rgba(0,0,0,.18);min-width:180px;text-align:left}
+.dc-tip::after{content:'';position:absolute;top:100%;left:calc(50% - var(--ax,0px));transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a1a1a}
 .dc-col:hover .dc-tip{opacity:1}
 .dc-tip-title{font-weight:700;color:#fff;margin-bottom:6px;font-size:12px}
 .dc-tip-row{display:flex;justify-content:space-between;gap:12px;color:#cfccc2}
@@ -415,10 +415,10 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .fuel-cta-ic{font-size:23px;line-height:1;flex:0 0 auto}
 .fuel-cta-t{display:block;font-size:13px;font-weight:700;color:#1c1c1c;line-height:1.35}
 .fuel-cta-s{display:block;font-size:11px;color:#96854f;margin-top:3px;line-height:1.45}
-.fuel-cta-go{margin-left:auto;flex:0 0 auto;font-size:10px;font-weight:700;color:#b07700;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:5px}
-.fuel-cta-go svg{transition:transform .2s cubic-bezier(.22,1,.36,1)}
-.fuel-cta:hover .fuel-cta-go svg{transform:translateY(-2px)}
+.fuel-cta-go{margin-left:auto;flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:#f0d89a;color:#8a6b1f;display:flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.22,1,.36,1),background .2s}
+.fuel-cta:hover .fuel-cta-go{transform:translateX(3px);background:#e6c87d}
 #fuel-back{position:fixed;inset:0;background:rgba(22,20,16,.44);opacity:0;pointer-events:none;transition:opacity .24s ease-out;z-index:9998}
+#fuel-back.instant{transition:none}
 #fuel-back.on{opacity:1;pointer-events:auto}
 /* ปิด: ต้องเลื่อนพ้นจอ + เผื่อความฟุ้งของ box-shadow (34px) ไม่งั้นเหลือเงาดำคาขอบล่างตอนสไลด์ออก */
 #fuel-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9999;width:min(100%,640px);margin-inline:auto;background:var(--bg);border-radius:20px 20px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(calc(100% + 50px));transition:transform .36s cubic-bezier(.22,1,.36,1),visibility 0s linear .36s;box-shadow:0 -10px 34px rgba(0,0,0,.2);visibility:hidden}
@@ -1122,6 +1122,21 @@ function secHead(id,label,def,hint){
 function secWrap(id,def,inner){
  return '<div class="sec-body'+(secOn(id,def)?' open':'')+'" data-sec="'+id+'"><div class="sec-inner">'+inner+'</div></div>';
 }
+// tooltip ไม่ให้หลุดขอบจอ — วัดตอนจะโชว์ แล้วเลื่อนกล่อง (ลูกศรอยู่ที่เดิมด้วย --ax)
+function clampTip(host){
+ const body=host.querySelector('.tip-body,.dc-tip');
+ if(!body)return;
+ body.style.transform='translateX(-50%)';body.style.setProperty('--ax','0px');
+ const r=body.getBoundingClientRect(),pad=12;
+ let dx=0;
+ if(r.right>innerWidth-pad)dx=innerWidth-pad-r.right;
+ if(r.left+dx<pad)dx=pad-r.left;
+ if(dx){body.style.transform='translateX(calc(-50% + '+Math.round(dx)+'px))';body.style.setProperty('--ax',Math.round(dx)+'px');}
+}
+['pointerover','touchstart','focusin'].forEach(ev=>document.addEventListener(ev,e=>{
+ const t=e.target.closest&&e.target.closest('.tip,.dc-col');
+ if(t)clampTip(t);
+},{passive:true}));
 function selWeek(i){selected=i;window.__mo=0;render();   // สลับสัปดาห์ = รีเซ็ต offset ปฏิทิน ไม่งั้นค้างเดือนเก่า
  // ไม่เฟด container ทั้งก้อนอีกแล้ว — การหรี่ทั้งหน้า (แม้แค่ 18%) อ่านเป็น "หน้าโหลดใหม่"
  // ให้สลับทันที แล้วขยับเฉพาะ "การ์ดหัวสัปดาห์" นิดเดียวเพื่อบอกว่าอะไรเปลี่ยน
@@ -1299,8 +1314,9 @@ function render(){
  W.forEach((ww,i)=>{
   const d2=wkDone(i),t2=wkTotal(i);
   const cmp=d2===t2&&t2>0,par=d2>0&&d2<t2;
-  let bg=cmp?'#52c896':par?'#f5a623':i===selected?(PHCOLOR[ww.p]||'#cfccc2'):i<selected?'#cfccc2':'#e6e3da';
-  let op=cmp||par?1:i===selected?1:i<selected?.4:.2;
+  // สัปดาห์ที่ยังไม่ถึงเคยจางจนกลืนพื้น (#e6e3da @ .2) — ยกคอนทราสต์ให้เห็นว่ายังเหลืออีกกี่ช่อง
+  let bg=cmp?'#52c896':par?'#f5a623':i===selected?(PHCOLOR[ww.p]||'#cfccc2'):i<selected?'#c6c2b6':'#d5d1c6';
+  let op=cmp||par?1:i===selected?1:i<selected?.75:.6;
   html+='<div class="ph-seg" style="background:'+bg+';opacity:'+op+'"></div>';
  });
  html+='</div>';
@@ -1622,7 +1638,7 @@ function render(){
   const _dd=Math.round((_rfR.date-new Date(new Date().setHours(0,0,0,0)))/864e5);
   if(_dd>=0){
    const _sub=_dd===0?'วันนี้แข่ง 🏁 · เช็ค gel -15′':(_dd===1?'พรุ่งนี้แข่ง · มื้อ -3 ชม. + gel -15′':'อีก '+_dd+' วัน · เริ่มโหลดศุกร์ 14 ส.ค. (Option B)');
-   const _arrow='<span class="fuel-cta-go">เปิด<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 8.5V1.5M2 4.5 5 1.5l3 3"/></svg></span>';
+   const _arrow='<span class="fuel-cta-go" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5 10.5 8 6 12.5"/></svg></span>';
    const _card=(k,ic,t,s)=>'<button class="fuel-cta" onclick="openSheet(\''+k+'\')">'+
     '<span class="fuel-cta-ic">'+ic+'</span>'+
     '<span><span class="fuel-cta-t">'+t+'</span><span class="fuel-cta-s">'+s+'</span></span>'+_arrow+'</button>';
@@ -1645,12 +1661,9 @@ function centerChip(){
   if(!nav||!act)return;
   // spacer หัว-ท้าย: ให้ chip ตัวแรก/ตัวสุดท้ายเลื่อนมาอยู่กลางได้เหมือนตัวอื่น
   // (ใส่เป็น padding ผ่าน JS ไม่ใช่ CSS คงที่ — จะได้ไม่สร้าง scroll เกินจำเป็นตอนจอกว้างพอ)
+  // เดิมใส่ spacer ครึ่งจอหัว-ท้ายเพื่อให้ W1/W30 มาอยู่กลางได้ — พอ chip ครบ 30 ตัว
+  // ที่ว่างนั้นกลายเป็นช่องโหวงตอนเลื่อนสุดทาง เลยเหลือ padding ปกติ (W1/W30 ชิดขอบตามมาตรฐาน tab strip)
   nav.style.paddingLeft='';nav.style.paddingRight='';
-  const first=nav.querySelector('.wk-btn'),last=nav.lastElementChild;
-  if(first&&last&&nav.scrollWidth>nav.clientWidth+1){
-   nav.style.paddingLeft=Math.max(4,(nav.clientWidth-first.offsetWidth)/2)+'px';
-   nav.style.paddingRight=Math.max(4,(nav.clientWidth-last.offsetWidth)/2)+'px';
-  }
   const target=act.offsetLeft-(nav.clientWidth-act.offsetWidth)/2;
   const max=nav.scrollWidth-nav.clientWidth;
   const left=Math.max(0,Math.min(target,max));
@@ -1703,6 +1716,9 @@ function openSheet(key){
  requestAnimationFrame(()=>s.classList.add('shown'));
 }
 function closeFuel(){
+ const bk=document.getElementById('fuel-back');
+ bk.classList.add('instant');                     // ดับฉากหลังทันที — การเฟดออกคือสิ่งที่เห็นเป็น "เงาค้าง"
+ requestAnimationFrame(()=>requestAnimationFrame(()=>bk.classList.remove('instant')));
  const s=document.getElementById('fuel-sheet');
  s.classList.remove('on','shown','dragging');s.style.transform='';
  s.setAttribute('aria-hidden','true');
