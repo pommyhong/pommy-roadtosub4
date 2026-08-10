@@ -1123,10 +1123,13 @@ function secWrap(id,def,inner){
  return '<div class="sec-body'+(secOn(id,def)?' open':'')+'" data-sec="'+id+'"><div class="sec-inner">'+inner+'</div></div>';
 }
 function selWeek(i){selected=i;window.__mo=0;render();   // สลับสัปดาห์ = รีเซ็ต offset ปฏิทิน ไม่งั้นค้างเดือนเก่า
- const c=document.getElementById('content');   // เฟดสั้นๆ จาก .82 (ไม่ดับจอ ไม่ขยับ) = รู้สึกว่า "เปลี่ยนข้อมูล" ไม่ใช่ "โหลดหน้าใหม่"
- if(c&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
-  c.style.transition='none';c.style.opacity='.82';c.style.transform='none';
-  requestAnimationFrame(()=>{c.style.transition='opacity .16s ease-out';c.style.opacity='1';});
+ // ไม่เฟด container ทั้งก้อนอีกแล้ว — การหรี่ทั้งหน้า (แม้แค่ 18%) อ่านเป็น "หน้าโหลดใหม่"
+ // ให้สลับทันที แล้วขยับเฉพาะ "การ์ดหัวสัปดาห์" นิดเดียวเพื่อบอกว่าอะไรเปลี่ยน
+ const c=document.getElementById('content');
+ if(c){c.style.transition='';c.style.opacity='';c.style.transform='';}
+ const wkh=document.querySelector('.wkh');
+ if(wkh&&!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  wkh.animate([{opacity:.55,transform:'translateY(-3px)'},{opacity:1,transform:'none'}],{duration:180,easing:'cubic-bezier(.22,1,.36,1)'});
  }
 }
 function setHRMode(m){window.__hrMode=m;render()}
