@@ -217,6 +217,10 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .rl-meta{font-size:11px;color:var(--muted);margin-top:3px}
 .rl-cd{text-align:right;line-height:1;font-variant-numeric:tabular-nums}
 .rl-cd-n{font-size:20px;font-weight:800;color:var(--ink)}
+.rl-item.done{background:#f7f6f2;border-color:var(--line)}
+.rl-done{background:#eaf7f0;color:#2faa72}
+.rl-cd-t{font-family:var(--font-display);font-size:var(--fs-num);font-weight:700;line-height:1;letter-spacing:-.01em;color:var(--ink)}
+.rl-cd-t.hit{color:#2faa72}
 .rl-cd-u{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
 /* week-nav as chips · sticky single nav */
 .week-nav{border-bottom:none;gap:6px;padding:16px 0 6px}
@@ -1218,12 +1222,49 @@ function renderHero(){
  }
 }
 
+// ผลของ race ที่ผ่านไปแล้ว — ดึงจาก log ของวันนั้นตรงๆ (ไม่ต้องกรอกมือ)
+// goal เขียนเป็นภาษาคน ('sub 45 นาที' / 'sub 4 ชั่วโมง') → แปลงเป็นนาทีเพื่อเทียบผลจริง
+function goalMinutes(goal){
+ const m=String(goal).match(/(\d+(?:\.\d+)?)\s*(นาที|ชั่วโมง|ชม)/);
+ if(!m)return null;
+ return /ชั่วโมง|ชม/.test(m[2])?parseFloat(m[1])*60:parseFloat(m[1]);
+}
+function raceResult(r){
+ const sl=slotOf(r.date);
+ if(!sl)return null;
+ const l=getLog(sl.wi,sl.di);
+ if(!l||!(l.km>0)||!(l.min>0))return null;
+ const secs=Math.round(l.min*60);
+ const hh=Math.floor(secs/3600),mm=Math.floor((secs%3600)/60),ss=secs%60;
+ const p2=n=>String(n).padStart(2,'0');
+ const gm=goalMinutes(r.goal);
+ return {
+  time:(hh?hh+':'+p2(mm):mm)+':'+p2(ss),
+  pace:paceFmt(l.min*60/l.km),
+  km:l.km,
+  hr:l.hr>0?Math.round(l.hr):0,
+  hit:gm==null?null:l.min<=gm
+ };
+}
 function renderRaces(){
  const today=new Date();today.setHours(0,0,0,0);
  const nextI=RACES.findIndex(r=>r.date>=today);
  let h='';
  RACES.forEach((r,i)=>{
   if(i===nextI)return;                                            // ตัวที่ next อยู่ใน hero แล้ว
+  const past=r.date<today;
+  if(past){
+   // โหมดหลังแข่ง: แทนที่นับถอยหลัง (ซึ่งจะค้างที่ 0 วัน) ด้วยผลจริงของวันนั้น
+   const res=raceResult(r);
+   h+='<div class="rl-item done">'+
+    '<div class="rl-l">'+
+     '<div class="rl-name">'+r.short+'<span class="rl-tag rl-done">'+(res&&res.hit===true?'✓ เข้าเป้า':res&&res.hit===false?'จบแล้ว':'จบแล้ว')+'</span></div>'+
+     '<div class="rl-meta">'+(res?res.km.toFixed(2)+' km · '+res.pace+'/km'+(res.hr?' · HR '+res.hr:'')+' · เป้า '+r.goal:r.full+' · รอ sync ผล')+'</div>'+
+    '</div>'+
+    '<div class="rl-cd">'+(res?'<div class="rl-cd-t'+(res.hit===true?' hit':'')+'">'+res.time+'</div><div class="rl-cd-u">ผลจริง</div>':'<div class="rl-cd-u">—</div>')+'</div>'+
+   '</div>';
+   return;
+  }
   const days=Math.max(0,Math.round((r.date-today)/864e5));
   h+='<div class="rl-item'+(r.a?' a':'')+'">'+
    '<div class="rl-l">'+
