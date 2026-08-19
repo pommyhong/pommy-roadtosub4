@@ -717,7 +717,7 @@ const RACES=[
  {n:'ASICS Meta Time Trials 2026',short:'ASICS 10K',date:new Date(2026,7,16),loc:'สะพานพระราม 8, bangkok',goal:'sub 45 นาที',meta:'16 ส.ค. · 10K · sub-45',full:'อาทิตย์ที่ 16 ส.ค. 2026 · 10K · สะพานพระราม 8',done:true},
  {n:'ATM Bangkok Marathon 42K',short:'ATM 42K',date:new Date(2026,10,29),loc:'ราชดำเนิน, bangkok',goal:'sub 4 ชั่วโมง',meta:'29 พ.ย. · sub-4 🎯',full:'อาทิตย์ที่ 29 พ.ย. 2026 · ราชดำเนิน',a:true},
 ];
-const TPACE={easy:'E 6:00–6:20',quality:'T–I 5:05–5:30',long:'E 6:10–6:30',cross:'—',rest:'—',race:'race pace'};
+const TPACE={easy:'E 5:46–6:26',quality:'T–I 4:45–5:09',long:'E 6:00–6:26',cross:'—',rest:'—',race:'race pace'};
 // ท่าเวทประจำของปอม — runner-focused strength (template ปกติ · deload week ลด volume เอง)
 const WEIGHTS_ROUTINE=[
  {l:'Compound (heavy first)',items:[['Goblet squat','3 × 8'],['RDL','3 × 8'],['Bulgarian split squat','3 × 8 /ขา'],['Hip thrust','3 × 10']]},
@@ -940,11 +940,11 @@ const W=[
 ]},
 {w:23,p:'M-Peak',f:'Big long + MP block 10km',k:65,ls:80,d:[
  {d:0,t:'cross',k:0,m:55,ti:'Weights',de:'',ca:'rest'},
- {d:1,t:'quality',k:11,m:65,ti:'Q1: T-pace 4×2km',de:'WU 15\' → 4×2km @ T (5:25/km) rest 2\' → CD 10\'',al:'3×2km',ca:'quality'},
+ {d:1,t:'quality',k:11,m:65,ti:'Q1: T-pace 4×2km',de:'WU 15\' → 4×2km @ T (5:09–5:15/km) rest 2\' → CD 10\'',al:'3×2km',ca:'quality'},
  {d:2,t:'easy',k:10,m:62,ti:'Easy 60 + 4 Strides',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:7,m:45,ti:'Easy 45 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:28,m:175,ti:'Long Run 28km — 10km MP',de:'18km Easy + 10km @ MP · 🍯 70g คาร์บ/ชม. · GATE: MP ที่ HR≤181 ผ่านมั้ย',ca:'long'},
+ {d:5,t:'long',k:28,m:175,ti:'Long Run 28km — 10km MP',de:'18km Easy + 10km @ MP · 🍯 70g คาร์บ/ชม. · GATE: MP ที่ HR≤183 ผ่านมั้ย',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:24,p:'Recovery',f:'Deload before peak weeks',k:50,ls:55,d:[
@@ -980,7 +980,7 @@ const W=[
  {d:2,t:'easy',k:10,m:62,ti:'Easy 60 นาที',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:7,m:45,ti:'Easy 45 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:32,m:200,ti:'Long Run 32km — final big long',de:'22km Easy + 10km @ MP — practice everything (gel/shoes/outfit) · 🍯 90g คาร์บ/ชม. · 🎯 GATE ตัดสิน sub-4: ท้าย 10km @5:41 ที่ HR≤181',ca:'long'},
+ {d:5,t:'long',k:32,m:200,ti:'Long Run 32km — final big long',de:'22km Easy + 10km @ MP — practice everything (gel/shoes/outfit) · 🍯 90g คาร์บ/ชม. · 🎯 GATE ตัดสิน sub-4: ท้าย 10km @5:41 ที่ HR≤183',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:28,p:'Taper',f:'Taper start — ลด volume -20%',k:50,ls:60,d:[
@@ -1462,8 +1462,8 @@ function render(){
  html+='<div class="type-legend">'+['easy','quality','long','cross','rest'].map(t=>{const s=SESS[t];return '<span class="tl-chip" style="color:'+s.tc+';background:'+s.bg+'">'+s.l+'</span>'}).join('')+'</div>';
  html+='</div>';
  // เพซเป้าหมายย้ายมาอยู่ใต้ตาราง (เดิมเป็นคอลัมน์ในตาราง + ซ้ำใน section อ้างอิง)
- html+='<div class="ref-sub" style="margin-top:14px">เพซเป้าหมาย · VDOT 42 <i>นาที/กม.</i></div><div class="ref-row">';
- [['E','#2f9e6a','5:52–6:31'],['M','#3a86c8','5:41 (sub-4)'],['T','#f5a623','5:16'],['I','#e63012','4:51'],['R','#9a968a','4:29']].forEach(p=>{
+ html+='<div class="ref-sub" style="margin-top:14px">เพซเป้าหมาย · VDOT 40 <i>นาที/กม.</i></div><div class="ref-row">';
+ [['E','#2f9e6a','5:46–6:26'],['M','#3a86c8','5:27 · sub-4 5:41'],['T','#f5a623','5:09'],['I','#e63012','4:45'],['R','#9a968a','4:24']].forEach(p=>{
   html+='<span class="ref-pill"><span class="ref-dot" style="background:'+p[1]+'"></span><b>'+p[0]+'</b> '+p[2]+'</span>';
  });
  html+='</div>';
