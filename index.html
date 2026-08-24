@@ -56,13 +56,16 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .race-label{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .race-name{font-size:13px;font-weight:600;color:#1c1c1c;line-height:1.3}
 .race-meta{font-size:10px;color:#6b6b6b;margin-top:2px}
-.prog-bar{display:grid;grid-template-columns:repeat(3,1fr);margin-top:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.prog-bar{display:grid;grid-template-columns:repeat(4,1fr);margin-top:16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .ps{padding:var(--s-3) var(--s-1)}
 .ps+.ps{border-left:1px solid var(--line);padding-left:var(--s-3)}
 .ps-n{font-family:var(--font-display);font-size:var(--fs-num-s);font-weight:700;line-height:1;letter-spacing:-.01em;color:#1c1c1c}
 .ps-n small{font-family:'Google Sans',sans-serif;font-size:var(--fs-label);color:var(--muted);font-weight:700}
 .ps-n .arw{font-family:'Google Sans',sans-serif;font-size:14px;margin-left:2px}
 .ps-k{font-size:var(--fs-label);font-weight:700;letter-spacing:.04em;white-space:nowrap;text-transform:uppercase;color:var(--muted);margin-top:var(--s-2)}
+/* 4 ไทล์ที่จอแคบ: ช่องเหลือ ~86px · label เป็น nowrap uppercase เลยต้องบีบ ไม่งั้นล้น */
+@media(max-width:640px){.prog-bar .ps{padding-left:6px;padding-right:0}.prog-bar .ps+.ps{padding-left:6px}.prog-bar .ps-k{font-size:10px;letter-spacing:0}.prog-bar .ps-n{font-size:18px}}/* จอแคบมาก (SE/มือถือเล็ก): ช่องเหลือ ~72px — ลดอีกขั้นกัน label ล้น */
+@media(max-width:380px){.prog-bar .ps-k{font-size:9px}.prog-bar .ps-n{font-size:17px}}
 .prog{background:#fff;border:1px solid #e3e0d7;border-radius:3px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .prog.ef{border-color:#bfdcf3}
 .prog-l{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
@@ -1359,29 +1362,32 @@ function renderProg(){
  const dcTrack=x=>x.t==='long'?'long':'steady';
  const TRL={long:'Long',steady:'Easy/steady'};
  const trSum=tr=>{const a=dcs.filter(x=>dcTrack(x)===tr);return a.length?a:null;};
- let dcv='–',dcu='ยังไม่มี session ที่คำนวณ dc ได้',dcarw='';
- if(dcs.length){
-  const last=dcs[dcs.length-1];
-  const tr=dcTrack(last), series=trSum(tr);
-  dcv=last.v.toFixed(1)+'%';
+ // ไทล์ต่อเส้น — เทียบในเส้นตัวเองเท่านั้น ไม่ข้ามชนิด
+ const dcTile=tr=>{
+  const a=dcs.filter(x=>dcTrack(x)===tr);
+  if(!a.length)return {v:'–',arw:'',u:'ยังไม่มี '+TRL[tr]+' ที่คำนวณ dc ได้'};
+  const last=a[a.length-1];
   const band=last.v<5?'coupled — base ติดแล้ว ✅':last.v<10?'mild — base กำลังมา':'decoupled — base ยังไม่พอ';
-  if(series.length>1){
-   const win=series.slice(Math.max(0,series.length-4),series.length-1);   // เทียบในเส้นเดียวกันเท่านั้น
-   const prior=win.reduce((a,b)=>a+b.v,0)/win.length;
+  let arw='',u=band;
+  if(a.length>1){
+   const win=a.slice(Math.max(0,a.length-4),a.length-1);
+   const prior=win.reduce((sm,b)=>sm+b.v,0)/win.length;
    const delta=last.v-prior;                       // ต่ำ = ดี → ลดลงคือดีขึ้น
    const better=delta<-0.3,worse=delta>0.3;
-   dcarw=better?'<span class="arw" style="color:#2faa72">▼</span>':worse?'<span class="arw" style="color:#e63012">▲</span>':'';
-   dcu=band+' · '+(better?'ดีกว่า':worse?'แย่กว่า':'เท่ากับ')+' '+win.length+' '+TRL[tr]+' ก่อน ('+prior.toFixed(1)+'%)';
-  }else{dcu=band;}
-  dcu=last.d+' · '+TRL[tr]+' · '+dcu;
- }
- // ทั้ง 2 เส้นใน tooltip — เห็นพร้อมกันโดยไม่ต้องเพิ่มไทล์ (แถบบนเป็น grid 3 ช่องตายตัว)
- let dcBoth='';
- ['long','steady'].forEach(tr=>{const a=trSum(tr);if(!a)return;
-  const l=a[a.length-1], rec=a.slice(-3).map(x=>x.v.toFixed(1)+'%').join(' → ');
-  dcBoth+='<br><b>'+TRL[tr]+'</b> ล่าสุด '+l.v.toFixed(1)+'% ('+l.d+') · '+a.length+' ครั้ง · ล่าสุด 3: '+rec;});
- h+='<div class="ps"><div class="ps-n">'+dcv+dcarw+'</div>'+
-  '<div class="ps-k tip">decoupling<i class="tip-i">i</i><span class="tip-body"><b>Decoupling (Pa:HR)</b> จาก session ล่าสุดที่คำนวณ dc ได้ (long + easy/steady ≥ 8 กม. · ไม่รวม race) · เพซต่อ HR ครึ่งหลังหล่นจากครึ่งแรกกี่ % — <b>ยิ่งต่ำยิ่งดี</b><br>&lt;5% base ติดแล้ว · 5–10% กำลังมา · &gt;10% ยังไม่พอ / overpace / under-fueled<br>ตอนนี้: '+dcu+dcBoth+'</span></div></div>';
+   arw=better?'<span class="arw" style="color:#2faa72">▼</span>':worse?'<span class="arw" style="color:#e63012">▲</span>':'';
+   u=band+' · '+(better?'ดีกว่า':worse?'แย่กว่า':'เท่ากับ')+' '+win.length+' ครั้งก่อน ('+prior.toFixed(1)+'%)';
+  }
+  return {v:last.v.toFixed(1)+'%',arw:arw,
+   u:last.d+' · '+u+'<br>ล่าสุด 3: '+a.slice(-3).map(x=>x.v.toFixed(1)+'%').join(' → ')+' · ทั้งหมด '+a.length+' ครั้ง'};
+ };
+ const DCEXP='<b>ยิ่งต่ำยิ่งดี</b><br>&lt;5% base ติดแล้ว · 5–10% กำลังมา · &gt;10% ยังไม่พอ / overpace / under-fueled';
+ [['long','dc long','long run 16-22 กม.'],['steady','dc easy','easy/steady ต่อเนื่อง 8-12 กม. · ไม่รวม race']].forEach(([tr,lab,scope])=>{
+  const t=dcTile(tr);
+  h+='<div class="ps"><div class="ps-n">'+t.v+t.arw+'</div>'+
+   '<div class="ps-k tip">'+lab+'<i class="tip-i">i</i><span class="tip-body"><b>Decoupling (Pa:HR)</b> — '+scope+
+   '<br>เพซต่อ HR ครึ่งหลังหล่นจากครึ่งแรกกี่ % · '+DCEXP+
+   '<br>ตอนนี้: '+t.u+'</span></div></div>';
+ });
  pb.innerHTML=h;
 }
 
@@ -1879,7 +1885,8 @@ function initMotion(){
  // top stats (อยู่ในจอตอนโหลด) — reward เปิดมาเห็นเลขวิ่งขึ้น
  cu(document.querySelector('#progbar .ps:nth-child(1) .ps-n'));           // ระยะสะสม
  cu(document.querySelector('#progbar .ps:nth-child(2) .ps-n'));           // sessions
- cu(document.querySelector('#progbar .ps:nth-child(3) .ps-n'));           // aerobic eff
+ cu(document.querySelector('#progbar .ps:nth-child(3) .ps-n'));           // dc long
+ cu(document.querySelector('#progbar .ps:nth-child(4) .ps-n'));           // dc easy/steady
  document.querySelectorAll('#content .snap-card .snap-v').forEach(el=>cu(el)); // streak/longest/cadence
 
  // ── Tier 1: viz motion (set ค่าว่างทันที = ไม่ flash · คืนค่าจริงตอน scroll ถึง) ──
