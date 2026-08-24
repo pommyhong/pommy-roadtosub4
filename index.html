@@ -1093,8 +1093,12 @@ function dcSeries(){
  W.forEach((w,wi)=>w.d.forEach(day=>{
   const l=getLog(wi,day.d);
   if(!l||typeof l.dc!=='number')return;
-  if((l.type||day.t)!=='long')return;          // ยึด type ที่ทำจริงก่อน plan (ตรงกับกราฟ HR)
-  a.push({v:l.dc,d:fmt(dateOf(wi,day.d))});
+  // "มี dc" = ผ่านเกณฑ์ steady มาแล้วในตัว — /run-log คำนวณ dc ให้เฉพาะ long หรือ
+  // steady continuous ≥ 8 กม. เท่านั้น (intervals/quality ที่มี walk recovery ไม่คำนวณให้)
+  // เหลือกฎเดียวที่ต้องกรองเอง = ตัด race (max effort คนละสรีรวิทยา ใส่แล้วบิดค่าเทียบ)
+  const _t=l.type||day.t;                      // ยึด type ที่ทำจริงก่อน plan (ตรงกับกราฟ HR)
+  if(_t==='race')return;
+  a.push({v:l.dc,d:fmt(dateOf(wi,day.d)),t:_t});
  }));
  return a;
 }
@@ -1350,7 +1354,7 @@ function renderProg(){
  // เหตุผล: EF ใช้ได้เฉพาะ easy outdoor เดี่ยวๆ ซึ่งช่วงหลังแทบไม่มี (ค้างตั้งแต่ 3 มิ.ย.)
  // ส่วน dc มาจาก long run ทุกสัปดาห์ + ตอบคำถาม sub-4 ตรงกว่า ("ถือเพซยาวๆ ได้ไหม")
  const dcs=dcSeries();
- let dcv='–',dcu='ยังไม่มี long run ที่คำนวณ dc ได้',dcarw='';
+ let dcv='–',dcu='ยังไม่มี session ที่คำนวณ dc ได้',dcarw='';
  if(dcs.length){
   const last=dcs[dcs.length-1];
   dcv=last.v.toFixed(1)+'%';
@@ -1361,12 +1365,12 @@ function renderProg(){
    const delta=last.v-prior;                       // ต่ำ = ดี → ลดลงคือดีขึ้น
    const better=delta<-0.3,worse=delta>0.3;
    dcarw=better?'<span class="arw" style="color:#2faa72">▼</span>':worse?'<span class="arw" style="color:#e63012">▲</span>':'';
-   dcu=band+' · '+(better?'ดีกว่า':worse?'แย่กว่า':'เท่ากับ')+' '+win.length+' long ก่อน ('+prior.toFixed(1)+'%)';
+   dcu=band+' · '+(better?'ดีกว่า':worse?'แย่กว่า':'เท่ากับ')+' '+win.length+' session ก่อน ('+prior.toFixed(1)+'%)';
   }else{dcu=band;}
-  dcu=last.d+' · '+dcu;
+  dcu=last.d+' · '+((SESS[last.t]&&SESS[last.t].l)||last.t)+' · '+dcu;
  }
  h+='<div class="ps"><div class="ps-n">'+dcv+dcarw+'</div>'+
-  '<div class="ps-k tip">decoupling<i class="tip-i">i</i><span class="tip-body"><b>Decoupling (Pa:HR)</b> จาก long run ล่าสุด · เพซต่อ HR ครึ่งหลังหล่นจากครึ่งแรกกี่ % — <b>ยิ่งต่ำยิ่งดี</b><br>&lt;5% base ติดแล้ว · 5–10% กำลังมา · &gt;10% ยังไม่พอ / overpace / under-fueled<br>ตอนนี้: '+dcu+'</span></div></div>';
+  '<div class="ps-k tip">decoupling<i class="tip-i">i</i><span class="tip-body"><b>Decoupling (Pa:HR)</b> จาก session ล่าสุดที่คำนวณ dc ได้ (long + easy/steady ≥ 8 กม. · ไม่รวม race) · เพซต่อ HR ครึ่งหลังหล่นจากครึ่งแรกกี่ % — <b>ยิ่งต่ำยิ่งดี</b><br>&lt;5% base ติดแล้ว · 5–10% กำลังมา · &gt;10% ยังไม่พอ / overpace / under-fueled<br>ตอนนี้: '+dcu+'</span></div></div>';
  pb.innerHTML=h;
 }
 
