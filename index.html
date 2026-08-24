@@ -1354,23 +1354,34 @@ function renderProg(){
  // เหตุผล: EF ใช้ได้เฉพาะ easy outdoor เดี่ยวๆ ซึ่งช่วงหลังแทบไม่มี (ค้างตั้งแต่ 3 มิ.ย.)
  // ส่วน dc มาจาก long run ทุกสัปดาห์ + ตอบคำถาม sub-4 ตรงกว่า ("ถือเพซยาวๆ ได้ไหม")
  const dcs=dcSeries();
+ // 2 เส้นแยกกัน: long (18-22 กม.) กับ steady (easy/continuous 8-12 กม.)
+ // long ยาวกว่าเท่าตัว → drift มากกว่าโดยธรรมชาติ · เทียบข้ามเส้นแล้วอ่านผิดทุกครั้ง
+ const dcTrack=x=>x.t==='long'?'long':'steady';
+ const TRL={long:'Long',steady:'Easy/steady'};
+ const trSum=tr=>{const a=dcs.filter(x=>dcTrack(x)===tr);return a.length?a:null;};
  let dcv='–',dcu='ยังไม่มี session ที่คำนวณ dc ได้',dcarw='';
  if(dcs.length){
   const last=dcs[dcs.length-1];
+  const tr=dcTrack(last), series=trSum(tr);
   dcv=last.v.toFixed(1)+'%';
   const band=last.v<5?'coupled — base ติดแล้ว ✅':last.v<10?'mild — base กำลังมา':'decoupled — base ยังไม่พอ';
-  if(dcs.length>1){
-   const win=dcs.slice(Math.max(0,dcs.length-4),dcs.length-1);
+  if(series.length>1){
+   const win=series.slice(Math.max(0,series.length-4),series.length-1);   // เทียบในเส้นเดียวกันเท่านั้น
    const prior=win.reduce((a,b)=>a+b.v,0)/win.length;
    const delta=last.v-prior;                       // ต่ำ = ดี → ลดลงคือดีขึ้น
    const better=delta<-0.3,worse=delta>0.3;
    dcarw=better?'<span class="arw" style="color:#2faa72">▼</span>':worse?'<span class="arw" style="color:#e63012">▲</span>':'';
-   dcu=band+' · '+(better?'ดีกว่า':worse?'แย่กว่า':'เท่ากับ')+' '+win.length+' session ก่อน ('+prior.toFixed(1)+'%)';
+   dcu=band+' · '+(better?'ดีกว่า':worse?'แย่กว่า':'เท่ากับ')+' '+win.length+' '+TRL[tr]+' ก่อน ('+prior.toFixed(1)+'%)';
   }else{dcu=band;}
-  dcu=last.d+' · '+((SESS[last.t]&&SESS[last.t].l)||last.t)+' · '+dcu;
+  dcu=last.d+' · '+TRL[tr]+' · '+dcu;
  }
+ // ทั้ง 2 เส้นใน tooltip — เห็นพร้อมกันโดยไม่ต้องเพิ่มไทล์ (แถบบนเป็น grid 3 ช่องตายตัว)
+ let dcBoth='';
+ ['long','steady'].forEach(tr=>{const a=trSum(tr);if(!a)return;
+  const l=a[a.length-1], rec=a.slice(-3).map(x=>x.v.toFixed(1)+'%').join(' → ');
+  dcBoth+='<br><b>'+TRL[tr]+'</b> ล่าสุด '+l.v.toFixed(1)+'% ('+l.d+') · '+a.length+' ครั้ง · ล่าสุด 3: '+rec;});
  h+='<div class="ps"><div class="ps-n">'+dcv+dcarw+'</div>'+
-  '<div class="ps-k tip">decoupling<i class="tip-i">i</i><span class="tip-body"><b>Decoupling (Pa:HR)</b> จาก session ล่าสุดที่คำนวณ dc ได้ (long + easy/steady ≥ 8 กม. · ไม่รวม race) · เพซต่อ HR ครึ่งหลังหล่นจากครึ่งแรกกี่ % — <b>ยิ่งต่ำยิ่งดี</b><br>&lt;5% base ติดแล้ว · 5–10% กำลังมา · &gt;10% ยังไม่พอ / overpace / under-fueled<br>ตอนนี้: '+dcu+'</span></div></div>';
+  '<div class="ps-k tip">decoupling<i class="tip-i">i</i><span class="tip-body"><b>Decoupling (Pa:HR)</b> จาก session ล่าสุดที่คำนวณ dc ได้ (long + easy/steady ≥ 8 กม. · ไม่รวม race) · เพซต่อ HR ครึ่งหลังหล่นจากครึ่งแรกกี่ % — <b>ยิ่งต่ำยิ่งดี</b><br>&lt;5% base ติดแล้ว · 5–10% กำลังมา · &gt;10% ยังไม่พอ / overpace / under-fueled<br>ตอนนี้: '+dcu+dcBoth+'</span></div></div>';
  pb.innerHTML=h;
 }
 
