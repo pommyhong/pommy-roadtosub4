@@ -591,6 +591,9 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 
 <script>
 const PLAN_START=new Date(2026,4,4); // Mon 4 May 2026
+// escape ข้อความจากข้อมูล (note/ti/de/al) ก่อนต่อเข้า HTML — เขียนมือ มี < > & ปนได้จริง
+// (w3d5 'recovery > long-run' · W2d5 'HR < 172' — รอดมาเพราะ parser กู้ให้ ไม่ใช่เพราะถูก)
+const escH=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const SESS={
  rest:{c:'#a8a496',tc:'var(--muted)',l:'พัก',bg:'#eeece6'},
  easy:{c:'#52c896',tc:'#2faa72',l:'Easy',bg:'#eaf7f0'},
@@ -1088,17 +1091,17 @@ function efOf(l){
 function dcSeries(){
  const a=[];
  W.forEach((w,wi)=>w.d.forEach(day=>{
-  if(day.t!=='long')return;
   const l=getLog(wi,day.d);
   if(!l||typeof l.dc!=='number')return;
+  if((l.type||day.t)!=='long')return;          // ยึด type ที่ทำจริงก่อน plan (ตรงกับกราฟ HR)
   a.push({v:l.dc,d:fmt(dateOf(wi,day.d))});
  }));
  return a;
 }
 function efSeries(){const a=[];W.forEach((w,wi)=>w.d.forEach(day=>{
- if(day.t!=='easy')return;
  const l=getLog(wi,day.d);
- if(!l||l.env==='tm'||l.mix)return;
+ if(!l||(l.type||day.t)!=='easy')return;      // ยึด type ที่ทำจริงก่อน plan (ตรงกับกราฟ HR)
+ if(l.env==='tm'||l.mix)return;
  if(!efUsable(l))return;                      // ตัด session ที่ EF ไม่มีความหมาย (ดู efUsable)
  const e=efOf(l);if(e)a.push(e)}));return a}
 // EF เทียบกันได้เฉพาะ easy run ที่ "ราบ + steady" — เนินสะพาน/ซ้อมบันไดทำให้เพซช้าลงมากโดยไม่ได้แปลว่าฟิตลด
@@ -1439,11 +1442,11 @@ function render(){
   html+='<div class="wk-row'+(isR?' rest':'')+(showDone?' done':'')+(tdy?' today':'')+'">';
   html+='<div class="wk-dt"><div class="wk-dow">'+DAYS[day.d]+'</div><div class="wk-day">'+dt.getDate()+'</div></div>';
   html+='<div class="wk-bar" style="background:'+st.c+'"></div>';
-  html+='<div class="wk-main"><div class="wk-ti">'+day.ti+
+  html+='<div class="wk-main"><div class="wk-ti">'+escH(day.ti)+
    (tdy&&!showDone?'<span class="wk-tag">TODAY</span>':'')+
    (showDone?'<span class="wk-ok">✓</span>':'')+'</div>';
-  if(day.de)html+='<div class="wk-de">'+day.de+'</div>';
-  if(day.al)html+='<div class="wk-alt">⚡ '+day.al+'</div>';
+  if(day.de)html+='<div class="wk-de">'+escH(day.de)+'</div>';
+  if(day.al)html+='<div class="wk-alt">⚡ '+escH(day.al)+'</div>';
   if(lg&&lg.km>0){
    let r=lg.km+' km';
    if(lg.ses&&lg.ses.length>1)r+=' <span class="s-multi tip">'+lg.ses.length+'×<span class="tip-body"><b>'+lg.ses.length+' session วันนี้</b> · '+lg.ses.join(' + ')+' km · ยอดรวมเป็น volume ของวัน · pace = ของ run ยาวสุด</span></span>';
@@ -1513,7 +1516,7 @@ function render(){
    else if(day.t==='race'){cls+=' mg-race';sty='background:'+st.c}   // วันแข่ง = ดังเต็มสีเสมอ ไม่จางเหมือนวันอนาคตอื่น
    else{cls+=' mg-fut';sty='background:'+st.c+';opacity:.42'}
    if(isTdy)cls+=' mg-today';
-   const ttl=fmt(dt)+' · '+day.ti+(lg&&lg.km>0?' · '+lg.km+' km':'');
+   const ttl=escH(fmt(dt)+' · '+day.ti+(lg&&lg.km>0?' · '+lg.km+' km':''));
    html+='<button class="'+cls+'" onclick="jumpDay('+sl.wi+','+sl.di+')" title="'+ttl.replace(/"/g,'')+'">'+
     '<span class="mg-c" style="'+sty+'">'+dnum+'</span>'+
     '<span class="mg-mark">'+(lg&&(lg.mix||(lg.ses&&lg.ses.length>1))?'<i></i>':'')+'</span></button>';
@@ -1543,7 +1546,7 @@ function render(){
   const dt=dateOf(selected,day.d);const lg=getLog(selected,day.d);
   // tooltip content
   let tip='<div class="dc-tip-title">'+DAYS[day.d]+' '+fmt(dt)+' · '+st.l+'</div>';
-  if(day.t==='rest'){tip+='<div class="dc-tip-row"><span>'+day.ti+'</span></div>';}
+  if(day.t==='rest'){tip+='<div class="dc-tip-row"><span>'+escH(day.ti)+'</span></div>';}
   else{
    tip+='<div class="dc-tip-row"><span>Plan</span><b>'+(pv?pv+' km':'—')+(day.m?' · '+day.m+'′':'')+'</b></div>';
    if(lg&&lg.km>0){
@@ -1576,7 +1579,7 @@ function render(){
    const _pkm=l.bkm||l.km,_pmin=l.bmin||l.min;const ps=_pmin>0?_pmin*60/_pkm:0;
    const pace=ps?paceFmt(ps):'';
    html+='<div class="log-item"><div class="log-date"><span class="ld-num">'+dt.getDate()+'</span><span class="ld-mo">'+MONTHS[dt.getMonth()]+'</span></div>';
-   html+='<div class="log-body"><div class="log-head"><div class="log-title">'+day.ti+' <span class="log-tw">W'+w.w+' '+DAYS[day.d]+'</span>'+(l.sl>0&&l.sl<60?' <span class="lb lb-warn tip">😴 sleep '+l.sl+'<span class="tip-body"><b>Sleep score</b> ต่ำกว่า 60 คืนก่อนวิ่ง — อาจอธิบาย performance วันนี้ (คะแนนปกติไม่โชว์ ไม่ใช่ทุกวัน)</span></span>':'')+'</div>';
+   html+='<div class="log-body"><div class="log-head"><div class="log-title">'+escH(day.ti)+' <span class="log-tw">W'+w.w+' '+DAYS[day.d]+'</span>'+(l.sl>0&&l.sl<60?' <span class="lb lb-warn tip">😴 sleep '+l.sl+'<span class="tip-body"><b>Sleep score</b> ต่ำกว่า 60 คืนก่อนวิ่ง — อาจอธิบาย performance วันนี้ (คะแนนปกติไม่โชว์ ไม่ใช่ทุกวัน)</span></span>':'')+'</div>';
    if(l.rpe)html+='<div class="log-rpe tip">'+l.rpe+'/10<span>RPE<i class="tip-i">i</i><span class="tip-body"><b>RPE</b> (Rate of Perceived Exertion) · 1=สบายมาก, 10=ตายแน่ · ปอม subjective rate effort หลังวิ่ง</span></span></div>';
    html+='</div>';
    html+='<span class="s-chip" style="color:'+s.tc+';background:'+s.bg+'">'+s.l+'</span>';
@@ -1595,7 +1598,7 @@ function render(){
     html+='<span class="lb-more">'+more.join('')+'</span>';
    }
    html+='</div>';
-   if(l.note)html+='<div class="log-note">'+l.note+'</div>';
+   if(l.note)html+='<div class="log-note">'+escH(l.note)+'</div>';
    html+='</div></div>';
    return html;
   };
@@ -1651,7 +1654,7 @@ function render(){
  W.forEach((ww,wi)=>ww.d.forEach(day=>{const l=getLog(wi,day.d);if(!l)return;const sk=(l.ses&&l.ses.length)?l.ses[0]:l.km;if(sk>_long.km)_long={km:sk,w:ww.w}}));
  // baseline cadence (easy outdoor only)
  const _cads=[];
- W.forEach((ww,wi)=>ww.d.forEach(day=>{if(day.t!=='easy')return;const l=getLog(wi,day.d);if(l&&l.cad>0&&l.env!=='tm'&&!l.mix)_cads.push(l.cad)}));
+ W.forEach((ww,wi)=>ww.d.forEach(day=>{const l=getLog(wi,day.d);if(!l||(l.type||day.t)!=='easy')return;if(l.cad>0&&l.env!=='tm'&&!l.mix&&efUsable(l))_cads.push(l.cad)}));
  const _cadAvg=_cads.length?Math.round(_cads.reduce((a,b)=>a+b,0)/_cads.length):0;
  // phase description for lead text — clamp cw (curWeek คืน -1 ก่อนวันเริ่มแผน)
  const _cw=Math.max(0,Math.min(cw,W.length-1));
@@ -1682,7 +1685,7 @@ function render(){
  ['easy','long'].forEach(t=>{const m=NUTRI[t];
   _refH+='<div class="nutri-menu" id="nm-'+t+'">';
   _refH+='<div class="nutri-head" style="color:'+m.color+'">🍱 '+m.label+' · เมนูเต็มวัน <span class="nutri-tg">'+m.target+'</span></div>';
-  if(m.note)_refH+='<div class="nutri-note">'+m.note+'</div>';
+  if(m.note)_refH+='<div class="nutri-note">'+escH(m.note)+'</div>';
   _refH+='<table class="nutri-tbl"><tr><th>มื้อ</th><th>เมนู</th><th>carb</th><th>cal</th><th>prot</th></tr>';
   m.rows.forEach(r=>{_refH+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>'});
   _refH+='<tr class="nutri-sum"><td colspan="2">รวม</td><td>'+m.sum.split(' · ')[0]+'</td><td colspan="2">'+m.sum.split(' · ').slice(1).join(' · ')+'</td></tr>';
