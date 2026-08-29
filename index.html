@@ -342,6 +342,10 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wx{display:flex;align-items:center;justify-content:space-between;gap:12px;
  padding:10px 13px;border-radius:10px;background:#faf9f5}
 .wx-l{font-size:11px;font-weight:600;color:var(--ink-2)}
+.wx-l s i{font-style:normal;color:#8d867b}
+.wx-age{font-size:9px;font-weight:600;color:var(--faint);background:#efece5;
+ border-radius:4px;padding:1px 5px;margin-left:2px;white-space:nowrap}
+.wx-age.stale{color:#b07700;background:#fbf3e0}
 .wx-l s,.wx-r s{display:block;text-decoration:none;font-weight:500;font-size:9.5px;color:var(--faint);margin-top:2px}
 .wx-r{text-align:right}
 .wx-r b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -690,8 +694,19 @@ function paceHRRef(wi){
    const slot=now<12?'morning':'evening', o=d[slot]||d.morning||d.evening;
    if(o){
     const warn=o.cap>167;
-    h+='<div class="wx"><div class="wx-l">'+(slot==='morning'?'เช้ามืด':'ค่ำ')+'วันนี้'+
-     '<s>dew '+o.dew+'° · '+o.temp+'°C · ลม '+o.wind+' km/h</s></div>'+
+    // อายุของพยากรณ์ — ตัวเลขนี้เป็น snapshot ไม่ใช่ realtime (ปอมถาม 29/08)
+    // ดึงตอน auto-sync 07:30/21:30/23:30 · หน้า public เป็น static ค่าจึงค้างตั้งแต่ deploy ล่าสุด
+    let age='';
+    if(WX.as_of){
+     const t=new Date(WX.as_of.replace(' ','T')), hrs=(Date.now()-t)/3600000;
+     const stale=hrs>14;
+     age='<span class="wx-age'+(stale?' stale':'')+'">'+
+      (hrs<1?'อัปเมื่อครู่':hrs<24?('อัป '+WX.as_of.slice(11)+' น.'):('อัป '+WX.as_of.slice(5,10)))+
+      (stale?' · เก่าแล้ว':'')+'</span>';
+    }
+    h+='<div class="wx"><div class="wx-l">'+(slot==='morning'?'เช้ามืด':'ค่ำ')+'วันนี้ '+age+
+     '<s>dew '+o.dew+'° · '+o.temp+'°C · ลม '+o.wind+' km/h <i>· พยากรณ์เฉลี่ยช่วง '+
+     (slot==='morning'?'05-07':'18-21')+' น.</i></s></div>'+
      '<div class="wx-r'+(warn?' warn':'')+'"><b>≤'+o.cap+'</b><s>cap · '+o.band+'</s></div></div>';
     if(warn)h+='<div class="wx-n">อากาศ '+o.band+' → ยก cap จาก 167 เป็น '+o.cap+' ('+o.note+') · เพซจะช้าลงเองตาม HR ไม่ต้องฝืนเลขบนนาฬิกา</div>';
    }
