@@ -691,7 +691,7 @@ function paceHRRef(wi){
   for(let i=W[wi].d.length-1;i>=0;i--){
    const day=W[wi].d[i], l=getLog(wi,day.d);
    if(l&&l.hr>0&&(l.type||day.t)==='long'){
-    mk={hr:Math.round(l.hr),d:DAYS[day.d],dt:dateOf(wi,day.d)};break;
+    mk={hr:hrOf(l),d:DAYS[day.d],dt:dateOf(wi,day.d)};break;
    }
   }
  }
@@ -1260,6 +1260,10 @@ function wkTotal(wi){return W[wi].d.filter(x=>x.t!=='rest').length}
 
 function getLog(wi,di){return log['w'+wi+'d'+di]||null}
 // EF = ความเร็ว (m/min) ÷ HR เฉลี่ย — สูง=ฟิตขึ้น · grade+heat adjusted (elev/temp) ถ้ามี, ไม่มี=raw
+// HR ของ session — วันที่มีหลาย activity ต้องใช้ค่าของ run ยาวสุด ไม่ใช่เฉลี่ยรวม cooldown
+// แยกเป็น helper เพราะเดิมแก้ทีละจุดแล้วตกหล่น (marker ใน pace×HR ยังโชว์ 172 แทน 177)
+const hrOf=l=>l?Math.round(l.bhr||l.hr||0):0;
+const hxOf=l=>l?Math.round(l.bhx||l.hx||0):0;
 const EF_GRADE_K=0.0075,EF_GRADE_CAP=0.15,EF_HEAT_BASE=20,EF_HEAT_K=0.5;
 function efOf(l){
  if(!(l&&l.km>0&&l.min>0&&l.hr>0))return null;
@@ -1475,7 +1479,7 @@ function raceResult(r){
   time:(hh?hh+':'+p2(mm):mm)+':'+p2(ss),
   pace:paceFmt(min*60/km),
   km:km,
-  hr:(!useB&&l.hr>0)?Math.round(l.hr):0,   // mix = HR เฉลี่ยรวม warm-up ด้วย → ไม่โชว์ดีกว่าโชว์ผิด
+  hr:hrOf(l),   // mix ก็โชว์ได้แล้ว — bhr = HR ของ run ยาวสุด ไม่ใช่เฉลี่ยรวม warm-up
   hit:gm==null?null:min<=gm
  };
 }
@@ -1515,7 +1519,7 @@ function hrByType(){
  W.forEach((w,wi)=>w.d.forEach(day=>{if(!acc[day.t])return;const l=getLog(wi,day.d);if(l&&l.hr>0)acc[day.t].push(l)}));
  const out=[];
  for(const k in acc){const a=acc[k];if(!a.length)continue;
-  const avg=Math.round(a.reduce((s,l)=>s+l.hr,0)/a.length);
+  const avg=Math.round(a.reduce((s,l)=>s+hrOf(l),0)/a.length);
   const mx=a.filter(l=>l.hx>0).map(l=>l.hx);
   out.push({t:k,avg,max:mx.length?Math.round(Math.max(...mx)):0,n:a.length});
  }
@@ -1651,7 +1655,7 @@ function render(){
    let r=lg.km+' km';
    if(lg.ses&&lg.ses.length>1)r+=' <span class="s-multi tip">'+lg.ses.length+'×<span class="tip-body"><b>'+lg.ses.length+' session วันนี้</b> · '+lg.ses.join(' + ')+' km · ยอดรวมเป็น volume ของวัน · pace = ของ run ยาวสุด</span></span>';
    {const pkm=lg.bkm||lg.km,pmin=lg.bmin||lg.min;if(pmin>0)r+=' · '+paceFmt(pmin*60/pkm)+'/km'}
-   if(lg.hr>0)r+=' · HR '+Math.round(lg.hr);
+   if(lg.hr>0)r+=' · HR '+hrOf(lg);
    if(lg.env==='tm')r+=' <span class="tm">🏠</span>';
    const e=efOf(lg);
    if(e&&day.t==='easy'&&lg.env!=='tm'&&!lg.mix&&efUsable(lg))r+='<span class="s-ef">EF '+e.toFixed(2)+'</span>';
@@ -1749,7 +1753,7 @@ function render(){
     const _pkm=lg.bkm||lg.km,_pmin=lg.bmin||lg.min;const pace=paceFmt(_pmin*60/_pkm);
     tip+='<div class="dc-tip-row"><span>Actual</span><b>'+lg.km+' km · '+pace+'/km</b></div>';
     if(lg.ses&&lg.ses.length>1)tip+='<div class="dc-tip-row"><span>Sessions</span><b>'+lg.ses.length+' ช่วง · '+lg.ses.join(' + ')+' (pace=run ยาวสุด)</b></div>';
-    if(lg.hr>0)tip+='<div class="dc-tip-row"><span>HR</span><b>'+Math.round(lg.hr)+(lg.hx>0?' / '+Math.round(lg.hx):'')+'</b></div>';
+    if(lg.hr>0)tip+='<div class="dc-tip-row"><span>HR</span><b>'+hrOf(lg)+(lg.hx>0?' / '+hxOf(lg):'')+'</b></div>';
     if(pv>0){const d=lg.km-pv;const pct=Math.round(d/pv*100);
      tip+='<div class="dc-tip-delta '+(d>=0?'hit':'short')+'">'+(d>=0?'+':'')+d.toFixed(1)+' km ('+(pct>=0?'+':'')+pct+'%) vs plan</div>';
     }
@@ -1772,7 +1776,7 @@ function render(){
   const hrZoneStrip=(l,t)=>{
    if(!(l.hr>0))return'';
    // วันที่มีหลาย run ใช้ HR ของ run ยาวสุด (bhr) — ค่าเฉลี่ยรวม cooldown ทำให้ session หลักดูเบากว่าจริง
-   const avg=Math.round(l.bhr||l.hr), mx=Math.round(l.bhx||l.hx||0);
+   const avg=hrOf(l), mx=hxOf(l);
    const zone=hrZoneOf(avg), goal=HRTARGET[t];
    let bar='';
    HRZ.forEach((z,i)=>{
@@ -1818,7 +1822,7 @@ function render(){
    html+='<div class="log-badges">';
    html+='<span class="lb lb-km"><b>'+l.km+'</b> กม.'+(l.ses&&l.ses.length>1?' <span class="ses-split">('+l.ses.length+' ช่วง: '+l.ses.join(' + ')+')</span>':'')+'</span>';
    if(pace)html+='<span class="lb lb-pace"><b>'+pace+'</b>/กม.</span>';
-   if(l.hr>0){const _h=Math.round(l.bhr||l.hr),_x=Math.round(l.bhx||l.hx||0);
+   if(l.hr>0){const _h=hrOf(l),_x=hxOf(l);
     html+='<span class="lb lb-hr">HR <b>'+_h+'</b>'+(_x?'/'+_x:'')+'</span>';}
    if(more.length){
     html+='<button type="button" class="lb lb-toggle" onclick="toggleMore(this)">+'+more.length+' <span class="lb-chev">▾</span></button>';
@@ -1839,7 +1843,7 @@ function render(){
 
  // กราฟ HR รายสัปดาห์ — line chart · 2 เส้น (avg + max) · มี filter chip
  const hrMode=window.__hrMode||'easy';   // 'easy' | 'all'
- const wk=[];W.forEach((ww,wi)=>{const hrs=[],mxs=[];ww.d.forEach(day=>{const l=getLog(wi,day.d);if(!l||!(l.hr>0))return;const t=l.type||day.t;if(hrMode==='easy'&&t!=='easy')return;if(hrMode==='all'&&!['easy','quality','long'].includes(t))return;hrs.push(l.hr);if(l.hx)mxs.push(l.hx)});if(hrs.length)wk.push({w:wi+1,hr:Math.round(hrs.reduce((s,x)=>s+x,0)/hrs.length),hx:mxs.length?Math.round(Math.max(...mxs)):0})});
+ const wk=[];W.forEach((ww,wi)=>{const hrs=[],mxs=[];ww.d.forEach(day=>{const l=getLog(wi,day.d);if(!l||!(l.hr>0))return;const t=l.type||day.t;if(hrMode==='easy'&&t!=='easy')return;if(hrMode==='all'&&!['easy','quality','long'].includes(t))return;hrs.push(hrOf(l));if(l.hx)mxs.push(hxOf(l))});if(hrs.length)wk.push({w:wi+1,hr:Math.round(hrs.reduce((s,x)=>s+x,0)/hrs.length),hx:mxs.length?Math.round(Math.max(...mxs)):0})});
  if(wk.length){
   let _hrH='';
   _hrH+='<div class="hr-tabs">'+
