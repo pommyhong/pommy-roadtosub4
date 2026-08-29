@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<title>Sub-4 — space cat</title>
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%"   stop-color="#2a6bff"/>
+    <stop offset="100%" stop-color="#1747c8"/>
+  </linearGradient>
+  <!-- ริ้วเนบิวลา: เหลืองใจกลาง → ส้ม → แดงจาง (ไล่แบบ airbrush เหมือนต้นฉบับ) -->
+  <linearGradient id="neb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%"   stop-color="#ff5a3c" stop-opacity="0"/>
+    <stop offset="26%"  stop-color="#ff6a35" stop-opacity=".85"/>
+    <stop offset="52%"  stop-color="#ffc65c" stop-opacity=".95"/>
+    <stop offset="76%"  stop-color="#ff7a3a" stop-opacity=".8"/>
+    <stop offset="100%" stop-color="#ff4d2e" stop-opacity="0"/>
+  </linearGradient>
+  <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="9"/>
+  </filter>
+  <!-- ดาว: noise แล้ว threshold — ได้ starfield แน่นแบบต้นฉบับโดยไม่ต้องวาดทีละดวง -->
+  <filter id="stars" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="7" result="n"/>
+    <feColorMatrix in="n" type="matrix" result="m"
+      values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1.9 0 0 0 -1.05"/>
+  </filter>
+</defs>
+
+<rect width="512" height="512" fill="url(#sky)"/>
+
+<!-- เนบิวลาเป็นริ้วโค้ง ไม่ใช่ blob — เว้นกลางไว้ให้ silhouette อ่านออก -->
+<g filter="url(#glow)">
+  <path d="M-40 96 C40 40 128 74 178 128 C214 168 200 214 150 224 C86 236 20 196 -40 168 Z" fill="url(#neb)" transform="rotate(-12 90 150)"/>
+  <path d="M552 108 C468 52 372 92 328 148 C294 192 312 232 364 240 C430 250 496 208 552 180 Z" fill="url(#neb)" transform="rotate(10 420 160)"/>
+  <path d="M-40 356 C44 300 126 330 166 386 C196 428 176 466 124 472 C60 480 8 442 -40 420 Z" fill="url(#neb)" transform="rotate(8 60 400)"/>
+  <path d="M552 366 C470 310 380 340 340 396 C310 438 332 474 384 480 C450 488 500 448 552 424 Z" fill="url(#neb)" transform="rotate(-10 440 410)"/>
+  <path d="M132 486 C214 446 306 450 386 494 C310 524 208 522 132 486 Z" fill="url(#neb)"/>
+</g>
+
+<!-- starfield -->
+<rect width="512" height="512" filter="url(#stars)" opacity=".85"/>
+
+<!-- silhouette ดำสนิท: หมวกปีกกว้าง + หัวแมว + หูโผล่ข้างหมวก -->
+<g fill="#06060c">
+  <!-- หูแมวแทงทะลุปีกหมวก — วาดก่อนปีกเพื่อให้ปีกทับโคนหู -->
+  <path d="M168 108 L150 214 L246 176 Z"/>
+  <path d="M344 108 L362 214 L266 176 Z"/>
+  <path d="M256 34 C242 88 224 140 206 180 C232 194 280 194 306 180 C288 140 270 88 256 34 Z"/>
+  <path d="M256 166 C342 166 444 186 444 206 C444 228 342 242 256 242 C170 242 68 228 68 206 C68 186 170 166 256 166 Z"/>
+  <path d="M256 232 C332 232 378 274 378 332 C378 398 326 442 256 442 C186 442 134 398 134 332 C134 274 180 232 256 232 Z"/>
+</g>
+
+<!-- หน้า: แผ่นน้ำเงินรอบตา-จมูก (จุดเด่นของต้นฉบับ) -->
+<path d="M256 294 C296 294 334 302 334 318 C334 346 302 386 256 386 C210 386 178 346 178 318 C178 302 216 294 256 294 Z"
+      fill="#1f63e8"/>
+
+<!-- ตา: ขอบเขียว → เหลือง → pupil แดงแนวตั้ง -->
+<g>
+  <ellipse cx="212" cy="318" rx="40" ry="25" fill="#2fd47a"/>
+  <ellipse cx="212" cy="318" rx="32" ry="18" fill="#ffe14d"/>
+  <ellipse cx="212" cy="318" rx="7.5" ry="18" fill="#ff3b1f"/>
+  <ellipse cx="300" cy="318" rx="40" ry="25" fill="#2fd47a"/>
+  <ellipse cx="300" cy="318" rx="32" ry="18" fill="#ffe14d"/>
+  <ellipse cx="300" cy="318" rx="7.5" ry="18" fill="#ff3b1f"/>
+</g>
+
+<!-- จมูก: ลิ่มมนแนวตั้ง -->
+<path d="M256 340 C267 340 274 348 274 360 C274 374 266 384 256 384 C246 384 238 374 238 360 C238 348 245 340 256 340 Z"
+      fill="#ff3b1f"/>
+</svg>
