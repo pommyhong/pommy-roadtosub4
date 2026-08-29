@@ -318,6 +318,20 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .lb-more{display:none;gap:6px}
 .lb-more.open{display:contents}
 .log-note{font-size:var(--fs-label);color:var(--muted);line-height:1.55;margin-top:var(--s-2)}
+/* แถบโซน HR ในการ์ดแต่ละวัน — เห็นว่า run นั้นไปตกโซนไหน (เพิ่ม 29/08) */
+.hz{margin-top:var(--s-2)}
+.hz-track{position:relative;display:flex;height:15px;border-radius:7px;overflow:hidden;background:#eeece6}
+.hz-track>span{display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#fff;opacity:.32}
+.hz-track>span.on{opacity:1}
+.hz-wrap{position:relative;padding-top:5px}
+.hz-avg{position:absolute;top:0;bottom:-2px;width:2px;background:var(--ink);z-index:3;box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}
+.hz-avg::after{content:'';position:absolute;top:-4px;left:-3.5px;width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px #fff}
+.hz-max{position:absolute;top:5px;bottom:0;width:1.5px;background:rgba(28,28,28,.42);z-index:2}
+.hz-goal{position:absolute;top:5px;bottom:0;border:1.5px dashed rgba(28,28,28,.5);border-radius:6px;z-index:1;pointer-events:none}
+.hz-cap{font-size:var(--fs-label);color:var(--faint);margin-top:5px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.hz-cap b{color:var(--ink);font-weight:700}
+.hz-over{color:#d62a0e;font-weight:700}
+.hz-in{color:#2faa72;font-weight:700}
 .log-empty{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #ddd9cf;border-radius:16px;padding:18px;text-align:center}
 /* 🎯 Note — Peak-End close + journey context */
 .snap-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:0 1px 2px rgba(0,0,0,.03);margin-top:8px}
@@ -606,6 +620,25 @@ const SESS={
  race:{c:'#e63012',tc:'#fff',l:'RACE',bg:'#e63012'},
 };
 const CARB={rest:[195,260],easy:[325,390],quality:[455,520],long:[520,610],race:[600,715]}; // 65 kg (อัป 22 ก.ค. 2026 · เดิม 60 kg)
+
+// โซน HR (Daniels · %HRR) — maxHR 208 / RHR 52 / HRR 156 · recalc 16 ส.ค. 2026 (ที่มา: running.md)
+// ⚠️ ถ้า maxHR/RHR เปลี่ยน ต้องแก้ที่นี่ด้วย ไม่งั้นแถบโซนในการ์ดจะโกหก
+const HRLO=140, HRHI=208;
+const HRZ=[
+ {k:'E',c:'#2f9e6a',lo:144,hi:167,pace:'5:46–6:26'},
+ {k:'M',c:'#3a86c8',lo:169,hi:183,pace:'5:27'},
+ {k:'T',c:'#f5a623',lo:183,hi:189,pace:'5:09'},
+ {k:'I',c:'#e63012',lo:200,hi:208,pace:'4:45'},
+];
+// โซนที่ session แต่ละชนิด "ควรอยู่" — เฉพาะที่ running.md ระบุกฎไว้ชัด
+// easy/long: E cap 167 ("long run เกินนี้ = ไม่ใช่ easy แล้ว") · race: marathon cap 183 (84% HRR)
+// quality ไม่ใส่ เพราะ T กับ I ใช้ target คนละช่วง แยกจาก type เดียวไม่ได้
+const HRTARGET={easy:[144,167],long:[144,167],race:[144,183]};
+const hrPos=v=>Math.max(0,Math.min(100,(v-HRLO)/(HRHI-HRLO)*100));
+const hrZoneOf=v=>{for(const z of HRZ){if(v>=z.lo&&v<=z.hi)return z.k}
+ if(v<HRZ[0].lo)return'<E'; if(v>HRZ[3].hi)return'>I';
+ for(let i=0;i<HRZ.length-1;i++){if(v>HRZ[i].hi&&v<HRZ[i+1].lo)return HRZ[i].k+'–'+HRZ[i+1].k}
+ return'—'};
 // 🍱 เมนูเต็มวันต่อ session type (content จาก nutrition-menus.md · 65kg · no peanut butter)
 const NUTRI={
  easy:{label:'Easy',target:'325–390g',color:'#2f9e6a',sum:'~305g · 2,210 cal · 96g prot',ok:'⚠️ ขาด ~20g จาก target ใหม่ (65 kg)',note:'➕ เติม: กล้วย 1 ลูก หรือ ข้าวเพิ่ม 1 ทัพพี (~25-30g)',rows:[
@@ -1595,6 +1628,33 @@ function render(){
  if(doneRuns.length){
   // D: โชว์ 3 วันล่าสุด · วันเก่ากว่านั้นพับไว้ (สัปดาห์ที่วิ่งครบ 6 วัน การ์ดยาวเกินจอ)
   const _older=doneRuns.slice(0,-3),_latest=doneRuns.slice(-3);
+  // แถบโซน HR ต่อ run — marker ทึบ = HR เฉลี่ย · ขีดจาง = HR สูงสุด · กรอบประ = โซนที่ควรอยู่
+  const hrZoneStrip=(l,t)=>{
+   if(!(l.hr>0))return'';
+   const avg=Math.round(l.hr), mx=l.hx>0?Math.round(l.hx):0;
+   const zone=hrZoneOf(avg), goal=HRTARGET[t];
+   let bar='';
+   HRZ.forEach((z,i)=>{
+    const gap=i===0?hrPos(z.lo)-0:hrPos(z.lo)-hrPos(HRZ[i-1].hi);
+    if(gap>0.4)bar+='<span style="flex:0 0 '+gap+'%"></span>';
+    bar+='<span class="'+(zone===z.k?'on':'')+'" style="flex:0 0 '+(hrPos(z.hi)-hrPos(z.lo))+'%;background:'+z.c+'">'+(zone===z.k?z.k:'')+'</span>';
+   });
+   let ov='';
+   // กรอบประ = โซนที่ควรอยู่ · แสดงเฉพาะตอนหลุดเป้า — ตอนอยู่ในเป้ามันทับแถบสีพอดี ไม่เพิ่มข้อมูล
+   if(goal&&avg>goal[1]){
+    ov+='<div class="hz-goal" style="left:'+hrPos(goal[0])+'%;width:'+(hrPos(goal[1])-hrPos(goal[0]))+'%"></div>';
+   }
+   if(mx)ov+='<div class="hz-max" style="left:'+hrPos(mx)+'%"></div>';
+   ov+='<div class="hz-avg" style="left:'+hrPos(avg)+'%"></div>';
+   let cap='<span>HR เฉลี่ย <b>'+avg+'</b> · โซน <b>'+zone+'</b></span>';
+   if(mx)cap+='<span>สูงสุด '+mx+'</span>';
+   if(goal){
+    cap+=(avg>goal[1]
+     ? '<span class="hz-over">เกินเป้า '+goal[1]+' อยู่ '+(avg-goal[1])+'</span>'
+     : '<span class="hz-in">อยู่ในเป้า ≤'+goal[1]+'</span>');
+   }
+   return '<div class="hz"><div class="hz-wrap"><div class="hz-track">'+bar+'</div>'+ov+'</div><div class="hz-cap">'+cap+'</div></div>';
+  };
   const logCard=(day)=>{
    let html='';
    const l=getLog(selected,day.d);const dt=dateOf(selected,day.d);
@@ -1621,6 +1681,7 @@ function render(){
     html+='<span class="lb-more">'+more.join('')+'</span>';
    }
    html+='</div>';
+   html+=hrZoneStrip(l,t);
    if(l.note)html+='<div class="log-note">'+escH(l.note)+'</div>';
    html+='</div></div>';
    return html;
