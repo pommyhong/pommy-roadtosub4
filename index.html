@@ -333,15 +333,21 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .hz-over{color:#d62a0e;font-weight:700}
 .hz-in{color:#2faa72;font-weight:700}
 /* ── เพซ × หัวใจเป้าหมาย (ท่า 1: สเปกตรัมบน + ตารางล่าง · 29/08) ── */
+/* การ์ดเดียวครอบทั้ง section — เดิมเป็น 5 ก้อนลอยเรียงกัน ไม่มีอะไรบอกว่าเป็นเรื่องเดียวกัน
+   ใช้ pattern เดียวกับ .wkh / .wk-list (ขาว · border --line · radius 16) ให้เข้าชุดกับที่เหลือ */
+.pz-card{background:#fff;border:1px solid var(--line);border-radius:16px;
+ padding:var(--s-4);margin:var(--s-4) 0 0}
+.pz-div{height:1px;background:#f0eee8;margin:13px 0}
+/* แถบอากาศ = inset ในการ์ด — พื้นเข้มกว่านิดเดียว ไม่ต้องมี border ซ้อน border ของการ์ด */
 .wx{display:flex;align-items:center;justify-content:space-between;gap:12px;
- margin:16px 0 0;padding:10px 13px;border-radius:11px;background:#faf9f5;border:1px solid var(--line)}
+ padding:10px 13px;border-radius:10px;background:#faf9f5}
 .wx-l{font-size:11px;font-weight:600;color:var(--ink-2)}
 .wx-l s,.wx-r s{display:block;text-decoration:none;font-weight:500;font-size:9.5px;color:var(--faint);margin-top:2px}
 .wx-r{text-align:right}
 .wx-r b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
 .wx-r.warn b{color:#b07700}
-.wx-n{font-size:10px;color:var(--muted);line-height:1.5;margin-top:6px}
-.pz-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:16px 0 9px}
+.wx-n{font-size:10px;color:var(--muted);line-height:1.5;margin-top:7px;padding-left:2px}
+.pz-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 12px}
 .pz-head .t{font-size:11px;font-weight:600;color:var(--ink-2)}
 .pz-vdot{font-size:10px;font-weight:700;color:#fff;background:var(--ink);
  border-radius:5px;padding:2px 7px;letter-spacing:.2px}
@@ -356,14 +362,14 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
  border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px #fff}
 .pz-x{display:flex;font-size:9.5px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:5px}
 .pz-x span{text-align:center}
-.pz-key{font-size:10px;color:var(--ink-2);margin-top:9px;line-height:1.5;
+.pz-key{font-size:10px;color:var(--ink-2);margin-top:8px;line-height:1.5;
  display:flex;align-items:baseline;gap:6px}
 .pz-key .dot{width:7px;height:7px;border-radius:50%;background:var(--ink);
  flex-shrink:0;transform:translateY(-1px)}
 .pz-key b{color:var(--ink)}
-.pz-rows{margin-top:13px;border-top:1px solid #f0eee8}
+.pz-rows{margin-top:0}
 .pz-r{display:grid;grid-template-columns:19px 1fr 84px;align-items:center;gap:10px;
- padding:8px 0;border-bottom:1px solid #f4f2ec}
+ padding:6px 0;border-bottom:1px solid #f4f2ec}
 .pz-r:last-child{border-bottom:0}
 .pz-r .k{font-size:12px;font-weight:700}
 .pz-r .p{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
@@ -672,7 +678,10 @@ function paceHRRef(wi){
    }
   }
  }
- let h='';
+ // หัวข้อขึ้นก่อนเสมอ — เดิมกล่องอากาศมาก่อนหัวข้อ เลยไม่รู้ว่ามันเกี่ยวกับอะไร
+ let h='<div class="pz-card"><div class="pz-head"><span class="t">เพซเป้าหมาย × หัวใจเป้าหมาย</span>'+
+  '<span class="pz-vdot">VDOT 40 <s>· recalc 19 ส.ค.</s></span>'+
+  '<span class="t" style="color:var(--faint);font-weight:500">นาที/กม. · bpm</span></div>';
  // แถบอากาศวันนี้ — ตอบ "จะรู้ก่อนวิ่งได้ยังไงว่า cap เท่าไหร่" (ปอมถาม 29/08)
  if(WX&&WX.days){
   const today=localYMD_(), d=WX.days[today];
@@ -688,9 +697,7 @@ function paceHRRef(wi){
    }
   }
  }
- h+='<div class="pz-head"><span class="t">เพซเป้าหมาย × หัวใจเป้าหมาย</span>'+
-  '<span class="pz-vdot">VDOT 40 <s>· recalc 19 ส.ค.</s></span>'+
-  '<span class="t" style="color:var(--faint);font-weight:500">นาที/กม. · bpm</span></div>';
+ h+='<div class="pz-div"></div>';
  const seg=[];
  WZ.forEach((z,i)=>{
   const gap=i===0?hrPos(z.lo):hrPos(z.lo)-hrPos(WZ[i-1].hi);
@@ -702,8 +709,8 @@ function paceHRRef(wi){
                 :'<span style="flex:0 0 '+x.w+'%;background:#eeece6"></span>').join('')+'</div>';
  if(mk)h+='<div class="pz-mk" style="left:'+hrPos(mk.hr)+'%"></div>';
  h+='</div><div class="pz-x">'+
-  seg.map(x=>x.z?'<span style="flex:0 0 '+x.w+'%">'+x.z.lo+'–'+x.z.hi+'</span>'
-                :'<span style="flex:0 0 '+x.w+'%"></span>').join('')+'</div>';
+  seg.map(x=>x.z&&x.w>=14?'<span style="flex:0 0 '+x.w+'%">'+x.z.lo+'–'+x.z.hi+'</span>'
+                         :'<span style="flex:0 0 '+x.w+'%"></span>').join('')+'</div>';
  if(mk){
   h+='<div class="pz-key"><span class="dot"></span><span>เส้นดำ = <b>long run '+
    mk.dt.getDate()+' '+MONTHS[mk.dt.getMonth()]+'</b> · HR เฉลี่ย <b>'+mk.hr+'</b> → โซน <b>'+
@@ -711,10 +718,10 @@ function paceHRRef(wi){
  }else{
   h+='<div class="pz-key" style="color:var(--faint)"><span>สัปดาห์นี้ยังไม่มี long run — วิ่งแล้วจะมีเส้นดำบอกว่า HR เฉลี่ยตกโซนไหน</span></div>';
  }
- h+='<div class="pz-rows">'+P.map(z=>
+ h+='<div class="pz-div"></div><div class="pz-rows">'+P.map(z=>
   '<div class="pz-r"><span class="k" style="color:'+z.c+'">'+z.k+'</span>'+
   '<div class="p">'+z.pace+'<s>'+z.n+'</s></div>'+
-  '<div class="h"><b>'+(z.hi>0?z.lo+'–'+z.hi:'—')+'</b><s>'+z.pct+'</s></div></div>').join('')+'</div>';
+  '<div class="h"><b>'+(z.hi>0?z.lo+'–'+z.hi:'—')+'</b><s>'+z.pct+'</s></div></div>').join('')+'</div></div>';
  return h;
 }
 const SESS={
