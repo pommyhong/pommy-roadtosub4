@@ -333,6 +333,14 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .hz-over{color:#d62a0e;font-weight:700}
 .hz-in{color:#2faa72;font-weight:700}
 /* ── เพซ × หัวใจเป้าหมาย (ท่า 1: สเปกตรัมบน + ตารางล่าง · 29/08) ── */
+.wx{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ margin:16px 0 0;padding:10px 13px;border-radius:11px;background:#faf9f5;border:1px solid var(--line)}
+.wx-l{font-size:11px;font-weight:600;color:var(--ink-2)}
+.wx-l s,.wx-r s{display:block;text-decoration:none;font-weight:500;font-size:9.5px;color:var(--faint);margin-top:2px}
+.wx-r{text-align:right}
+.wx-r b{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.wx-r.warn b{color:#b07700}
+.wx-n{font-size:10px;color:var(--muted);line-height:1.5;margin-top:6px}
 .pz-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:16px 0 9px}
 .pz-head .t{font-size:11px;font-weight:600;color:var(--ink-2)}
 .pz-vdot{font-size:10px;font-weight:700;color:#fff;background:var(--ink);
@@ -644,6 +652,7 @@ const PLAN_START=new Date(2026,4,4); // Mon 4 May 2026
 const escH=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 // เพซเป้าหมาย × หัวใจเป้าหมาย — สเปกตรัม HR ด้านบน + ตารางเพซด้านล่าง (ท่า 1 · 29/08)
 // marker = long run ล่าสุดของสัปดาห์ที่กำลังดู · ไม่มี long = ไม่มี marker
+const localYMD_=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function paceHRRef(wi){
  const P=[
   {k:'E',c:'#2f9e6a',pace:'5:46–6:26',lo:144,hi:167,pct:'59–74%',n:'easy · long run · cap 167'},
@@ -663,7 +672,23 @@ function paceHRRef(wi){
    }
   }
  }
- let h='<div class="pz-head"><span class="t">เพซเป้าหมาย × หัวใจเป้าหมาย</span>'+
+ let h='';
+ // แถบอากาศวันนี้ — ตอบ "จะรู้ก่อนวิ่งได้ยังไงว่า cap เท่าไหร่" (ปอมถาม 29/08)
+ if(WX&&WX.days){
+  const today=localYMD_(), d=WX.days[today];
+  if(d){
+   const now=new Date().getHours();
+   const slot=now<12?'morning':'evening', o=d[slot]||d.morning||d.evening;
+   if(o){
+    const warn=o.cap>167;
+    h+='<div class="wx"><div class="wx-l">'+(slot==='morning'?'เช้ามืด':'ค่ำ')+'วันนี้'+
+     '<s>dew '+o.dew+'° · '+o.temp+'°C · ลม '+o.wind+' km/h</s></div>'+
+     '<div class="wx-r'+(warn?' warn':'')+'"><b>≤'+o.cap+'</b><s>cap · '+o.band+'</s></div></div>';
+    if(warn)h+='<div class="wx-n">อากาศ '+o.band+' → ยก cap จาก 167 เป็น '+o.cap+' ('+o.note+') · เพซจะช้าลงเองตาม HR ไม่ต้องฝืนเลขบนนาฬิกา</div>';
+   }
+  }
+ }
+ h+='<div class="pz-head"><span class="t">เพซเป้าหมาย × หัวใจเป้าหมาย</span>'+
   '<span class="pz-vdot">VDOT 40 <s>· recalc 19 ส.ค.</s></span>'+
   '<span class="t" style="color:var(--faint);font-weight:500">นาที/กม. · bpm</span></div>';
  const seg=[];
@@ -1149,6 +1174,9 @@ let done={};
 try{const s=localStorage.getItem('mp-done');if(s)done=JSON.parse(s)}catch(e){}
 // ⚠️ AUTO-GENERATED จาก Strava โดย sync-strava.js (พ่วง /run-coach) — อย่าแก้มือ
 // env:'tm'=treadmill/incline → ตัดออกจาก EF · mix:1=หลาย activity วันเดียว → ตัดจาก EF
+// พยากรณ์ dew point + HR cap ของวันนั้น — เขียนโดย sync-dashboard.js จาก weather-cache.json
+// (weather.js ดึงจาก Open-Meteo · ถ้าดึงไม่ได้ค่าจะค้างของเดิม ดู as_of)
+const WX=/*WX:START*/{ "as_of": "2026-08-29 11:26", "source": "open-meteo", "days": { "2026-08-29": { "morning": { "dew": 24.9, "temp": 26.2, "rh": 93, "wind": 8, "cap": 172, "band": "อบอ้าว", "note": "+5 จากปกติ" }, "evening": { "dew": 25.3, "temp": 27.4, "rh": 89, "wind": 6, "cap": 172, "band": "อบอ้าว", "note": "+5 จากปกติ" } }, "2026-08-30": { "morning": { "dew": 24.4, "temp": 26.5, "rh": 88, "wind": 8, "cap": 172, "band": "อบอ้าว", "note": "+5 จากปกติ" }, "evening": { "dew": 24.9, "temp": 27.5, "rh": 86, "wind": 6, "cap": 172, "band": "อบอ้าว", "note": "+5 จากปกติ" } }, "2026-08-31": { "morning": { "dew": 24.5, "temp": 26, "rh": 92, "wind": 6, "cap": 172, "band": "อบอ้าว", "note": "+5 จากปกติ" }, "evening": { "dew": 25.5, "temp": 27.6, "rh": 89, "wind": 2, "cap": 172, "band": "อบอ้าว", "note": "+5 จากปกติ" } } } }/*WX:END*/;
 const SEED=/*SEED:START*/{
  'w0d1':{km:5.02,min:31.2,hr:162,hx:173,cad:178,env:"tm",type:"easy",te:3.5,sl:84,note:"TM easy 5.0km/31:22 · 6:15/km · HR162 (backfill)"},'w0d5':{km:14.36,min:102.4,hr:169,hx:180,cad:171,elev:115,type:"long",rpe:5,te:3.8,dc:11.6,sl:81,note:"Aerobic base กลับมา · 0 soreness post-run · dc 11.6% (retro-calc)"},'w0d2':{type:"cross",te:2.7,note:"แบด Beat 17min · HR153/max188 สั้นแต่แรง (backfill)"},'w0d6':{type:"cross",te:1.7,note:"แบด Tito 85min · HR113 เบา (backfill)"},
  'w1d1':{km:6.24,min:46.7,hr:159.99,hx:174,cad:171,elev:13,mix:1,ses:[5.71,0.53],bkm:5.71,bmin:40.2,type:"easy",rpe:1,te:3.1,sl:56,note:"easy 5.7km/40:19 · 7:04/km · HR165 + jog 0.5km แยก (backfill)"},'w1d2':{km:6.66,min:46.6,hr:168,hx:182,cad:172,elev:34,type:"easy",rpe:6,te:3.3,sl:61,note:"easy effort จริง แม้ heat 31°C"},'w1d3':{km:4.03,min:41.6,hr:161,hx:196,cad:160,elev:580,type:"easy",rpe:3,te:3.6,sl:79,note:"easy 4.0km Phra Khanong สะพาน · HR161/max196 (backfill)"},'w1d6':{km:16.57,min:109.9,hr:170,hx:182,cad:176,elev:124,type:"long",rpe:6,te:4.5,dc:10.5,note:"Breakthrough — ระยะ+pace ดีขึ้น HR เท่าเดิม · dc 10.5% (retro-calc · ยัง decoupled, ดีกว่า W0 นิดเดียว)"},'w1d0':{type:"cross",te:2.1,note:"เวท 48min · HR123 · squat+deadlift+pull-up (backfill)"},
