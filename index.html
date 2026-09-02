@@ -679,7 +679,7 @@ const localYMD_=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padSt
 function paceHRRef(wi){
  const P=[
   {k:'E',c:'#2f9e6a',pace:'5:46–6:26',lo:144,hi:167,pct:'59–74%',n:'easy · long run · cap 167'},
-  {k:'M',c:'#3a86c8',pace:'5:27',      lo:169,hi:183,pct:'75–84%',n:'sub-4 ใช้ 5:41 · race cap 183'},
+  {k:'M',c:'#3a86c8',pace:'5:27',      lo:169,hi:183,pct:'75–84%',n:'race 5:30–5:34 (คอร์ส 43กม.) · cap 183'},
   {k:'T',c:'#f5a623',pace:'5:09',      lo:183,hi:189,pct:'84–88%',n:'threshold'},
   {k:'I',c:'#e63012',pace:'4:45',      lo:200,hi:208,pct:'95–100%',n:'interval'},
   {k:'R',c:'#9a968a',pace:'4:24',      lo:0,  hi:0,  pct:'—',      n:'reps สั้นเกิน HR ตามไม่ทัน'},
@@ -891,6 +891,87 @@ SHEETS.raceday={
    ['นาฬิกาชาร์จเต็ม','+ ตั้ง alarm 01:40 สองตัว'],
    ['เสื้อเปลี่ยน + ผ้าเช็ดตัว','ใส่กระเป๋าฝาก'],
    ['น้ำ + electrolyte','จิบระหว่างรอ หยุดจิบ ~04:30']]}]};
+// 🏁 แผนวิ่ง + เจล มาราธอน — ATMBKK sub-4 · set-based negative split ผูกเจล Xreal 30g · เพิ่ม 3 ก.ย. 2026
+// 1 เซท = 25 นาที = เจล 1 ซอง · เพซเป็น range (วันจริงไม่นิ่ง) · น้ำทุก 2 กม. · เผื่อคอร์ส 43 กม. · จบ 3:58
+SHEETS.marathon={
+ title:'🏁 แผนวิ่ง + เจล — มาราธอน',
+ sub:'ATMBKK · 29 พ.ย. · sub-4 · 1 เซท = 25 นาที = เจล 1 ซอง',
+ warn:'🎯 เผื่อคอร์สยาว <b>43 กม.</b> · หัวใจ <b>≤183 ชนะเพซเสมอ</b> · เวลาไว้เช็คหลวมๆ ทุก 30K ไม่ต้องไล่ทุกกิโล',
+ blocks:[
+  {k:'table',l:'ช่วง 1 · ออกตัว · 0:00–1:15',tag:'HR ≤178',rows:[
+   ['SET 1','5:36–5:40','กม.0–4.4 · จบ 0:25'],
+   ['SET 2','5:36–5:40','กม.4.4–8.9 · จบ 0:50'],
+   ['SET 3','5:36–5:40','กม.8.9–13.3 · จบ 1:15']]},
+  {k:'table',l:'ช่วง 2 · settle เข้า MP · 1:15–2:30',tag:'HR ≤181',rows:[
+   ['SET 4','5:30–5:34','กม.13.3–17.8 · จบ 1:40'],
+   ['SET 5','5:30–5:34','กม.17.8–22.4 · จบ 2:05'],
+   ['SET 6','5:30–5:34','กม.22.4–26.9 · จบ 2:30']]},
+  {k:'table',l:'ช่วง 3 · push ถ้าหัวใจให้ · 2:30–3:45',tag:'HR ≤183',rows:[
+   ['SET 7','5:26–5:30','กม.26.9–31.5 · จบ 2:55'],
+   ['SET 8','5:26–5:30','กม.31.5–36.0 · จบ 3:20'],
+   ['SET 9','5:26–5:30','กม.36.0–40.6 · จบ 3:45']]},
+  {k:'table',l:'ช่วง 4 · 🏁 ปิดจ๊อบ · 3:45–3:58',tag:'หมดถัง',rows:[
+   ['SET 10','เท่าที่ไหว','กม.40.6–43.0 · จบ 3:58']],hit:0},
+  {k:'tips',l:'💧 น้ำ + เจล',rows:[
+   'น้ำทุก <b>2 กม.</b> (2,4,6…42) · 1 เซทผ่าน ~2 จุดน้ำ',
+   'กินเจลจบทุกเซท → รับ<b>น้ำเปล่า</b>จุดถัดไป (ไม่ใช่สปอร์ตดริงก์)']},
+  {k:'table',l:'📍 Checkpoint — ไม่ต้องเป๊ะ มีช่องหายใจ',rows:[
+   ['Half 21.1','เป้า 1:58','เร็วกว่า 1:55 = ออกร้อน · ช้ากว่า 2:01 = ผ่อนได้'],
+   ['30K','เป้า 2:47','จุด bonk เดิม · ช้ากว่า 2:51 = เปลี่ยนเป็นจบสวย'],
+   ['40K','เป้า 3:42','ช้ากว่า 3:47 = sub-4 หลุด · ยิ้มเข้าเส้น'],
+   ['Finish 43','3:58','🎯 ใต้ 4:00']],hit:3},
+  {k:'tips',l:'🧠 สมาธิ · ทีละช่วง',rows:[
+   '<b>ช่วง 1</b> ปล่อยคนแซง อยู่กับลมหายใจ + cadence 174–176 · เช็คนาฬิกาน้อยๆ',
+   '<b>ช่วง 2</b> เข้าจังหวะ กินเจลตรงเวลาไม่รอหิว · โฟกัสทีละเซท',
+   '<b>ช่วง 3</b> เริ่มเจ็บ = ปกติ · คิดแค่เซทตรงหน้า ไม่คิดถึงเส้นชัย · HR นำ ไม่ใช่ขา',
+   '<b>ช่วง 4</b> ขุดใจ · กม.40 นาฬิกาจะโกหกว่าใกล้ เหลืออีก ~1 เซท']},
+  {k:'tips',l:'🧭 ใช้ฟีลได้ตอนไหน',rows:[
+   '<b>ช่วง 1–2 ห้ามใช้ฟีล</b> — สบาย = กับดัก ยึดนาฬิกา+HR เท่านั้น',
+   '<b>ช่วง 3–4 ใช้ใจได้</b> — แต่เป็นฟีล “ทน/สู้” ไม่ใช่ “เร่ง” · HR ยังเป็นเบรก']},
+  {k:'tips',l:'🌉 สะพาน / ทางไต่',rows:[
+   'ขาขึ้น: ปล่อยเพซช้าลง 10–15 วิ ยึด HR ไม่ฝืน · ขาลง: เก็บคืน ไม่เบรก',
+   '⚠️ กม.สะพานจริงของ ATMBKK ยังไม่ปัก — รอ route map ทางการแล้วมาใส่'],},
+  {k:'tips',l:'🍯 Fuel สรุป',rows:[
+   'เจล <b>Xreal 30g</b> ทุก 25 นาที (จบทุกเซท) = ~82g คาร์บ/ชม.',
+   'พก <b>11 ซอง</b> (กินจริง 10 · เผื่อหล่น 1) + pre-start 1 ซอง',
+   'เกลือแร่ <b>1 แคป/ชม.</b> (~4 แคป) · Carb-load 2 วันก่อน 10–12 g/kg',
+   'ห้ามเปลี่ยนยี่ห้อเจลวัน race · ซ้อมกินให้ครบใน long run W23/25/27']}]};
+
+// 🍚 โหลดคาร์บ + ซ้อมกิน — reference สำหรับ long run / 2 วันก่อน race · เนื้อจาก running-fueling.md (65 kg) · กลับมา 3 ก.ย.
+SHEETS.load={
+ title:'🍚 โหลดคาร์บ + ซ้อมกิน',
+ sub:'ใช้ตอน long run / 2 วันก่อน race · 65 kg · ไม่กิน peanut butter',
+ warn:'🍯 ซ้อมกินตอน long run W19–27 — ลำไส้ปรับตัว 6–8 สัปดาห์ · ห้ามรอวัน race ค่อยลอง',
+ blocks:[
+  {k:'table',l:'คาร์บวันก่อน · ตามชนิดที่ซ้อม',tag:'g/วัน',rows:[
+   ['Easy <60′','4–5 g/kg','260–325 g'],
+   ['Quality','6–7 g/kg','390–455 g'],
+   ['Long 90–120′','7–8 g/kg','455–520 g'],
+   ['Long >2 ชม','8–10 g/kg','520–650 g'],
+   ['Race มาราธอน','10–12 g/kg','650–780 g']]},
+  {k:'table',l:'🍯 ซ้อมกินระหว่าง long run',tag:'Xreal 30g',rows:[
+   ['W19 · 24 กม.','40 g/ชม.','gel ~2 ซอง'],
+   ['W21 · 24 กม.','50 g/ชม.','เริ่มกินตอน MP ด้วย'],
+   ['W23 · 28 กม.','70 g/ชม.','GATE: MP ที่ HR≤183'],
+   ['W25 · 30 กม.','80 g/ชม.','GATE: ท้องรับไหว'],
+   ['W27 · 32 กม.','90 g/ชม.','🎯 rehearsal เต็ม']]},
+  {k:'list',l:'🍽 มื้อเย็นก่อน long (~150–180g)',sep:'—',rows:[
+   ['A · ไทย','ข้าว 2 ทัพพี + ข้าวผัด/ผัดไทย + น้ำผลไม้ ≈165g'],
+   ['B · Pasta','สปาเกตตี้ 200g + ขนมปังกระเทียม + ผลไม้ ≈145g'],
+   ['C · ง่าย','ข้าวมันไก่ + น้ำเต้าหู้+ปาท่องโก๋ + กล้วย ≈175g']]},
+  {k:'list',l:'🌅 เช้าก่อนวิ่ง (-60–90′ · 60–90g)',sep:'·',rows:[
+   ['กล้วยหอม 1–2 ลูก','25–50g'],
+   ['ขนมปังขาว + แยม','40g'],
+   ['ข้าวต้มกุ้งใส 1 ถ้วย','50g']]},
+  {k:'list',l:'❌ เลี่ยงเช้าวันวิ่ง',bad:1,rows:[
+   ['นม / โยเกิร์ต','lactose ย่อยช้า'],
+   ['ไข่ดาว / ของทอด','ไขมันย่อยช้า'],
+   ['ผลไม้ fiber สูง (แอปเปิล/ฝรั่ง)','ท้องอืด']]},
+  {k:'tips',l:'📌 จำไว้',rows:[
+   'gel ตามด้วย<b>น้ำเปล่า</b> · ห้ามเปลี่ยนยี่ห้อวัน race',
+   'evening run ≥8 กม. → pre-fuel 30–60g ก่อนวิ่ง 60–90 นาที',
+   'หลังวิ่ง 30 นาที: 3:1 carb:protein — ข้าว+ไก่+ไข่ / นมช็อค+กล้วย']}]};
+
 const PHCOLOR={Base:'#2f9e6a',Threshold:'#cf8f00','10K-Peak':'#e63012',Recovery:'#3a86c8','M-Build':'#2f9e6a','M-Peak':'#e63012',Taper:'#3a86c8'};
 // races (A-race = ATM marathon) · เพซเป้าหมายตามประเภท (ใช้ใน schedule)
 const RACES=[
@@ -1088,7 +1169,7 @@ const W=[
  {d:2,t:'easy',k:9,m:56,ti:'Easy 55 นาที',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:6,m:38,ti:'Easy 35 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:24,m:148,ti:'Long Run 24km — first MP block',de:'18km Easy (6:15) + 6km @ MP (5:41/km) — feel marathon pace ในขาเหนื่อย · 🍯 gut training เริ่ม: 40g คาร์บ/ชม.',ca:'long'},
+ {d:5,t:'long',k:24,m:148,ti:'Long Run 24km — first MP block',de:'18km Easy (6:15) + 6km @ MP (5:33/km) — feel marathon pace ในขาเหนื่อย · 🍯 gut training เริ่ม: 40g คาร์บ/ชม.',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:20,p:'Recovery',f:'Deload — recovery week',k:45,ls:48,d:[
@@ -1106,7 +1187,7 @@ const W=[
  {d:2,t:'easy',k:9,m:56,ti:'Easy 55 นาที',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:7,m:45,ti:'Easy 45 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:24,m:148,ti:'Long Run 24km — 8km MP',de:'16km Easy + 8km @ MP (5:41) — เริ่มยาวขึ้น · 🍯 50g คาร์บ/ชม. (กินตอน MP ด้วย)',ca:'long'},
+ {d:5,t:'long',k:24,m:148,ti:'Long Run 24km — 8km MP',de:'16km Easy + 8km @ MP (5:33) — เริ่มยาวขึ้น · 🍯 50g คาร์บ/ชม. (กินตอน MP ด้วย)',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:22,p:'M-Build',f:'Long run 26 — ยังไม่เคย',k:62,ls:75,d:[
@@ -1124,7 +1205,7 @@ const W=[
  {d:2,t:'easy',k:10,m:62,ti:'Easy 60 + 4 Strides',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:7,m:45,ti:'Easy 45 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:28,m:175,ti:'Long Run 28km — 10km MP',de:'18km Easy + 10km @ MP · 🍯 70g คาร์บ/ชม. · GATE: MP ที่ HR≤183 ผ่านมั้ย',ca:'long'},
+ {d:5,t:'long',k:28,m:175,ti:'Long Run 28km — 10km MP',de:'18km Easy + 10km @ MP (5:33) · 🍯 Xreal 30g · เป้า 70g คาร์บ/ชม. · GATE: MP ที่ HR≤183 ผ่านมั้ย',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:24,p:'Recovery',f:'Deload before peak weeks',k:50,ls:55,d:[
@@ -1142,7 +1223,7 @@ const W=[
  {d:2,t:'easy',k:10,m:62,ti:'Easy 60 นาที',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:7,m:45,ti:'Easy 45 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:30,m:188,ti:'Long Run 30km — 10km MP',de:'20km Easy + 10km @ MP — race rehearsal · 🍯 80g คาร์บ/ชม. · GATE: ท้องรับไหวมั้ย',ca:'long'},
+ {d:5,t:'long',k:30,m:188,ti:'Long Run 30km — 10km MP',de:'20km Easy + 10km @ MP (5:30–5:34) — race rehearsal · 🍯 Xreal 30g ทุก 25 นาที · เป้า 80g คาร์บ/ชม. · GATE: ท้องรับไหวมั้ย',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:26,p:'M-Peak',f:'MP focus — 14km MP block',k:65,ls:84,d:[
@@ -1160,7 +1241,7 @@ const W=[
  {d:2,t:'easy',k:10,m:62,ti:'Easy 60 นาที',de:'',ca:'easy'},
  {d:3,t:'rest',k:0,m:0,ti:'พัก',de:'',ca:'rest'},
  {d:4,t:'easy',k:7,m:45,ti:'Easy 45 นาที',de:'',ca:'easy'},
- {d:5,t:'long',k:32,m:200,ti:'Long Run 32km — final big long',de:'22km Easy + 10km @ MP — practice everything (gel/shoes/outfit) · 🍯 90g คาร์บ/ชม. · 🎯 GATE ตัดสิน sub-4: ท้าย 10km @5:41 ที่ HR≤183',ca:'long'},
+ {d:5,t:'long',k:32,m:200,ti:'Long Run 32km — final big long',de:'22km Easy + 10km @ MP — practice everything (Xreal 30g/shoes/outfit) · 🍯 90g คาร์บ/ชม. · 🎯 GATE ตัดสิน sub-4: ท้าย 10km @5:30–5:34 ที่ HR≤183',ca:'long'},
  {d:6,t:'rest',k:0,m:0,ti:'พักสนิท',de:'',ca:'rest'},
 ]},
 {w:28,p:'Taper',f:'Taper start — ลด volume -20%',k:50,ls:60,d:[
@@ -1188,7 +1269,7 @@ const W=[
  {d:3,t:'easy',k:4,m:25,ti:'Easy 25 + 4 Strides',de:'6:25/km',ca:'easy'},
  {d:4,t:'rest',k:0,m:0,ti:'พักสนิท + Carb Load D1',de:'8–10g/kg = 480–600g — เตรียม bib/เสื้อผ้า',ca:'race'},
  {d:5,t:'easy',k:3,m:20,ti:'Shakeout 3km + Carb Load D2',de:'4×100m strides — 480–600g คาร์บ',ca:'race'},
- {d:6,t:'race',k:42,m:240,ti:'🏁 ATMBKK Marathon Sub-4',de:'Even pace 5:41/km — กม.1–10 ระวังอย่าเร็ว, กม.10–30 ล็อค pace, กม.30–42 ขุด',ca:'race'},
+ {d:6,t:'race',k:42,m:240,ti:'🏁 ATMBKK Marathon Sub-4',de:'Negative split ผูกเจล — เริ่ม 5:38 ไล่ขึ้น 5:28 · 10 เซท × 25 นาที · หัวใจ ≤183 · เผื่อคอร์ส 43 กม. → กดการ์ด “แผนวิ่ง + เจล” ล่างสุด',ca:'race'},
 ]},
 ];
 
@@ -1306,6 +1387,8 @@ function efUsable(l){
  return true;
 }
 function cumKm(){let s=0;W.forEach((w,wi)=>w.d.forEach(day=>{const l=getLog(wi,day.d);if(l&&l.km>0)s+=l.km}));return s}
+// ระยะที่ "แผนสั่งไว้" นับถึงวันนี้ (รวมวันที่ผ่านมาแล้วเท่านั้น) — เทียบกับ cumKm ให้รู้ว่านำ/ตามแผนรวมทั้งซีซั่น
+function cumPlanToDate(){const now=new Date();now.setHours(23,59,59,999);let s=0;W.forEach((w,wi)=>w.d.forEach(day=>{const d=dateOf(wi,day.d);if(d<=now)s+=day.k||0}));return s}
 function nextRace(){const now=new Date();now.setHours(0,0,0,0);let best=null;W.forEach((w,wi)=>w.d.forEach(day=>{if(day.t!=='race')return;const d=dateOf(wi,day.d);d.setHours(0,0,0,0);if(d>=now&&(!best||d<best.d))best={d:d,ti:day.ti}}));return best}
 
 function jumpToday(){
@@ -1535,7 +1618,9 @@ function renderProg(){
  const adays=Math.max(0,Math.round((aR.date-t0)/864e5));   // (เก็บไว้ใช้ในที่อื่น)
  const ef=efSeries();
  // editorial strip — เส้นขนคั่นแทนการ์ด (การ์ดเดิมหน้าตาซ้ำ hero + ตัวเลข sessions ซ้ำ % ใน hero)
- let h='<div class="ps"><div class="ps-n" style="color:#2faa72">'+(km?km.toFixed(1):'0')+'</div><div class="ps-k">km สะสม</div></div>';
+ const _cumPlan=cumPlanToDate(),_cumDelta=km-_cumPlan;
+ const _cumTxt=_cumPlan>0?(Math.abs(_cumDelta)<1?' · ตรงแผน':(_cumDelta>0?' · +'+Math.round(_cumDelta)+' นำแผน':' · ขาด '+Math.round(-_cumDelta)+' km')):'';
+ let h='<div class="ps"><div class="ps-n" style="color:#2faa72">'+(km?km.toFixed(1):'0')+'</div><div class="ps-k">km สะสม'+_cumTxt+'</div></div>';
  h+='<div class="ps"><div class="ps-n">'+dn+'<small>/'+tot+'</small></div><div class="ps-k">sessions</div></div>';
  // countdown
  // decoupling ของ long run ล่าสุด — แทน EF ในแถบบนสุด
@@ -1969,6 +2054,19 @@ function render(){
    html+='<div class="section-l">🏁 Race week</div>';
    html+=_card('fuel','🍚','กินอะไร ศุกร์ → เสาร์ → วันแข่ง',_sub+' · ทุกมื้อ + กรัม + ของห้ามกิน + ตัวสลับ');
    html+=_card('raceday','🕐','ไทม์ไลน์วันแข่ง','ปืน 05:00 · ตื่นกี่โมง ออกกี่โมง วอมกี่โมง + ของที่ต้องเตรียม');
+  }
+ }
+
+ // 🏁 แผนวิ่ง + เจล มาราธอน — เมนูล่างสุด · โผล่จนกว่า ATMBKK จะจบ · เพิ่ม 3 ก.ย.
+ const _mR=RACES.find(r=>r.a&&!r.done);
+ if(_mR){
+  const _mdd=Math.round((_mR.date-new Date(new Date().setHours(0,0,0,0)))/864e5);
+  if(_mdd>=0){
+   const _mgo='<span class="fuel-cta-go" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5 10.5 8 6 12.5"/></svg></span>';
+   const _msub=_mdd===0?'วันนี้แข่ง 🏁 · เจลทุก 25 นาที · หัวใจ ≤183':'อีก '+_mdd+' วัน · 10 เซท × 25 นาที · เจลผูกเพซ · หัวใจ ≤183';
+   html+='<div class="section-l">🏁 มาราธอน · sub-4</div>';
+   html+='<button class="fuel-cta" onclick="openSheet(\'marathon\')"><span class="fuel-cta-ic">🏁</span><span><span class="fuel-cta-t">แผนวิ่ง + เจล วันแข่ง</span><span class="fuel-cta-s">'+_msub+'</span></span>'+_mgo+'</button>';
+   html+='<button class="fuel-cta" onclick="openSheet(\'load\')"><span class="fuel-cta-ic">🍚</span><span><span class="fuel-cta-t">โหลดคาร์บ + ซ้อมกิน</span><span class="fuel-cta-s">ใช้ตอน long run / 2 วันก่อน race · โหลด + gut training รายวีค</span></span>'+_mgo+'</button>';
   }
  }
 
