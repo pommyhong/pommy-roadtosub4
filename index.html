@@ -915,11 +915,21 @@ SHEETS.marathon={
   {k:'tips',l:'💧 น้ำ + เจล',rows:[
    'น้ำทุก <b>2 กม.</b> (2,4,6…42) · 1 เซทผ่าน ~2 จุดน้ำ',
    'กินเจลจบทุกเซท → รับ<b>น้ำเปล่า</b>จุดถัดไป (ไม่ใช่สปอร์ตดริงก์)']},
-  {k:'table',l:'📍 Checkpoint — ไม่ต้องเป๊ะ มีช่องหายใจ',rows:[
-   ['Half 21.1','เป้า 1:58','เร็วกว่า 1:55 = ออกร้อน · ช้ากว่า 2:01 = ผ่อนได้'],
-   ['30K','เป้า 2:47','จุด bonk เดิม · ช้ากว่า 2:51 = เปลี่ยนเป็นจบสวย'],
-   ['40K','เป้า 3:42','ช้ากว่า 3:47 = sub-4 หลุด · ยิ้มเข้าเส้น'],
-   ['Finish 43','3:58','🎯 ใต้ 4:00']],hit:3},
+  {k:'table',l:'📍 Checkpoint ทุก 5K',tag:'เวลาสะสม',rows:[
+   ['5K','28:10','เพซ 5:38'],
+   ['10K','56:20','เพซ 5:38'],
+   ['15K','1:24:20','เพซ 5:32'],
+   ['20K','1:52:00','เพซ 5:32'],
+   ['21.1 Half','1:58:00','ครึ่งทาง'],
+   ['25K','2:19:40','เพซ 5:32'],
+   ['30K','2:47:05','เพซ 5:28 · จุด bonk เดิม'],
+   ['35K','3:14:25','เพซ 5:28'],
+   ['40K','3:41:45','เพซ 5:28'],
+   ['Finish 43','3:58:10','🎯 ใต้ 4:00']],hit:9},
+  {k:'tips',l:'⏱ อ่าน checkpoint ยังไง',rows:[
+   'ไม่ต้องเป๊ะทุกจุด — ยึด HR + ฟีล · เวลาไว้เช็คหลวมๆ ทุก 5K ที่ป้าย',
+   'ช้ากว่าเป้า 1–2 นาที ที่ 30K = ยังไหว · เกินนั้น (>2:51) เปลี่ยนเป็นจบสวย ไม่เครียด',
+   'เวลาทุกช่องคิดเผื่อคอร์สยาว 43 กม.แล้ว — กม.40 นาฬิกาจะขึ้น ~43 อย่าตกใจ']},
   {k:'tips',l:'🧠 สมาธิ · ทีละช่วง',rows:[
    '<b>ช่วง 1</b> ปล่อยคนแซง อยู่กับลมหายใจ + cadence 174–176 · เช็คนาฬิกาน้อยๆ',
    '<b>ช่วง 2</b> เข้าจังหวะ กินเจลตรงเวลาไม่รอหิว · โฟกัสทีละเซท',
@@ -990,6 +1000,12 @@ const UPPER_ROUTINE=[
  {l:'Pull · หลังกว้าง (V-taper)',items:[['Pull-up / Lat pulldown','3 × 8–10'],['Seated cable row','3 × 10'],['Face pull','3 × 15']]},
  {l:'Shoulder · ไหล่สวย + capped',items:[['Overhead press','3 × 8'],['Lateral raise','3 × 12–15'],['Rear-delt fly','3 × 12']]},
  {l:'Rotation · power ตบ (แบด)',items:[['Cable wood-chop','3 × 10 /ข้าง'],['Band external rotation','3 × 15'],['Scap push-up','2 × 12']]},
+];
+// 🧘 ยืดเหยียด (static) — ท่าเฉพาะปอม (ITB history + เท้าแบน) · เพิ่ม 3 ก.ย. 2026
+const STRETCH_ROUTINE=[
+ {l:'ขาท่อนล่าง · เท้าแบนโหลดหนัก',items:[['น่อง gastroc','ดันกำแพง เข่าตรง · 30 วิ /ข้าง'],['น่อง soleus','ท่าเดิม เข่างอ · 30 วิ /ข้าง'],['ฝ่าเท้า plantar','เหยียบลูกบอลคลึง + ดึงนิ้วเท้าขึ้น · 30 วิ']]},
+ {l:'สะโพก · ค้ำ ITB (จุดเฝ้าระวัง)',items:[['Glute / piriformis','figure-4 นอนหงายดึงเข่า · 30 วิ /ข้าง'],['TFL (ต้นตอ ITB)','ยืนไขว้ขาเอนข้าง + foam roll · 30 วิ /ข้าง'],['Hip flexor','couch / lunge stretch · 30 วิ /ข้าง']]},
+ {l:'หลังต้นขา',items:[['Hamstring','ยืดขาตรง ไม่โก่งหลัง · 30 วิ /ข้าง'],['Quad','ยืนดึงส้นเข้าก้น · 30 วิ /ข้าง']]},
 ];
 
 // d=mon0..sun6, t=type, k=km, m=min, ti=title, de=desc, al=alt, ca=carb
@@ -2039,6 +2055,25 @@ function render(){
   _wH+='<div class="weights-note">'+(wMode==='upper'?'🏸 Upper: ตบแรงขึ้น (lat + rotation + rotator cuff) · หลัง/ไหล่ V-taper · ไม่เน้นแขน (เลี่ยงก้ามปู) · แทรกวันที่ไม่ชน quality/long':(isLight?'🟡 Deload week — ลด volume 30% (set น้อยลง หรือ weight เบาลง)':'RPE 7 · compound หนักก่อน → accessory + glute med → plyo ปิดท้าย'))+'</div>';
   _wH+='</div>';
   html+=secHead('weights','ท่าเวทประจำสัปดาห์',_wToday,_wToday?'วันนี้วันเวท':'')+secWrap('weights',_wToday,_wH);
+ }
+
+ // 🧘 ยืดเหยียด (static) — ต่อจากท่าเวท · ท่าเฉพาะปอม + timing ปรับตามเฟส · เพิ่ม 3 ก.ย.
+ {
+  const _stTiming = w.p==='Taper'
+    ? '🟡 <b>Taper</b> — ยืด “ตื้น” maintain (ค้าง 10–15 วิ) · ห้ามยืดลึกใหม่ เสี่ยงกล้ามหลวม/economy เปลี่ยน'
+    : w.p==='Recovery'
+    ? '✅ <b>Deload</b> — ยืด “ลึก” ได้เต็ม (ค้าง 30–60 วิ) · load ต่ำ ร่างกายมีเวลา adapt แก้จุดตึงสะสมช่วงนี้เลย'
+    : '💡 ยืด “ลึก” วันแยก/deload (30–60 วิ) · หลังวิ่งยืด “เบา” พอ · <b>ก่อนวิ่งใช้ dynamic ไม่ใช่ static</b>';
+  let _stH='<div class="weights-card">';
+  _stH+='<div class="weights-note" style="margin-top:0">'+_stTiming+'</div>';
+  STRETCH_ROUTINE.forEach(grp=>{
+   _stH+='<div class="weights-grp"><div class="weights-grp-l">'+grp.l+'</div>';
+   grp.items.forEach(it=>{_stH+='<div class="weights-row"><b>'+it[0]+'</b><span>'+it[1]+'</span></div>'});
+   _stH+='</div>';
+  });
+  _stH+='<div class="weights-note">❌ ก่อนวิ่ง/วันแข่ง = dynamic เท่านั้น (static ก่อนวิ่งลด power) · ⚠️ ITB ยืดตรงๆ ไม่ได้ = คลาย TFL+glute · ตึงกลับ = glute อ่อน ไม่ใช่ยืดน้อย · <b>ยืดลึกครั้งสุดท้าย ≥10 วันก่อน race</b></div>';
+  _stH+='</div>';
+  html+=secHead('stretch','ยืดเหยียด (static)',false,'ITB + เท้าแบน · ปรับตามเฟส')+secWrap('stretch',false,_stH);
  }
 
  // 🍚 การ์ดกิน race week — เมนูล่างสุดสุด · กดแล้วเด้ง bottom sheet · หายเองหลังแข่งจบ
