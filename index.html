@@ -1467,7 +1467,7 @@ function nextRace(){const now=new Date();now.setHours(0,0,0,0);let best=null;W.f
 function jumpToday(){
  const cw=curWeek();
  if(cw<0||cw>=W.length)return;
- selected=cw;render();
+ selected=cw;window.__mo=0;render();                                // รีเซ็ต offset ปฏิทินด้วย ไม่งั้นค้างเดือนที่เลื่อนไว้
  setTimeout(()=>{
   const row=document.querySelector('.wk-row.today');
   if(row){row.classList.add('jump-hi');row.scrollIntoView({behavior:'smooth',block:'center'});}
@@ -1494,7 +1494,7 @@ function jumpDay(wi,di){
  },160);
 }
 function moveMonth(n){                                              // กันเลื่อนออกนอกช่วงแผน (ปุ่ม disabled อยู่แล้ว · กันเรียกตรงด้วย)
- const a=dateOf(selected,0);
+ const a=(selected===curWeek())?new Date():dateOf(selected,0);     // ฐานเดียวกับ render (สัปดาห์ปัจจุบันเกาะวันนี้)
  const t=new Date(a.getFullYear(),a.getMonth()+(window.__mo||0)+n,1);
  const last=new Date(t.getFullYear(),t.getMonth()+1,0);
  if(!slotOf(t)&&!slotOf(last))return;
@@ -1833,7 +1833,8 @@ function render(){
 
  // 🗓 ปฏิทินเดือน — เห็นรูปทรง block ทั้งเดือนในภาพเดียว (สีตาม session type · ทึบ=ทำแล้ว · เส้นประ=ข้าม)
  {
-  const anchor=dateOf(selected,0);
+  // ฐานเดือนของปฏิทิน: สัปดาห์ปัจจุบัน → เกาะวันนี้จริง (กันเดือนค้างตอนสัปดาห์คร่อมเดือน) · สัปดาห์อื่น → จันทร์ของสัปดาห์นั้น · __mo = offset จากฐาน (ต้องใช้ฐานเดียวกับ moveMonth)
+  const anchor=(selected===curWeek())?new Date():dateOf(selected,0);
   const mo=new Date(anchor.getFullYear(),anchor.getMonth()+(window.__mo||0),1);
   const first=new Date(mo), last=new Date(mo.getFullYear(),mo.getMonth()+1,0);
   const lead=(first.getDay()+6)%7;                                  // ปฏิทินเริ่มจันทร์ (ตรงกับ index วันของแผน)
