@@ -1380,6 +1380,7 @@ function dateOf(wi,di){const d=new Date(PLAN_START);d.setDate(d.getDate()+wi*7+d
 function fmt(d){return d.getDate()+' '+MONTHS[d.getMonth()]}
 // pace mm:ss จากวินาที/กม. — ปัดเป็นวินาทีรวมก่อนค่อยแยกนาที (กันเคส "6:60")
 function paceFmt(sec){const s=Math.round(sec);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function fmtDur(m){if(!m)return '';if(m<60)return m+'′';const h=Math.floor(m/60),mm=m%60;return h+' ชม'+(mm?' '+mm+' นาที':'');}  // ≥60 นาที → "ชม + นาที" (อ่านง่ายกว่า 140′)
 function curWeek(){const diff=Math.floor((new Date()-PLAN_START)/(7*864e5));return Math.max(-1,Math.min(diff,W.length-1))}
 function curDay(){const diff=Math.floor((new Date()-PLAN_START)/864e5);if(diff<0||diff>=W.length*7)return -1;return diff%7}
 
@@ -1855,7 +1856,7 @@ function render(){
    html+='<div class="wk-res">'+r+'</div>';
   }else if(showDone)html+='<div class="wk-res">✓ เสร็จ</div>';
   html+='</div>';
-  const plan=[];if(day.k)plan.push(day.k+' km');if(day.m)plan.push(day.m+'′');
+  const plan=[];if(day.k)plan.push(day.k+' km');if(day.m)plan.push(fmtDur(day.m));
   html+='<div class="wk-plan">'+(isR?'พัก':(plan.join('<br>')||'—'))+'</div>';
   html+='</div>';
  });
@@ -1941,7 +1942,7 @@ function render(){
   let tip='<div class="dc-tip-title">'+DAYS[day.d]+' '+fmt(dt)+' · '+st.l+'</div>';
   if(day.t==='rest'){tip+='<div class="dc-tip-row"><span>'+escH(day.ti)+'</span></div>';}
   else{
-   tip+='<div class="dc-tip-row"><span>Plan</span><b>'+(pv?pv+' km':'—')+(day.m?' · '+day.m+'′':'')+'</b></div>';
+   tip+='<div class="dc-tip-row"><span>Plan</span><b>'+(pv?pv+' km':'—')+(day.m?' · '+fmtDur(day.m):'')+'</b></div>';
    if(lg&&lg.km>0){
     const _pkm=lg.bkm||lg.km,_pmin=lg.bmin||lg.min;const pace=paceFmt(_pmin*60/_pkm);
     tip+='<div class="dc-tip-row"><span>Actual</span><b>'+lg.km+' km · '+pace+'/km</b></div>';
