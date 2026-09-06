@@ -1380,7 +1380,7 @@ function dateOf(wi,di){const d=new Date(PLAN_START);d.setDate(d.getDate()+wi*7+d
 function fmt(d){return d.getDate()+' '+MONTHS[d.getMonth()]}
 // pace mm:ss จากวินาที/กม. — ปัดเป็นวินาทีรวมก่อนค่อยแยกนาที (กันเคส "6:60")
 function paceFmt(sec){const s=Math.round(sec);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-function fmtDur(m){if(!m)return '';if(m<60)return m+'′';const h=Math.floor(m/60),mm=m%60;return h+' ชม'+(mm?' '+mm+' นาที':'');}  // ≥60 นาที → "ชม + นาที" (อ่านง่ายกว่า 140′)
+function fmtDur(m){if(!m)return '';const h=Math.floor(m/60),mm=m%60;return h?h+'h'+(mm?' '+mm+'m':''):mm+'m';}  // สากล: 140→"2h 20m" · 60→"1h" · 55→"55m" (อ่านง่ายกว่า 140′ · ไม่ชนกับเพซ 5:33)
 function curWeek(){const diff=Math.floor((new Date()-PLAN_START)/(7*864e5));return Math.max(-1,Math.min(diff,W.length-1))}
 function curDay(){const diff=Math.floor((new Date()-PLAN_START)/864e5);if(diff<0||diff>=W.length*7)return -1;return diff%7}
 
