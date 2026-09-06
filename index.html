@@ -732,7 +732,9 @@ function paceHRRef(wi){
      '<s>dew '+o.dew+'° · '+o.temp+'°C · ลม '+o.wind+' km/h <i>· พยากรณ์เฉลี่ยช่วง '+
      (slot==='morning'?'05-07':'18-21')+' น.</i></s></div>'+
      '<div class="wx-r'+(warn?' warn':'')+'"><b>≤'+o.cap+'</b><s>cap · '+o.band+'</s></div></div>';
-    if(warn)h+='<div class="wx-n">อากาศ '+o.band+' → ยก cap จาก 167 เป็น '+o.cap+' ('+o.note+') · เพซจะช้าลงเองตาม HR ไม่ต้องฝืนเลขบนนาฬิกา</div>';
+    const rpeZone=typeof o.dew==='number'&&o.dew>=RPE_HOT_DEW;      // เกณฑ์เดียวกับ banner ต่อวัน (hotRPE) — align สองสัญญาณความร้อนให้ตรงกัน
+    if(warn)h+='<div class="wx-n">อากาศ '+o.band+' → ยก cap จาก 167 เป็น '+o.cap+' ('+o.note+') · easy/long ยึด RPE ปล่อยเพซตาม HR ไม่ต้องฝืนเลขบนนาฬิกา</div>';
+    else if(rpeZone)h+='<div class="wx-n">dew '+o.dew+'° (≥'+RPE_HOT_DEW+') → HR เด้งแม้เพซเดิม · easy/long ยึด RPE ปล่อยเพซ · cap ยัง 167 ('+o.band+')</div>';
    }
   }
  }
@@ -1504,8 +1506,11 @@ function jumpDay(wi,di){
   setTimeout(()=>{const r=document.querySelector('.wk-row.jump-hi');if(r)r.classList.remove('jump-hi')},1600);
  },160);
 }
+// ฐานเดือนปฏิทิน — render กับ moveMonth ต้องใช้ตัวนี้ร่วมกันเสมอ ไม่งั้น offset เพี้ยน (off-by-one)
+// สัปดาห์ปัจจุบัน + วันนี้ยังอยู่ในแผน → เกาะวันนี้จริง (กันเดือนค้างตอนสัปดาห์คร่อมเดือน) · ไม่งั้น (สัปดาห์อื่น/วันนี้นอกแผน) → จันทร์ของสัปดาห์นั้น
+function calBase(){return (selected===curWeek()&&slotOf(new Date()))?new Date():dateOf(selected,0);}
 function moveMonth(n){                                              // กันเลื่อนออกนอกช่วงแผน (ปุ่ม disabled อยู่แล้ว · กันเรียกตรงด้วย)
- const a=(selected===curWeek())?new Date():dateOf(selected,0);     // ฐานเดียวกับ render (สัปดาห์ปัจจุบันเกาะวันนี้)
+ const a=calBase();
  const t=new Date(a.getFullYear(),a.getMonth()+(window.__mo||0)+n,1);
  const last=new Date(t.getFullYear(),t.getMonth()+1,0);
  if(!slotOf(t)&&!slotOf(last))return;
@@ -1820,11 +1825,9 @@ function render(){
   html+='<div class="wk-main"><div class="wk-ti">'+escH(day.ti)+
    (tdy&&!showDone?'<span class="wk-tag">TODAY</span>':'')+
    (showDone?'<span class="wk-ok">✓</span>':'')+'</div>';
-  if(day.de){
-   const hot=hotRPE(day,dt);                                       // 🌡 วันร้อน + easy/long → ขึ้น RPE นำ · เพซเดิมหรี่เป็น reference
-   if(hot)html+='<div class="wk-de wk-de-hot">🌡 dew '+hot.dew+'° → '+day.t+' ยึด RPE '+hot.rpe+' ปล่อยเพซตาม effort</div>';
-   html+='<div class="wk-de'+(hot?' wk-de-sub':'')+'">'+escH(day.de)+'</div>';
-  }
+  const hot=hotRPE(day,dt);                                        // 🌡 วันร้อน + easy/long → ขึ้น RPE นำ (นอก gate de เพราะ easy หลายวันไม่มี de)
+  if(hot)html+='<div class="wk-de wk-de-hot">🌡 dew '+hot.dew+'° → '+day.t+' ยึด RPE '+hot.rpe+' ปล่อยเพซตาม effort</div>';
+  if(day.de)html+='<div class="wk-de'+(hot?' wk-de-sub':'')+'">'+escH(day.de)+'</div>';
   if(day.al)html+='<div class="wk-alt">⚡ '+escH(day.al)+'</div>';
   if(lg&&lg.km>0){
    let r=lg.km+' km';
@@ -1848,8 +1851,7 @@ function render(){
 
  // 🗓 ปฏิทินเดือน — เห็นรูปทรง block ทั้งเดือนในภาพเดียว (สีตาม session type · ทึบ=ทำแล้ว · เส้นประ=ข้าม)
  {
-  // ฐานเดือนของปฏิทิน: สัปดาห์ปัจจุบัน → เกาะวันนี้จริง (กันเดือนค้างตอนสัปดาห์คร่อมเดือน) · สัปดาห์อื่น → จันทร์ของสัปดาห์นั้น · __mo = offset จากฐาน (ต้องใช้ฐานเดียวกับ moveMonth)
-  const anchor=(selected===curWeek())?new Date():dateOf(selected,0);
+  const anchor=calBase();                                          // ฐานเดียวกับ moveMonth (สัปดาห์ปัจจุบัน&อยู่ในแผน → วันนี้ · ไม่งั้นจันทร์)
   const mo=new Date(anchor.getFullYear(),anchor.getMonth()+(window.__mo||0),1);
   const first=new Date(mo), last=new Date(mo.getFullYear(),mo.getMonth()+1,0);
   const lead=(first.getDay()+6)%7;                                  // ปฏิทินเริ่มจันทร์ (ตรงกับ index วันของแผน)
