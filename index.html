@@ -604,6 +604,8 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wk-de{font-size:var(--fs-label);color:var(--muted);margin-top:var(--s-1);line-height:1.5}
 .wk-de-hot{color:#c47b1a;font-weight:700}                          /* วันร้อน (dew สูง) · easy/long → ยึด RPE นำ */
 .wk-de-sub{opacity:.55}                                            /* เพซเป้าเดิมหรี่ลงเป็น reference วันร้อน */
+.wk-shoe{font-size:var(--fs-label);color:var(--faint);margin-top:var(--s-1);line-height:1.5}  /* 👟 รองเท้าแนะนำต่อวัน */
+.wk-shoe-race{color:#c0392b;font-weight:700}                       /* วันใส่รองเท้าแข่ง (Metaspeed) → เน้น */
 .wk-alt{font-size:var(--fs-label);color:#9a6b00;background:#fdf6e3;border:1px solid #f0d89a;border-radius:8px;padding:var(--s-1) var(--s-2);line-height:1.45;margin-top:var(--s-1);display:inline-block}
 .wk-res{font-size:var(--fs-label);color:#2faa72;font-weight:600;margin-top:var(--s-1);line-height:1.5}
 .wk-plan{flex:0 0 auto;text-align:right;font-size:var(--fs-label);font-weight:700;color:#6b6b6b;white-space:nowrap;line-height:1.5}
@@ -686,6 +688,18 @@ function hotRPE(day,dt){
  const o=WX.days[localYMD_(dt)], m=o&&o.morning;                   // อ้างอิง dew เช้ามืด (เวลาที่แนะนำวิ่ง aerobic)
  if(!m||typeof m.dew!=='number'||m.dew<RPE_HOT_DEW)return null;
  return {rpe:day.t==='long'?'4–5':'3–4', dew:m.dew};               // long เหนื่อยกว่า easy นิด · ทั้งคู่อยู่โซน E
+}
+// 👟 รองเท้าแนะนำต่อวัน — default ตาม type · session ที่แผนระบุ rehearsal ช่วง peak → Metaspeed (แข่ง) · day.sh = override มือ
+const SHOE={dyna:'Dynafish',sb3:'Superblast 3',ee2:'Endorphin Elite 2',meta:'Metaspeed Tokyo Sky'};
+const SHOE_META_RX=/race rehearsal|practice everything|dress rehearsal/i;   // MP-long/สั้นที่เป็น dress-rehearsal ช่วง peak → รองเท้าแข่ง
+function shoeFor(day){
+ if(day.sh&&SHOE[day.sh])return day.sh;                            // override มือรายวัน (ใส่ sh:'meta' ฯลฯ ใน W array ได้)
+ if(day.t==='race')return 'meta';
+ if(SHOE_META_RX.test((day.ti||'')+' '+(day.de||'')))return 'meta';
+ if(day.t==='long')return 'sb3';                                   // รวม MP-long ช่วง build (W19/W21) — plate สงวนไว้ peak
+ if(day.t==='easy')return 'dyna';
+ if(day.t==='quality')return 'ee2';                               // pace-focus เป็นหลัก · วันเบาสลับ Dynafish เองได้
+ return null;                                                      // cross/rest = ไม่ระบุ
 }
 function paceHRRef(wi){
  const P=[
@@ -1829,6 +1843,7 @@ function render(){
   if(hot)html+='<div class="wk-de wk-de-hot">🌡 dew '+hot.dew+'° → '+day.t+' ยึด RPE '+hot.rpe+' ปล่อยเพซตาม effort</div>';
   if(day.de)html+='<div class="wk-de'+(hot?' wk-de-sub':'')+'">'+escH(day.de)+'</div>';
   if(day.al)html+='<div class="wk-alt">⚡ '+escH(day.al)+'</div>';
+  {const sh=shoeFor(day);if(sh)html+='<div class="wk-shoe'+(sh==='meta'?' wk-shoe-race':'')+'">👟 '+SHOE[sh]+'</div>';}
   if(lg&&lg.km>0){
    let r=lg.km+' km';
    if(lg.ses&&lg.ses.length>1)r+=' <span class="s-multi tip">'+lg.ses.length+'×<span class="tip-body"><b>'+lg.ses.length+' session วันนี้</b> · '+lg.ses.join(' + ')+' km · ยอดรวมเป็น volume ของวัน · pace = ของ run ยาวสุด</span></span>';
