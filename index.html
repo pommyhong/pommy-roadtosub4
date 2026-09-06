@@ -602,6 +602,8 @@ body{background:var(--bg);font-family:'Google Sans',-apple-system,BlinkMacSystem
 .wk-main{flex:1;min-width:0}
 .wk-ti{font-size:var(--fs-label);font-weight:700;color:#1c1c1c;line-height:1.35}
 .wk-de{font-size:var(--fs-label);color:var(--muted);margin-top:var(--s-1);line-height:1.5}
+.wk-de-hot{color:#c47b1a;font-weight:700}                          /* วันร้อน (dew สูง) · easy/long → ยึด RPE นำ */
+.wk-de-sub{opacity:.55}                                            /* เพซเป้าเดิมหรี่ลงเป็น reference วันร้อน */
 .wk-alt{font-size:var(--fs-label);color:#9a6b00;background:#fdf6e3;border:1px solid #f0d89a;border-radius:8px;padding:var(--s-1) var(--s-2);line-height:1.45;margin-top:var(--s-1);display:inline-block}
 .wk-res{font-size:var(--fs-label);color:#2faa72;font-weight:600;margin-top:var(--s-1);line-height:1.5}
 .wk-plan{flex:0 0 auto;text-align:right;font-size:var(--fs-label);font-weight:700;color:#6b6b6b;white-space:nowrap;line-height:1.5}
@@ -676,6 +678,15 @@ const escH=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,
 // เพซเป้าหมาย × หัวใจเป้าหมาย — สเปกตรัม HR ด้านบน + ตารางเพซด้านล่าง (ท่า 1 · 29/08)
 // marker = long run ล่าสุดของสัปดาห์ที่กำลังดู · ไม่มี long = ไม่มี marker
 const localYMD_=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+// 🌡 วันร้อน → easy/long สลับมายึด RPE (ไม่แตะ quality — interval ต้องการเพซแม่น) · เกณฑ์ = dew เช้ามืด ≥ RPE_HOT_DEW · WX มีแค่ ~3 วัน วันไกลไม่มีข้อมูล = โชว์เพซปกติ
+const RPE_HOT_DEW=22;                                               // แก้เกณฑ์ที่บรรทัดเดียวนี้
+function hotRPE(day,dt){
+ if(day.t!=='easy'&&day.t!=='long')return null;                    // quality/cross/rest ไม่แตะ
+ if(!(WX&&WX.days))return null;
+ const o=WX.days[localYMD_(dt)], m=o&&o.morning;                   // อ้างอิง dew เช้ามืด (เวลาที่แนะนำวิ่ง aerobic)
+ if(!m||typeof m.dew!=='number'||m.dew<RPE_HOT_DEW)return null;
+ return {rpe:day.t==='long'?'4–5':'3–4', dew:m.dew};               // long เหนื่อยกว่า easy นิด · ทั้งคู่อยู่โซน E
+}
 function paceHRRef(wi){
  const P=[
   {k:'E',c:'#2f9e6a',pace:'5:46–6:26',lo:144,hi:167,pct:'59–74%',n:'easy · long run · cap 167'},
@@ -1809,7 +1820,11 @@ function render(){
   html+='<div class="wk-main"><div class="wk-ti">'+escH(day.ti)+
    (tdy&&!showDone?'<span class="wk-tag">TODAY</span>':'')+
    (showDone?'<span class="wk-ok">✓</span>':'')+'</div>';
-  if(day.de)html+='<div class="wk-de">'+escH(day.de)+'</div>';
+  if(day.de){
+   const hot=hotRPE(day,dt);                                       // 🌡 วันร้อน + easy/long → ขึ้น RPE นำ · เพซเดิมหรี่เป็น reference
+   if(hot)html+='<div class="wk-de wk-de-hot">🌡 dew '+hot.dew+'° → '+day.t+' ยึด RPE '+hot.rpe+' ปล่อยเพซตาม effort</div>';
+   html+='<div class="wk-de'+(hot?' wk-de-sub':'')+'">'+escH(day.de)+'</div>';
+  }
   if(day.al)html+='<div class="wk-alt">⚡ '+escH(day.al)+'</div>';
   if(lg&&lg.km>0){
    let r=lg.km+' km';
